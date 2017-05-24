@@ -1,7 +1,5 @@
 var snap;
 
-var x = 0;
-
 grid_minor = 20;
 grid_major = 4;
 
@@ -17,17 +15,6 @@ var drag_start = null;
 var shift_anchor = null;
 
 var grid;
-
-function timer1_callback() {
-
-    x += 0.1;
-
-    xshift = x % 200;
-    xshift = 0;
-
-    snap.attr({viewBox: [xshift, xshift, width, height].join(',')});
-
-}
 
 Mousetrap.bind('0', function() {
     shift_view(0, 0);
@@ -108,24 +95,44 @@ window.onload = function () {
 
     }
 
-    drawModule(40, 40, "norGate1");
-    drawModule(240, 80, "norGate2");
-    drawModule(140, 220, "norGate3");
+    m1 = drawModule(40, 40, "norGate1");
+    m2 = drawModule(240, 80, "norGate2");
+    m3 = drawModule(140, 220, "norGate3");
 
-    // window.setInterval(timer1_callback, 10);
+    addAnimations(m1);
+    addAnimations(m2);
+    addAnimations(m3);
 
 };
 
+function addAnimations(mod) {
+
+    var hoverover = function() {
+        // mod.animate({ transform: 's1.2r0,50,50' }, 250, mina.bounce);
+        mod.animate({ transform: 's1.1r0' }, 150, mina.easein);
+    };
+
+    var hoverout = function() {
+        mod.animate({ transform: 's1r0' }, 150, mina.easein);
+    };
+
+    mod.hover(hoverover, hoverout);
+}
+
 function drawModule(x, y, label) {
 
-    var r1 = snap.rect(x, y, 100, 100, 5, 5).attr({fill: 'white', stroke: 'black'});
+    var gr = snap.g();
 
-    var t1 = snap.text(x + 50, y + 120, label);
+    var r1 = gr.rect(x, y, 100, 100, 5, 5).attr({fill: 'white', stroke: 'black'});
+
+    var t1 = gr.text(x + 50, y + 120, label);
 
     t1.attr({
         fontFamily: "Rambla",
         textAnchor: "Middle",
         alignmentBaseline: "central"
     });
+
+    return gr;
 
 }
