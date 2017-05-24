@@ -1,0 +1,12 @@
+@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700i');
+@import url('https://fonts.googleapis.com/css?family=Rambla');
+
+body {
+    background: #eeeeee;
+}
+
+svg {
+    background: white;
+    border: solid 1px black;
+}
