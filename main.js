@@ -16,6 +16,8 @@ var shift_anchor = null;
 
 var grid;
 
+var pos_label;
+
 Mousetrap.bind('0', function() {
     shift_view(0, 0);
     return false;
@@ -23,9 +25,13 @@ Mousetrap.bind('0', function() {
 
 function shift_view(x, y) {
 
+    // shift view box
+
     snap.attr({viewBox: [x, y, width, height].join(',')});
 
     shift = {x: x, y: y};
+
+    // calculate grid shift
 
     grid_repeat = grid_minor * grid_major;
 
@@ -33,6 +39,19 @@ function shift_view(x, y) {
     grid_y = Math.floor(y / grid_repeat) * grid_repeat;
 
     grid.attr({transform: "translate(" + grid_x + ", " + grid_y + ")"})
+
+    // calculate position label shift
+
+    pos_label_margin = 10;
+
+    pos_label.attr({
+        y: height - pos_label_margin + y,
+        text: "(" + x + ", " + y + ")",
+    });
+
+    pos_label.attr({
+        x: width - pos_label_margin + x - pos_label.getBBox().width
+    });
 }
 
 window.onload = function () {
@@ -103,17 +122,25 @@ window.onload = function () {
     addAnimations(m2);
     addAnimations(m3);
 
+    pos_label = snap.text(0, 0, "hello");
+
+    pos_label.attr({
+        fontSize: 12,
+        fontFamily: "Inconsolata",
+    })
+
+    shift_view(0, 0);
+
 };
 
 function addAnimations(mod) {
 
     var hoverover = function() {
-        // mod.animate({ transform: 's1.2r0,50,50' }, 250, mina.bounce);
-        mod.animate({ transform: 's1.1r0' }, 150, mina.easein);
+        mod.animate({ transform: 's1.1r0' }, 75, mina.easein);
     };
 
     var hoverout = function() {
-        mod.animate({ transform: 's1r0' }, 150, mina.easein);
+        mod.animate({ transform: 's1r0' }, 75, mina.easein);
     };
 
     mod.hover(hoverover, hoverout);
