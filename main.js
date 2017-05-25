@@ -7,7 +7,7 @@ minor_attrs = ({stroke: '#eeeeee', strokeDasharray: '1 1'});
 major_attrs = ({stroke: '#eeeeee'});
 
 var width = 700;
-var height = 500;
+var height = 700;
 
 var shift = {x: 0, y: 0};
 
@@ -27,7 +27,7 @@ function shift_view(x, y) {
 
     // shift view box
 
-    snap.attr({viewBox: [x, y, width, height].join(',')});
+    snap.attr({viewBox: [x - width/2, y-height/2, width, height].join(',')});
 
     shift = {x: x, y: y};
 
@@ -45,12 +45,12 @@ function shift_view(x, y) {
     pos_label_margin = 10;
 
     pos_label.attr({
-        y: height - pos_label_margin + y,
+        y: height - pos_label_margin + y - height/2,
         text: "(" + x + ", " + y + ")",
     });
 
     pos_label.attr({
-        x: width - pos_label_margin + x - pos_label.getBBox().width
+        x: width - pos_label_margin + x - pos_label.getBBox().width - width/2
     });
 }
 
@@ -83,14 +83,14 @@ window.onload = function () {
     grid_minor_gr = grid.g();
     grid_major_gr = grid.g();
 
-    grid_minor_lines_h = Math.ceil(width/grid_minor);
-    grid_minor_lines_v = Math.ceil(height/grid_minor);
+    var gv = Math.ceil(height / grid_minor) + 1;
+    var gh = Math.ceil(width / grid_minor) + 1;
 
-    for (var i = 0; i<grid_minor_lines_h + grid_major + 1; i++) {
+    for (var i = -gh; i<=gh; i++) {
 
         var xi = i * grid_minor;
 
-        var line1 = snap.line(xi, 0, xi, height + grid_minor * grid_major);
+        var line1 = snap.line(xi, -height/2, xi, height/2 + grid_minor * grid_major);
 
         var is_maj = i % grid_major == 0;
 
@@ -100,11 +100,11 @@ window.onload = function () {
 
     }
 
-    for (var i = 0; i<grid_minor_lines_v + grid_major + 1; i++) {
+    for (var i = -gv; i<=gv; i++) {
 
         var yi = i * grid_minor;
 
-        var line2 = snap.line(0, yi, width + grid_minor * grid_major, yi);
+        var line2 = snap.line(-width/2, yi, width/2 + grid_minor * grid_major, yi);
 
         var is_maj = i % grid_major == 0;
 
@@ -114,7 +114,7 @@ window.onload = function () {
 
     }
 
-    m1 = drawModule(40, 40, "norGate1");
+    m1 = drawModule(0, 0, "norGate1");
     m2 = drawModule(240, 80, "norGate2");
     m3 = drawModule(140, 220, "norGate3");
 
@@ -127,7 +127,9 @@ window.onload = function () {
     pos_label.attr({
         fontSize: 12,
         fontFamily: "Inconsolata",
-    })
+    });
+
+    snap.circle(0, 0, 5);
 
     shift_view(0, 0);
 
@@ -146,13 +148,19 @@ function addAnimations(mod) {
     mod.hover(hoverover, hoverout);
 }
 
-function drawModule(x, y, label) {
+function drawModule(cx, cy, label) {
+
+    var mod_w = 80;
+    var mod_h = 80;
+
+    var x = cx - mod_w/2;
+    var y = cy - mod_h/2;
 
     var gr = snap.g();
 
-    var r1 = gr.rect(x, y, 100, 100, 5, 5).attr({fill: 'white', stroke: 'black'});
+    var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
 
-    var t1 = gr.text(x + 50, y + 120, label);
+    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
 
     t1.attr({
         fontFamily: "Rambla",
