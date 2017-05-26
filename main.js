@@ -3,8 +3,10 @@ var snap;
 grid_minor = 20;
 grid_major = 4;
 
-minor_attrs = ({stroke: '#eeeeee', strokeDasharray: '1 1'});
-major_attrs = ({stroke: '#eeeeee'});
+scale = 1;
+
+minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 1'});
+major_attrs = ({stroke: '#dddddd'});
 
 var width = 700;
 var height = 700;
@@ -23,11 +25,29 @@ Mousetrap.bind('0', function() {
     return false;
 });
 
+Mousetrap.bind(['+', '='], function() {
+    scale = Math.min(scale * 1.2, 4);
+    shift_view(shift.x, shift.y);
+    return false;
+});
+
+Mousetrap.bind('-', function() {
+    scale = Math.max(scale / 1.2, 1);
+    shift_view(shift.x, shift.y);
+    return false;
+});
+
+
 function shift_view(x, y) {
 
     // shift view box
 
-    snap.attr({viewBox: [x - width/2, y-height/2, width, height].join(',')});
+    w = width / scale;
+    h = height / scale;
+
+    vbox = [x - w/2, y-h/2, w, h];
+
+    snap.attr({viewBox: vbox.join(',')});
 
     shift = {x: x, y: y};
 
@@ -38,19 +58,20 @@ function shift_view(x, y) {
     grid_x = Math.floor(x / grid_repeat) * grid_repeat;
     grid_y = Math.floor(y / grid_repeat) * grid_repeat;
 
-    grid.attr({transform: "translate(" + grid_x + ", " + grid_y + ")"})
+    grid.attr({transform: "translate(" + grid_x + ", " + grid_y + ")"});
 
     // calculate position label shift
 
-    pos_label_margin = 10;
+    pos_label_margin = 10 / scale;
 
     pos_label.attr({
-        y: height - pos_label_margin + y - height/2,
-        text: "(" + x + ", " + y + ")",
+        y: h - pos_label_margin + y - h/2,
+        text: "(" + Math.round(x) + ", " + Math.round(y) + ") - " + Math.round(scale * 100) + "%" ,
+        fontSize: 16 / scale
     });
 
     pos_label.attr({
-        x: width - pos_label_margin + x - pos_label.getBBox().width - width/2
+        x: w - pos_label_margin + x - pos_label.getBBox().width - w/2
     });
 }
 
@@ -69,8 +90,8 @@ window.onload = function () {
 
         if (e.buttons == 1) {
 
-            new_x = shift_anchor.x - (e.x - drag_start.x);
-            new_y = shift_anchor.y - (e.y - drag_start.y);
+            new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
+            new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
 
             shift_view(new_x, new_y);
 
@@ -125,7 +146,6 @@ window.onload = function () {
     pos_label = snap.text(0, 0, "hello");
 
     pos_label.attr({
-        fontSize: 12,
         fontFamily: "Inconsolata",
     });
 
