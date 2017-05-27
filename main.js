@@ -10,14 +10,10 @@ major_attrs = ({stroke: '#dddddd'});
 
 var width = 700;
 var height = 700;
-
 var shift = {x: 0, y: 0};
-
 var drag_start = null;
 var shift_anchor = null;
-
 var grid;
-
 var pos_label;
 
 Mousetrap.bind('0', function() {
@@ -80,23 +76,16 @@ window.onload = function () {
     snap = Snap(width, height);
 
     snap.mousedown(function(e) {
-
         drag_start = {x: e.x, y: e.y};
         shift_anchor = {x: shift.x, y:shift.y};
-
     });
 
     snap.mousemove(function(e) {
-
         if (e.buttons == 1) {
-
             new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
             new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
-
             shift_view(new_x, new_y);
-
         }
-
     });
 
     grid = snap.g();
@@ -108,31 +97,19 @@ window.onload = function () {
     var gh = Math.ceil(width / grid_minor) + 1;
 
     for (var i = -gh; i<=gh; i++) {
-
         var xi = i * grid_minor;
-
         var line1 = snap.line(xi, -height/2, xi, height/2 + grid_minor * grid_major);
-
         var is_maj = i % grid_major == 0;
-
         line1.attr(is_maj ? major_attrs : minor_attrs);
-
         (is_maj ? grid_major_gr : grid_minor_gr).add(line1);
-
     }
 
     for (var i = -gv; i<=gv; i++) {
-
         var yi = i * grid_minor;
-
         var line2 = snap.line(-width/2, yi, width/2 + grid_minor * grid_major, yi);
-
         var is_maj = i % grid_major == 0;
-
         line2.attr(is_maj ? major_attrs : minor_attrs);
-
         (is_maj ? grid_major_gr : grid_minor_gr).add(line2);
-
     }
 
     m1 = drawModule(0, 0, "norGate1");
@@ -172,14 +149,10 @@ function drawModule(cx, cy, label) {
 
     var mod_w = 80;
     var mod_h = 80;
-
     var x = cx - mod_w/2;
     var y = cy - mod_h/2;
-
     var gr = snap.g();
-
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
-
     var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
 
     t1.attr({
@@ -189,5 +162,4 @@ function drawModule(cx, cy, label) {
     });
 
     return gr;
-
 }
