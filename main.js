@@ -165,8 +165,6 @@ window.onload = function () {
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
-    snap.circle(0, 0, 5);
-
     shift_view(0, 0);
 
 };
@@ -184,6 +182,38 @@ function addAnimations(mod) {
     mod.hover(hoverover, hoverout);
 }
 
+function align_text(text_obj, x, y, halign, valign, margin) {
+
+    // Align an svg object `text_obj` to (x, y)
+    //
+    // halign in ["left", "center", "right"]
+    // valign in ["top", "middle", "bottom"]
+    //
+    // Note that (halign, valign) = ("right", "middle") will align text
+    // to the right and middle of (x, y)
+
+    var bbox = text_obj.getBBox();
+    var w = bbox.width;
+    var h = bbox.height;
+    var x0, y0;
+
+    if (halign == "right")
+        x0 = x + 5;
+    else if (halign == "center")
+        x0 = x - w/2;
+    else // (halign == "left")
+        x0 = x - w - 5;
+
+    if (valign == "top")
+        y0 = y - h/2 - 5;
+    else if (valign == "middle")
+        y0 = y;
+    else // (valign == "bottom")
+        y0 = y + h/2 + 5;
+
+    text_obj.attr({x: x0, y:y0, alignmentBaseline: "central"});
+}
+
 function drawModule(cx, cy, label) {
 
     var mod_w = 80;
@@ -193,6 +223,15 @@ function drawModule(cx, cy, label) {
     var gr = snap.g();
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
     var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
+
+    function draw_port(x1, y1, x2, y2, r) {
+        gr.line(x1, y1, x2, y2).attr({stroke: "black"});
+        gr.circle(x2, y2, r);
+        text_obj = gr.text(x1, y1, "a").attr({fontFamily: "Inconsolata"});
+        align_text(text_obj, x1, y1, "right", "middle", 5);
+    }
+
+    draw_port(cx - mod_w/2, cy, cx - mod_w/2 - 25, cy, 5);
 
     t1.attr({
         fontFamily: "Rambla",
