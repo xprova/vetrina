@@ -91,7 +91,7 @@ function shift_view(x, y) {
 
 // drawing functions
 
-function draw_grid() {
+function draw_grid () {
 
     grid = snap.g();
 
@@ -101,21 +101,32 @@ function draw_grid() {
     var gv = Math.ceil(height / grid_minor) + 1;
     var gh = Math.ceil(width / grid_minor) + 1;
 
-    for (var i = -gh; i<=gh; i++) {
-        var xi = i * grid_minor;
-        var line1 = snap.line(xi, -height/2, xi, height/2 + grid_minor * grid_major);
-        var is_maj = i % grid_major == 0;
-        line1.attr(is_maj ? major_attrs : minor_attrs);
-        (is_maj ? grid_major_gr : grid_minor_gr).add(line1);
+    var h2 = height/2;
+    var w2 = width/2;
+
+    var gr = grid_minor * grid_major;
+
+    format_add_line = function (ind, line) {
+        // apply line attributes then add to appropriate grid group
+        var is_maj = ind % grid_major == 0;
+        line.attr(is_maj ? major_attrs : minor_attrs);
+        (is_maj ? grid_major_gr : grid_minor_gr).add(line);
     }
 
-    for (var i = -gv; i<=gv; i++) {
-        var yi = i * grid_minor;
-        var line2 = snap.line(-width/2, yi, width/2 + grid_minor * grid_major, yi);
-        var is_maj = i % grid_major == 0;
-        line2.attr(is_maj ? major_attrs : minor_attrs);
-        (is_maj ? grid_major_gr : grid_minor_gr).add(line2);
+    draw_hline = function (ind) {
+        var xi = ind * grid_minor;
+        var line = snap.line(xi, -h2, xi, h2 + gr);
+        format_add_line(ind, line);
     }
+
+    draw_vline = function (ind) {
+        var yi = ind * grid_minor;
+        var line = snap.line(-w2, yi, w2 + gr, yi);
+        format_add_line(ind, line);
+    }
+
+    _.map(_.range(-gh, gh+1), draw_hline);
+    _.map(_.range(-gv, gv+1), draw_vline);
 
     return grid;
 }
