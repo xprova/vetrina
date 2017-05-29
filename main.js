@@ -136,8 +136,8 @@ function draw_modules() {
     modules = snap.g();
 
     m1 = drawModule(0, 0, "norGate1");
-    m2 = drawModule(240, 80, "norGate2");
-    m3 = drawModule(140, 220, "norGate3");
+    m2 = drawModule(240, 0, "norGate2");
+    m3 = drawModule(240, 220, "norGate3");
 
     addAnimations(m1);
     addAnimations(m2);
@@ -223,15 +223,45 @@ function drawModule(cx, cy, label) {
     var gr = snap.g();
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
     var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
+    var port_pin_r = 5;
 
-    function draw_port(x1, y1, x2, y2, r) {
+    function draw_left_port(y, label) {
+        var x1 = x;
+        var x2 = x - 15;
+        var y1 = y;
+        var y2 = y;
         gr.line(x1, y1, x2, y2).attr({stroke: "black"});
-        gr.circle(x2, y2, r);
-        text_obj = gr.text(x1, y1, "a").attr({fontFamily: "Inconsolata"});
+        gr.circle(x2, y2, port_pin_r);
+        text_obj = gr.text(x1, y1, label).attr({fontFamily: "Inconsolata"});
         align_text(text_obj, x1, y1, "right", "middle", 5);
     }
 
-    draw_port(cx - mod_w/2, cy, cx - mod_w/2 - 25, cy, 5);
+    function draw_right_port(y, label) {
+        var x1 = x + mod_w;
+        var x2 = x1 + 15;
+        var y1 = y;
+        var y2 = y;
+        gr.line(x1, y1, x2, y2).attr({stroke: "black"});
+        gr.circle(x2, y2, port_pin_r);
+        text_obj = gr.text(x1, y1, label).attr({fontFamily: "Inconsolata"});
+        align_text(text_obj, x1, y1, "left", "middle", 5);
+    }
+
+    var left_ports = ["a", "b"];
+    var right_ports = ["y"];
+
+    var left_port_spacing = mod_h / (left_ports.length + 1);
+    var right_port_spacing = mod_h / (right_ports.length + 1);
+
+    for (var i=0; i<left_ports.length; i++) {
+        var py = y + left_port_spacing * (i+1);
+        draw_left_port(py, left_ports[i]);
+    }
+
+    for (var i=0; i<right_ports.length; i++) {
+        var py = y + right_port_spacing * (i+1);
+        draw_right_port(py, right_ports[i]);
+    }
 
     t1.attr({
         fontFamily: "Rambla",
