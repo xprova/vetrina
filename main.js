@@ -5,8 +5,9 @@ const major_attrs = ({stroke: '#dddddd'});
 
 var scale = 1;
 var snap;
-var width = 700;
-var height = 700;
+var modules;
+var width = 1600;
+var height = 1000;
 var shift = {x: 0, y: 0};
 var drag_start = null;
 var shift_anchor = null;
@@ -94,6 +95,7 @@ function shift_view(x, y) {
 function draw_grid () {
 
     grid = snap.g();
+    grid.attr({id: "grid"});
 
     grid_minor_gr = grid.g();
     grid_major_gr = grid.g();
@@ -135,17 +137,18 @@ function draw_modules() {
 
     modules = snap.g();
 
-    m1 = drawModule(0, 0, "norGate1");
-    m2 = drawModule(240, 0, "norGate2");
-    m3 = drawModule(240, 220, "norGate3");
-
-    addAnimations(m1);
-    addAnimations(m2);
-    addAnimations(m3);
-
-    modules.add(m1);
-    modules.add(m2);
-    modules.add(m3);
+    for (var i=0; i<10; i++) {
+        for (var j=0; j<10; j++) {
+            mod_label = `norGate_${i}_${j}`;
+            mx = 200 * i;
+            my = 200 * j;
+            m = drawModule(mx, my, mod_label);
+            addAnimations(m);
+            // modules.add(m);
+            all_modules.push(m);
+            all_mod_names.push(document.getElementById(mod_label));
+        }
+    }
 
     return modules;
 }
@@ -221,6 +224,7 @@ function drawModule(cx, cy, label) {
     var x = cx - mod_w/2;
     var y = cy - mod_h/2;
     var gr = snap.g();
+    gr.attr({id: label});
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
     var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
     var port_pin_r = 5;
