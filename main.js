@@ -78,7 +78,7 @@ function shift_view(x, y) {
     var zl = Math.round(scale * 100);
 
     cord_label.attr({
-        y: h - cord_label_margin + y - h/2,
+        y: h/2 - cord_label_margin + y,
         text: `(${rx}, ${ry}) - ${zl}%`,
         fontSize: 16 / scale
     });
@@ -86,7 +86,7 @@ function shift_view(x, y) {
     // adjust x coordinate after setting text so as to use bbox
 
     cord_label.attr({
-        x: w - cord_label_margin + x - cord_label.getBBox().width - w/2
+        x: w/2 - cord_label_margin - cord_label.getBBox().width + x
     });
 }
 
@@ -144,9 +144,7 @@ function draw_modules() {
             my = 200 * j;
             m = drawModule(mx, my, mod_label);
             addAnimations(m);
-            // modules.add(m);
-            all_modules.push(m);
-            all_mod_names.push(document.getElementById(mod_label));
+            modules.add(m);
         }
     }
 
