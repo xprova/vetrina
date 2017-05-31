@@ -9,7 +9,7 @@ body {
 
 svg {
 	background: white;
-	border: solid 1px black;
+	border: solid 1px #dddddd;
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Safari */
 	-khtml-user-select: none; /* Konqueror HTML */
@@ -18,6 +18,8 @@ svg {
     user-select: none; /* Non-prefixed version, currently
     supported by Chrome and Opera */
     cursor: default;
+    width: 100%;
+    height: 95%;
 }
 
 svg:active{

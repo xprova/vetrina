@@ -1,12 +1,12 @@
 const GRID_BLOCK = 200;
 const GRID_LINES_P_BLOCK = 4;
-const minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 1'});
+const minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 2'});
 const major_attrs = ({stroke: '#dddddd'});
 
 var scale = 1;
 var snap;
 var modules;
-var width = 1600;
+var width = 1000;
 var height = 1000;
 var shift = {x: 0, y: 0};
 var drag_start = null;
@@ -53,7 +53,7 @@ function mousemove_handler(e) {
 }
 
 function mousescroll_handler(e) {
-    (e.wheelDelta < 0 ? zoom_in : zoom_out)();
+    (e.wheelDelta > 0 ? zoom_in : zoom_out)();
 }
 
 function shift_view(x, y) {
@@ -96,8 +96,11 @@ function shift_view(x, y) {
 
 function draw_grid () {
 
-    grid = snap.g();
     grid.attr({id: "grid"});
+
+    children = grid.children();
+
+    _.map(grid.children(), x => x.remove());
 
     grid_minor_gr = grid.g();
     grid_major_gr = grid.g();
@@ -132,7 +135,6 @@ function draw_grid () {
     _.map(_.range(-gh, gh+1), draw_hline);
     _.map(_.range(-gv, gv+1), draw_vline);
 
-    return grid;
 }
 
 function draw_modules() {
@@ -155,23 +157,49 @@ function draw_modules() {
 
 // main function
 
+var addEvent = function(object, type, callback) {
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
+
 window.onload = function () {
 
-    snap = Snap(width, height);
+    snap = Snap();
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
     snap.node.addEventListener("mousewheel", mousescroll_handler, false);
+    addEvent(window, "resize", window_resize_handler);
 
-    grid = draw_grid();
+    grid = snap.g();
+
+    draw_grid();
 
     draw_modules();
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
+    window_resize_handler();
+
     shift_view(0, 0);
 
 };
+
+function window_resize_handler(event) {
+
+    bbox = document.getElementsByTagName('svg')[0].getBoundingClientRect();
+    [width, height] = [bbox.width, bbox.height];
+
+    draw_grid();
+    shift_view(shift.x, shift.y);
+
+}
 
 function addAnimations(mod) {
 
@@ -282,7 +310,7 @@ function drawModule(cx, cy, label) {
 
     var left_ports = ["a", "b"];
     var right_ports = ["y"];
-    var top_ports = ["north"];
+    var top_ports = ["z", "c", "e"];
     var bottom_ports = [];
 
     var ports = [
