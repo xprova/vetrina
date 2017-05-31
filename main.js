@@ -38,16 +38,22 @@ function zoom_out() {
 // mouse handlers
 
 function mousedown_handler(e) {
-    drag_start = {x: e.x, y: e.y};
-    shift_anchor = {x: shift.x, y:shift.y};
+    if (e.buttons == 4) {
+        drag_start = {x: e.x, y: e.y};
+        shift_anchor = {x: shift.x, y:shift.y};
+    }
 }
 
 function mousemove_handler(e) {
-    if (e.buttons == 1) {
+    if (e.buttons == 4) {
         new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
         new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
         shift_view(new_x, new_y);
     }
+}
+
+function mousescroll_handler(e) {
+    (e.wheelDelta < 0 ? zoom_in : zoom_out)();
 }
 
 function shift_view(x, y) {
@@ -155,6 +161,7 @@ window.onload = function () {
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
+    snap.node.addEventListener("mousewheel", mousescroll_handler, false);
 
     grid = draw_grid();
 
