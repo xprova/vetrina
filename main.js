@@ -1,5 +1,5 @@
-const grid_minor = 20;
-const grid_major = 4;
+const GRID_BLOCK = 160 * 2;
+const GRID_LINES_P_BLOCK = 4;
 const minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 1'});
 const major_attrs = ({stroke: '#dddddd'});
 
@@ -62,7 +62,7 @@ function shift_view(x, y) {
 
     // calculate grid shift
 
-    grid_repeat = grid_minor * grid_major;
+    grid_repeat = GRID_BLOCK;
 
     grid_x = Math.floor(x / grid_repeat) * grid_repeat;
     grid_y = Math.floor(y / grid_repeat) * grid_repeat;
@@ -78,16 +78,12 @@ function shift_view(x, y) {
     var zl = Math.round(scale * 100);
 
     cord_label.attr({
-        y: h/2 - cord_label_margin + y,
+        y: +h/2 - cord_label_margin + y,
+        x: -w/2 + cord_label_margin + x,
         text: `(${rx}, ${ry}) - ${zl}%`,
         fontSize: 16 / scale
     });
 
-    // adjust x coordinate after setting text so as to use bbox
-
-    cord_label.attr({
-        x: w/2 - cord_label_margin - cord_label.getBBox().width + x
-    });
 }
 
 // drawing functions
@@ -100,29 +96,29 @@ function draw_grid () {
     grid_minor_gr = grid.g();
     grid_major_gr = grid.g();
 
-    var gv = Math.ceil(height / grid_minor) + 1;
-    var gh = Math.ceil(width / grid_minor) + 1;
+    var gv = Math.ceil(height / GRID_BLOCK * GRID_LINES_P_BLOCK) + 1;
+    var gh = Math.ceil(width / GRID_BLOCK * GRID_LINES_P_BLOCK) + 1;
 
     var h2 = height/2;
     var w2 = width/2;
 
-    var gr = grid_minor * grid_major;
+    var gr = GRID_BLOCK;
 
     format_add_line = function (ind, line) {
         // apply line attributes then add to appropriate grid group
-        var is_maj = ind % grid_major == 0;
+        var is_maj = ind % GRID_LINES_P_BLOCK == 0;
         line.attr(is_maj ? major_attrs : minor_attrs);
         (is_maj ? grid_major_gr : grid_minor_gr).add(line);
     }
 
     draw_hline = function (ind) {
-        var xi = ind * grid_minor;
+        var xi = ind * GRID_BLOCK / GRID_LINES_P_BLOCK;
         var line = snap.line(xi, -h2, xi, h2 + gr);
         format_add_line(ind, line);
     }
 
     draw_vline = function (ind) {
-        var yi = ind * grid_minor;
+        var yi = ind * GRID_BLOCK / GRID_LINES_P_BLOCK;
         var line = snap.line(-w2, yi, w2 + gr, yi);
         format_add_line(ind, line);
     }
