@@ -5,13 +5,13 @@ const major_attrs = ({stroke: '#dddddd'});
 
 var scale = 1;
 var snap;
-var modules;
 var width = 1000;
 var height = 1000;
 var shift = {x: 0, y: 0};
 var drag_start = null;
 var shift_anchor = null;
-var grid; // svg group of grid lines
+var grid_layer;
+var module_layer;
 var cord_label;
 
 Mousetrap.bind('0', reset_view);
@@ -60,20 +60,18 @@ function shift_view(x, y) {
 
     // shift view box
 
-    w = width / scale;
-    h = height / scale;
-    vbox = [x - w/2, y-h/2, w, h];
+    var w = width / scale;
+    var h = height / scale;
+    var vbox = [x - w/2, y-h/2, w, h];
     snap.attr({viewBox: vbox.join(',')});
     shift = {x: x, y: y};
 
     // calculate grid shift
 
-    grid_repeat = GRID_BLOCK;
+    var grid_x = Math.floor(x / GRID_BLOCK) * GRID_BLOCK;
+    var grid_y = Math.floor(y / GRID_BLOCK) * GRID_BLOCK;
 
-    grid_x = Math.floor(x / grid_repeat) * grid_repeat;
-    grid_y = Math.floor(y / grid_repeat) * grid_repeat;
-
-    grid.attr({transform: `translate(${grid_x}, ${grid_y})`});
+    grid_layer.attr({transform: `translate(${grid_x}, ${grid_y})`});
 
     // re-position and adjust scale of coordinate label
 
@@ -94,16 +92,15 @@ function shift_view(x, y) {
 
 // drawing functions
 
-function draw_grid () {
+function draw_grid (layer) {
 
-    grid.attr({id: "grid"});
+    _.map(layer.children(), x => x.remove());
 
-    children = grid.children();
+    var grid_minor_layer = layer.g();
+    var grid_major_layer = layer.g();
 
-    _.map(grid.children(), x => x.remove());
-
-    grid_minor_gr = grid.g();
-    grid_major_gr = grid.g();
+    grid_minor_layer.attr({id: 'grid_minor'});
+    grid_major_layer.attr({id: 'grid_major'});
 
     var gv = Math.ceil(height / GRID_BLOCK * GRID_LINES_P_BLOCK) + 1;
     var gh = Math.ceil(width / GRID_BLOCK * GRID_LINES_P_BLOCK) + 1;
@@ -117,7 +114,7 @@ function draw_grid () {
         // apply line attributes then add to appropriate grid group
         var is_maj = ind % GRID_LINES_P_BLOCK == 0;
         line.attr(is_maj ? major_attrs : minor_attrs);
-        (is_maj ? grid_major_gr : grid_minor_gr).add(line);
+        (is_maj ? grid_major_layer : grid_minor_layer).add(line);
     }
 
     draw_hline = function (ind) {
@@ -137,9 +134,7 @@ function draw_grid () {
 
 }
 
-function draw_modules() {
-
-    modules = snap.g();
+function draw_modules(layer) {
 
     for (var i=0; i<10; i++) {
         for (var j=0; j<10; j++) {
@@ -148,11 +143,10 @@ function draw_modules() {
             my = 200 * j;
             m = drawModule(mx, my, mod_label);
             addAnimations(m);
-            modules.add(m);
+            layer.add(m);
         }
     }
 
-    return modules;
 }
 
 // main function
@@ -177,11 +171,15 @@ window.onload = function () {
     snap.node.addEventListener("mousewheel", mousescroll_handler, false);
     addEvent(window, "resize", window_resize_handler);
 
-    grid = snap.g();
+    grid_layer = snap.g();
+    module_layer = snap.g();
 
-    draw_grid();
+    grid_layer.attr({id: "grid"});
+    module_layer.attr({id: "modules"});
 
-    draw_modules();
+    draw_grid(grid_layer);
+
+    draw_modules(module_layer);
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
@@ -193,10 +191,10 @@ window.onload = function () {
 
 function window_resize_handler(event) {
 
-    bbox = document.getElementsByTagName('svg')[0].getBoundingClientRect();
+    var bbox = document.getElementsByTagName('svg')[0].getBoundingClientRect();
     [width, height] = [bbox.width, bbox.height];
 
-    draw_grid();
+    draw_grid(grid_layer);
     shift_view(shift.x, shift.y);
 
 }
