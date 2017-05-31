@@ -1,4 +1,4 @@
-const GRID_BLOCK = 160 * 2;
+const GRID_BLOCK = 200;
 const GRID_LINES_P_BLOCK = 4;
 const minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 1'});
 const major_attrs = ({stroke: '#dddddd'});
@@ -213,59 +213,90 @@ function align_text(text_obj, x, y, halign, valign, margin) {
 
 function drawModule(cx, cy, label) {
 
-    var mod_w = 80;
-    var mod_h = 80;
+    const mod_w = 80;
+    const mod_h = 80;
+    const port_pin_r = 5;
+    const port_edge_length = 15;
+
+    const port_line_style = {stroke: "black"};
+    const port_label_style = {fontFamily: "Inconsolata"};
+    const module_body_style = {fill: 'white', stroke: 'black'};
+    const module_label_style = {fontFamily: "Rambla", textAnchor: "Middle",
+        alignmentBaseline: "central"};
+
     var x = cx - mod_w/2;
     var y = cy - mod_h/2;
     var gr = snap.g();
-    gr.attr({id: label});
-    var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr({fill: 'white', stroke: 'black'});
+    var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
     var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
-    var port_pin_r = 5;
+
+    gr.attr({id: label});
+    t1.attr(module_label_style);
+
+    function draw_port(x1, x2, y1, y2, label, halign, valign) {
+        gr.line(x1, y1, x2, y2).attr(port_line_style);
+        gr.circle(x2, y2, port_pin_r);
+        text_obj = gr.text(x1, y1, label).attr(port_label_style);
+        align_text(text_obj, x1, y1, halign, valign, 5);
+    }
 
     function draw_left_port(y, label) {
         var x1 = x;
-        var x2 = x - 15;
+        var x2 = x - port_edge_length;
         var y1 = y;
         var y2 = y;
-        gr.line(x1, y1, x2, y2).attr({stroke: "black"});
-        gr.circle(x2, y2, port_pin_r);
-        text_obj = gr.text(x1, y1, label).attr({fontFamily: "Inconsolata"});
-        align_text(text_obj, x1, y1, "right", "middle", 5);
+        draw_port(x1, x2, y1, y2, label, "right", "middle");
     }
 
     function draw_right_port(y, label) {
         var x1 = x + mod_w;
-        var x2 = x1 + 15;
+        var x2 = x1 + port_edge_length;
         var y1 = y;
         var y2 = y;
-        gr.line(x1, y1, x2, y2).attr({stroke: "black"});
-        gr.circle(x2, y2, port_pin_r);
-        text_obj = gr.text(x1, y1, label).attr({fontFamily: "Inconsolata"});
-        align_text(text_obj, x1, y1, "left", "middle", 5);
+        draw_port(x1, x2, y1, y2, label, "left", "middle");
     }
+
+    function draw_top_port(x, label) {
+        var x1 = x;
+        var x2 = x;
+        var y1 = y;
+        var y2 = y - port_edge_length;
+        draw_port(x1, x2, y1, y2, label, "center", "bottom");
+    }
+
+    function draw_bottom_port(x, label) {
+        var x1 = x;
+        var x2 = x;
+        var y2 = y + mod_h + port_edge_length;
+        var y1 = y + mod_h;
+        draw_port(x1, x2, y1, y2, label, "center", "top");
+    }
+
 
     var left_ports = ["a", "b"];
     var right_ports = ["y"];
+    var top_ports = ["north"];
+    var bottom_ports = [];
 
-    var left_port_spacing = mod_h / (left_ports.length + 1);
-    var right_port_spacing = mod_h / (right_ports.length + 1);
+    var ports = [
+        [left_ports, draw_left_port, y, mod_h],
+        [right_ports, draw_right_port, y, mod_h],
+        [top_ports, draw_top_port, x, mod_w],
+        [bottom_ports, draw_bottom_port, x, mod_w],
+    ];
 
-    for (var i=0; i<left_ports.length; i++) {
-        var py = y + left_port_spacing * (i+1);
-        draw_left_port(py, left_ports[i]);
+    var directions = ports.length;
+
+    for (var i=0; i<directions; i++) {
+
+        var [dports, dport_fun, dim, coord] = ports[i];
+        var spacing = coord / (dports.length + 1);
+
+        for (var j=0; j<dports.length; j++) {
+            var pos = dim + spacing * (j+1);
+            dport_fun(pos, dports[j]);
+        }
     }
-
-    for (var i=0; i<right_ports.length; i++) {
-        var py = y + right_port_spacing * (i+1);
-        draw_right_port(py, right_ports[i]);
-    }
-
-    t1.attr({
-        fontFamily: "Rambla",
-        textAnchor: "Middle",
-        alignmentBaseline: "central"
-    });
 
     return gr;
 }
