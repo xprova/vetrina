@@ -134,17 +134,13 @@ function draw_grid (layer) {
 
 }
 
-function draw_modules(layer) {
+function draw_modules(layer, module_defs) {
 
-    for (var i=0; i<10; i++) {
-        for (var j=0; j<10; j++) {
-            mod_label = `norGate_${i}_${j}`;
-            mx = 200 * i;
-            my = 200 * j;
-            m = drawModule(mx, my, mod_label);
-            addAnimations(m);
-            layer.add(m);
-        }
+    for (var i=0; i<module_defs.length; i++) {
+        mod = module_defs[i];
+        m = drawModule(mod.x, mod.y, mod.label);
+        addAnimations(m);
+        layer.add(m);
     }
 
 }
@@ -162,9 +158,9 @@ var addEvent = function(object, type, callback) {
     }
 };
 
-window.onload = function () {
+function init_viewer(element_id, module_defs) {
 
-    snap = Snap();
+    snap = Snap(element_id);
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
@@ -179,7 +175,7 @@ window.onload = function () {
 
     draw_grid(grid_layer);
 
-    draw_modules(module_layer);
+    draw_modules(module_layer, module_defs);
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
@@ -187,7 +183,7 @@ window.onload = function () {
 
     shift_view(0, 0);
 
-};
+}
 
 function window_resize_handler(event) {
 
