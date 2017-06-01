@@ -1,25 +1,28 @@
 
 function get_module_grid() {
 
-    module_defs = [];
+    modules = [];
 
     for (var i=0; i<10; i++) {
         for (var j=0; j<10; j++) {
-            module_defs.push({
+            modules.push({
                 label: `norGate_${i}_${j}`,
                 x: 200 * i,
                 y: 200 * j,
+                left_ports: ["a", "b"],
+                right_ports: ["y"],
+                top_ports: ["z", "c", "e"],
             });
         }
     }
 
-    return module_defs;
+    return modules;
 }
 
 window.onload = function () {
 
-    module_defs = get_module_grid();
+    modules = get_module_grid();
 
-    init_viewer("#svg1", module_defs);
+    init_viewer("#svg1", modules);
 
 };

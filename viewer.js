@@ -13,6 +13,7 @@ var shift_anchor = null;
 var grid_layer;
 var module_layer;
 var cord_label;
+var modules;
 
 Mousetrap.bind('0', reset_view);
 Mousetrap.bind(['+', '='], zoom_in);
@@ -135,14 +136,11 @@ function draw_grid (layer) {
 }
 
 function draw_modules(layer, module_defs) {
-
-    for (var i=0; i<module_defs.length; i++) {
-        mod = module_defs[i];
-        m = drawModule(mod.x, mod.y, mod.label);
+    _.map(module_defs, function (mod) {
+        m = drawModule(mod);
         addAnimations(m);
         layer.add(m);
-    }
-
+    });
 }
 
 // main function
@@ -174,6 +172,8 @@ function init_viewer(element_id, module_defs) {
     module_layer.attr({id: "modules"});
 
     draw_grid(grid_layer);
+
+    modules = module_defs;
 
     draw_modules(module_layer, module_defs);
 
@@ -240,7 +240,7 @@ function align_text(text_obj, x, y, halign, valign, margin) {
     text_obj.attr({x: x0, y:y0, alignmentBaseline: "central"});
 }
 
-function drawModule(cx, cy, label) {
+function drawModule(mod) {
 
     const mod_w = 80;
     const mod_h = 80;
@@ -253,13 +253,13 @@ function drawModule(cx, cy, label) {
     const module_label_style = {fontFamily: "Rambla", textAnchor: "Middle",
         alignmentBaseline: "central"};
 
-    var x = cx - mod_w/2;
-    var y = cy - mod_h/2;
+    var x = mod.x - mod_w/2;
+    var y = mod.y - mod_h/2;
     var gr = snap.g();
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
-    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, label);
+    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, mod.label);
 
-    gr.attr({id: label});
+    gr.attr({id: mod.label});
     t1.attr(module_label_style);
 
     function draw_port(x1, x2, y1, y2, label, halign, valign) {
@@ -301,17 +301,11 @@ function drawModule(cx, cy, label) {
         draw_port(x1, x2, y1, y2, label, "center", "top");
     }
 
-
-    var left_ports = ["a", "b"];
-    var right_ports = ["y"];
-    var top_ports = ["z", "c", "e"];
-    var bottom_ports = [];
-
     var ports = [
-        [left_ports, draw_left_port, y, mod_h],
-        [right_ports, draw_right_port, y, mod_h],
-        [top_ports, draw_top_port, x, mod_w],
-        [bottom_ports, draw_bottom_port, x, mod_w],
+        [mod.left_ports   || [], draw_left_port,   y, mod_h],
+        [mod.right_ports  || [], draw_right_port,  y, mod_h],
+        [mod.top_ports    || [], draw_top_port,    x, mod_w],
+        [mod.bottom_ports || [], draw_bottom_port, x, mod_w],
     ];
 
     var directions = ports.length;
