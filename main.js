@@ -32,7 +32,8 @@ function get_module_grid(template, id_) {
                 x: 200 * i,
                 y: 200 * j,
             };
-            _.extend(newNor, template);
+            temp1 = JSON.parse(JSON.stringify(template)); // ugly, TODO
+            _.extend(newNor, temp1);
             modules[id] = newNor;
         }
     }
@@ -45,5 +46,9 @@ window.onload = function () {
     modules = get_module_grid(corePOETS, "corePOETS");
 
     init_viewer("#svg1", modules);
+
+    draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
+    draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");
+    draw_connection("corePOETS_1_1", "corePOETS_2_2", "E", "W");
 
 };

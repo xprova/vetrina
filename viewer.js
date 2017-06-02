@@ -12,6 +12,7 @@ var drag_start = null;
 var shift_anchor = null;
 var grid_layer;
 var module_layer;
+var connector_layer;
 var cord_label;
 var modules;
 
@@ -158,6 +159,7 @@ function init_viewer(element_id, module_defs) {
     addEvent(window, "resize", window_resize_handler);
 
     grid_layer = snap.g();
+    connector_layer = snap.g();
     module_layer = snap.g();
 
     grid_layer.attr({id: "grid"});
@@ -167,7 +169,7 @@ function init_viewer(element_id, module_defs) {
 
     modules = module_defs;
 
-    _.map(module_defs, (mod, id) => layer.add(drawModule(id, mod)));
+    _.map(module_defs, (mod, id) => module_layer.add(drawModule(id, mod)));
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
@@ -318,4 +320,25 @@ function drawModule(id, mod) {
     }
 
     return gr;
+}
+
+function draw_connection(mod1, mod2, port1, port2) {
+
+    console.log(modules);
+
+    var x1 = modules[mod1].ports[port1].x;
+    var y1 = modules[mod1].ports[port1].y;
+    var x2 = modules[mod2].ports[port2].x;
+    var y2 = modules[mod2].ports[port2].y;
+
+    console.log(`${x1}, ${y1} - ${x2}, ${y2}`);
+
+    // var l1 = connector_layer.line(x1, y1, x2, y2);
+    var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
+
+    l1.attr({
+        strokeWidth: 3,
+        fill: "none",
+        class: "connector"
+    });
 }

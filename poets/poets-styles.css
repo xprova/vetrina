@@ -39,3 +39,8 @@
 .poets .port-label {
 	fill: none;
 }
+
+.connector {
+	stroke: #0D47A1;
+	stroke-opacity: 0.75;
+}
