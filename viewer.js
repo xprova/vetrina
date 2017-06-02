@@ -301,11 +301,19 @@ function drawModule(mod) {
         draw_port(x1, x2, y1, y2, label, "center", "top");
     }
 
+    function get_ports(position) {
+        return _.chain(mod.ports)
+            .map((x, y) => [y, x.position]) // [port, position] tuples
+            .filter(x => x[1] == position) // keep tuples with correct position
+            .map(_.first) // take port names
+            .value();
+    }
+
     var ports = [
-        [mod.left_ports   || [], draw_left_port,   y, mod_h],
-        [mod.right_ports  || [], draw_right_port,  y, mod_h],
-        [mod.top_ports    || [], draw_top_port,    x, mod_w],
-        [mod.bottom_ports || [], draw_bottom_port, x, mod_w],
+        [get_ports("left")   || [], draw_left_port,   y, mod_h],
+        [get_ports("right")  || [], draw_right_port,  y, mod_h],
+        [get_ports("top")    || [], draw_top_port,    x, mod_w],
+        [get_ports("bottom") || [], draw_bottom_port, x, mod_w],
     ];
 
     var directions = ports.length;
