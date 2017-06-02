@@ -135,14 +135,6 @@ function draw_grid (layer) {
 
 }
 
-function draw_modules(layer, module_defs) {
-    _.map(module_defs, function (mod, id) {
-        m = drawModule(id, mod);
-        addAnimations(m);
-        layer.add(m);
-    });
-}
-
 // main function
 
 var addEvent = function(object, type, callback) {
@@ -175,7 +167,7 @@ function init_viewer(element_id, module_defs) {
 
     modules = module_defs;
 
-    draw_modules(module_layer, module_defs);
+    _.map(module_defs, (mod, id) => layer.add(drawModule(id, mod)));
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
@@ -193,19 +185,6 @@ function window_resize_handler(event) {
     draw_grid(grid_layer);
     shift_view(shift.x, shift.y);
 
-}
-
-function addAnimations(mod) {
-
-    var hoverover = function() {
-        mod.animate({ transform: 's1.1r0' }, 75, mina.easein);
-    };
-
-    var hoverout = function() {
-        mod.animate({ transform: 's1r0' }, 75, mina.easein);
-    };
-
-    mod.hover(hoverover, hoverout);
 }
 
 function align_text(text_obj, x, y, halign, valign, margin) {

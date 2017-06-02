@@ -9,6 +9,18 @@ norGate = {
     }
 }
 
+corePOETS = {
+    image: "poets/poets_logo_white.svg",
+    class: "poets",
+    width: 100,
+    height: 100,
+    ports: {
+        "W": {position: "left"},
+        "E": {position: "right"},
+        "N": {position: "top"},
+    }
+}
+
 function get_module_grid(template, id_) {
 
     modules = {};
@@ -30,7 +42,7 @@ function get_module_grid(template, id_) {
 
 window.onload = function () {
 
-    modules = get_module_grid(norGate, "norGate");
+    modules = get_module_grid(corePOETS, "corePOETS");
 
     init_viewer("#svg1", modules);
 
