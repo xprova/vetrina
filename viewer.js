@@ -136,8 +136,8 @@ function draw_grid (layer) {
 }
 
 function draw_modules(layer, module_defs) {
-    _.map(module_defs, function (mod) {
-        m = drawModule(mod);
+    _.map(module_defs, function (mod, id) {
+        m = drawModule(id, mod);
         addAnimations(m);
         layer.add(m);
     });
@@ -240,33 +240,44 @@ function align_text(text_obj, x, y, halign, valign, margin) {
     text_obj.attr({x: x0, y:y0, alignmentBaseline: "central"});
 }
 
-function drawModule(mod) {
+function drawModule(id, mod) {
 
-    const mod_w = 80;
-    const mod_h = 80;
+    const mod_w = mod.hasOwnProperty("width") ? mod.width : 80;
+    const mod_h = mod.hasOwnProperty("height") ? mod.height : 80;
     const port_pin_r = 5;
     const port_edge_length = 15;
 
-    const port_line_style = {stroke: "black"};
-    const port_label_style = {fontFamily: "Inconsolata"};
-    const module_body_style = {fill: 'white', stroke: 'black'};
+    const port_line_style = {stroke: "black", class: "port-line"};
+    const port_label_style = {fontFamily: "Inconsolata", class: "port-label"};
+    const module_body_style = {fill: 'white', stroke: "black", class: "module-body"};
     const module_label_style = {fontFamily: "Rambla", textAnchor: "Middle",
-        alignmentBaseline: "central"};
+        alignmentBaseline: "central", class: "module-label"};
 
     var x = mod.x - mod_w/2;
     var y = mod.y - mod_h/2;
     var gr = snap.g();
     var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
-    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, mod.label);
+    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
 
-    gr.attr({id: mod.label});
+    gr.attr({id: id});
     t1.attr(module_label_style);
+
+    if (mod.hasOwnProperty("image")) {
+        var img = gr.image(mod.image, x, y, mod_w, mod_h);
+        img.attr({preserveAspectRatio: "xMinYMid"});
+    }
+
+    if (mod.hasOwnProperty("class")) {
+        gr.attr({class: mod.class});
+    }
 
     function draw_port(x1, x2, y1, y2, label, halign, valign) {
         gr.line(x1, y1, x2, y2).attr(port_line_style);
         gr.circle(x2, y2, port_pin_r);
         text_obj = gr.text(x1, y1, label).attr(port_label_style);
         align_text(text_obj, x1, y1, halign, valign, 5);
+        mod.ports[label].x = x2;
+        mod.ports[label].y = y2;
     }
 
     function draw_left_port(y, label) {
@@ -316,9 +327,7 @@ function drawModule(mod) {
         [get_ports("bottom") || [], draw_bottom_port, x, mod_w],
     ];
 
-    var directions = ports.length;
-
-    for (var i=0; i<directions; i++) {
+    for (var i=0; i<ports.length; i++) {
 
         var [dports, dport_fun, dim, coord] = ports[i];
         var spacing = coord / (dports.length + 1);

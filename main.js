@@ -1,28 +1,27 @@
-
-function get_module_grid() {
-
-    norGate = {
-        ports: {
-            "a": {position: "left"},
-            "b": {position: "left"},
-            "y": {position: "right"},
-            "c": {position: "top"},
-            "e": {position: "top"},
-            "z": {position: "top"},
-        }
+norGate = {
+    ports: {
+        "a": {position: "left"},
+        "b": {position: "left"},
+        "y": {position: "right"},
+        "c": {position: "top"},
+        "e": {position: "top"},
+        "z": {position: "top"},
     }
+}
 
-    modules = [];
+function get_module_grid(template, id_) {
+
+    modules = {};
 
     for (var i=0; i<10; i++) {
         for (var j=0; j<10; j++) {
+            id = `${id_}_${i}_${j}`;
             newNor = {
-                label: `norGate_${i}_${j}`,
                 x: 200 * i,
                 y: 200 * j,
             };
-            _.extend(newNor, norGate);
-            modules.push(newNor);
+            _.extend(newNor, template);
+            modules[id] = newNor;
         }
     }
 
@@ -31,7 +30,7 @@ function get_module_grid() {
 
 window.onload = function () {
 
-    modules = get_module_grid();
+    modules = get_module_grid(norGate, "norGate");
 
     init_viewer("#svg1", modules);
 
