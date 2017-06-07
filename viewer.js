@@ -40,14 +40,14 @@ function zoom_out() {
 // mouse handlers
 
 function mousedown_handler(e) {
-    if (e.buttons == 4) {
+    if (e.buttons == 1) {
         drag_start = {x: e.x, y: e.y};
         shift_anchor = {x: shift.x, y:shift.y};
     }
 }
 
 function mousemove_handler(e) {
-    if (e.buttons == 4) {
+    if (e.buttons == 1) {
         new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
         new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
         shift_view(new_x, new_y);
@@ -236,17 +236,9 @@ function drawModule(id, mod) {
 
     var x = mod.x - mod_w/2;
     var y = mod.y - mod_h/2;
+
     var gr = snap.g();
-    var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
-    var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
-
     gr.attr({id: id});
-    t1.attr(module_label_style);
-
-    if (mod.hasOwnProperty("image")) {
-        var img = gr.image(mod.image, x, y, mod_w, mod_h);
-        img.attr({preserveAspectRatio: "xMinYMid"});
-    }
 
     if (mod.hasOwnProperty("class")) {
         gr.attr({class: mod.class});
@@ -299,24 +291,48 @@ function drawModule(id, mod) {
             .filter(x => x[1] == position) // keep tuples with correct position
             .map(_.first) // take port names
             .value();
-    }
-
-    var ports = [
-        [get_ports("left")   || [], draw_left_port,   y, mod_h],
-        [get_ports("right")  || [], draw_right_port,  y, mod_h],
-        [get_ports("top")    || [], draw_top_port,    x, mod_w],
-        [get_ports("bottom") || [], draw_bottom_port, x, mod_w],
-    ];
-
-    for (var i=0; i<ports.length; i++) {
-
-        var [dports, dport_fun, dim, coord] = ports[i];
-        var spacing = coord / (dports.length + 1);
-
-        for (var j=0; j<dports.length; j++) {
-            var pos = dim + spacing * (j+1);
-            dport_fun(pos, dports[j]);
         }
+
+        if (mod.hasOwnProperty("svg")) {
+
+        // svg module
+
+        var img = gr.image(mod.svg, x, y, mod_w, "");
+
+        img.attr({preserveAspectRatio: "xMaxYMax"});
+
+    } else {
+
+        // block module
+
+        var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
+        var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
+
+        t1.attr(module_label_style);
+
+        if (mod.hasOwnProperty("image")) {
+            var img = gr.image(mod.image, x, y, mod_w, mod_h);
+            img.attr({preserveAspectRatio: "xMinYMid"});
+        }
+
+        var ports = [
+            [get_ports("left")   || [], draw_left_port,   y, mod_h],
+            [get_ports("right")  || [], draw_right_port,  y, mod_h],
+            [get_ports("top")    || [], draw_top_port,    x, mod_w],
+            [get_ports("bottom") || [], draw_bottom_port, x, mod_w],
+        ];
+
+        for (var i=0; i<ports.length; i++) {
+
+            var [dports, dport_fun, dim, coord] = ports[i];
+            var spacing = coord / (dports.length + 1);
+
+            for (var j=0; j<dports.length; j++) {
+                var pos = dim + spacing * (j+1);
+                dport_fun(pos, dports[j]);
+            }
+        }
+
     }
 
     return gr;
