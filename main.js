@@ -24,14 +24,14 @@ corePOETS = {
 }
 
 gate = {
-    svg: "logic-gates/gate1.svg",
+    svg: "logic-gates/gate-nor.svg",
     class: "logic-gates",
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     ports: {
-        "a": {x:24.5, y:43.5},
-        "b": {x:24.5, y:56.5},
-        "y": {x:75.5, y:50},
+        "a": {x:0, y:31.5},
+        "b": {x:0, y:18.5},
+        "y": {x:50, y:25},
     }
 }
 
@@ -69,8 +69,8 @@ window.onload = function () {
 
     block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
 
-    modules["gate1"] = _.defaults(gate2, {x: -100, y:-50});
-    modules["gate2"] = _.defaults(gate3, {x: -100, y:+50});
+    modules["gate1"] = _.defaults(gate2, {x: -50, y:+50});
+    modules["gate2"] = _.defaults(gate3, {x: -50, y:-50});
     modules["gate3"] = _.defaults(gate1, {x: 0, y:0});
 
     // modules["core1"] = _.defaults(corePOETS, {x: 400, y:0});

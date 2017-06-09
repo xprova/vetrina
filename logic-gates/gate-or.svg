@@ -9,13 +9,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="100"
-   height="100"
+   width="50"
+   height="50"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.91 r13725"
    version="1.0"
-   sodipodi:docname="gate1.svg"
+   sodipodi:docname="gate-or.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs4" />
@@ -29,14 +29,14 @@
      objecttolerance="50"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="9.83"
-     inkscape:cx="50"
-     inkscape:cy="50"
+     inkscape:zoom="19.66"
+     inkscape:cx="25"
+     inkscape:cy="25"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      width="125px"
      height="202px"
-     showgrid="false"
+     showgrid="true"
      gridanglex="30px"
      gridanglez="30px"
      grid_units="px"
@@ -58,15 +58,16 @@
     <inkscape:grid
        id="GridFromPre046Settings"
        type="xygrid"
-       originx="-20.609431"
-       originy="-158.53734"
+       originx="-24.471803"
+       originy="-25"
        spacingx="1px"
        spacingy="1px"
        color="#3f3fff"
        empcolor="#3f3fff"
        opacity="0.15"
        empopacity="0.38"
-       empspacing="5" />
+       empspacing="5"
+       enabled="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -85,11 +86,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      style="display:inline"
-     transform="translate(-36.109431,38.942856)">
+     transform="translate(-60.581234,13.942856)">
     <path
        inkscape:connector-curvature="0"
-       id="path6087"
-       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;stroke-dasharray:none"
-       d="m 89.081235,24.057115 c -7.176,0 -19.000001,2e-6 -19.000001,2e-6 l 0,-25.998573 19.000001,-0.0014 c 7.176,0 12.999995,5.823999 12.999995,13 0,7.176001 -5.823995,13 -12.999995,13 z m 12.999995,-12.999999 9.0564,0 m -50.056396,-6.499999 9.00006,0 m -9.00006,12.999998 9.00006,0" />
+       id="rect9115"
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 66.331097,-1.9428635 0,0.0625 c 2.19873,3.815172 3.46875,8.2207122 3.46875,12.9374995 0,4.716789 -1.27002,9.122328 -3.46875,12.937515 l 0,0.0625 3.46875,0 10,0 c 9.61071,0 18.000071,-5.239311 22.499993,-13.000015 C 97.799917,3.2964335 89.410557,-1.9428625 79.799847,-1.9428635 l -10,0 -3.46875,0 z m 35.999713,13.0000065 9.00056,0 m -51.500274,-6.4999973 9.000062,0 m -9.000062,12.9999973 9.000062,0" />
   </g>
 </svg>
