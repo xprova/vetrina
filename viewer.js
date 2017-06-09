@@ -249,8 +249,8 @@ function drawModule(id, mod) {
         gr.circle(x2, y2, port_pin_r);
         text_obj = gr.text(x1, y1, label).attr(port_label_style);
         align_text(text_obj, x1, y1, halign, valign, 5);
-        mod.ports[label].x = x2;
-        mod.ports[label].y = y2;
+        mod.ports[label].x = x2 - x;
+        mod.ports[label].y = y2 - y;
     }
 
     function draw_left_port(y, label) {
@@ -293,11 +293,11 @@ function drawModule(id, mod) {
             .value();
         }
 
-        if (mod.hasOwnProperty("svg")) {
+    if (mod.hasOwnProperty("svg")) {
 
         // svg module
 
-        var img = gr.image(mod.svg, x, y, mod_w, "");
+        var img = gr.image(mod.svg, x, y, "", "");
 
         img.attr({preserveAspectRatio: "xMaxYMax"});
 
@@ -340,12 +340,21 @@ function drawModule(id, mod) {
 
 function draw_connection(mod1, mod2, port1, port2) {
 
-    console.log(modules);
+    var m1 = modules[mod1];
+    var m2 = modules[mod2];
 
-    var x1 = modules[mod1].ports[port1].x;
-    var y1 = modules[mod1].ports[port1].y;
-    var x2 = modules[mod2].ports[port2].x;
-    var y2 = modules[mod2].ports[port2].y;
+    console.log(m2.ports[port2]);
+
+    var cx1 = m1.x - m1.width / 2;
+    var cy1 = m1.y - m1.height / 2;
+
+    var cx2 = m2.x - m2.width / 2;
+    var cy2 = m2.y - m2.height / 2;
+
+    var x1 = cx1 + m1.ports[port1].x;
+    var y1 = cy1 + m1.ports[port1].y;
+    var x2 = cx2 + m2.ports[port2].x;
+    var y2 = cy2 + m2.ports[port2].y;
 
     console.log(`${x1}, ${y1} - ${x2}, ${y2}`);
 
@@ -353,7 +362,6 @@ function draw_connection(mod1, mod2, port1, port2) {
     var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
 
     l1.attr({
-        strokeWidth: 3,
         fill: "none",
         class: "connector"
     });

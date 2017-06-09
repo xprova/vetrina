@@ -6,7 +6,9 @@ norGate = {
         "c": {position: "top"},
         "e": {position: "top"},
         "z": {position: "top"},
-    }
+    },
+    width: 100,
+    height: 100
 }
 
 corePOETS = {
@@ -27,9 +29,9 @@ gate = {
     width: 100,
     height: 100,
     ports: {
-        "W": {position: "left"},
-        "E": {position: "right"},
-        "N": {position: "top"},
+        "a": {x:24.5, y:43.5},
+        "b": {x:24.5, y:56.5},
+        "y": {x:75.5, y:50},
     }
 }
 
@@ -38,11 +40,11 @@ function get_module_grid(template, id_) {
 
     modules = {};
 
-    for (var i=0; i<10; i++) {
-        for (var j=0; j<10; j++) {
+    for (var i=0; i<5; i++) {
+        for (var j=0; j<5; j++) {
             id = `${id_}_${i}_${j}`;
             newNor = {
-                x: 200 * i,
+                x: 200 * i + 200,
                 y: 200 * j,
             };
             temp1 = JSON.parse(JSON.stringify(template)); // ugly, TODO
@@ -57,23 +59,34 @@ function get_module_grid(template, id_) {
 window.onload = function () {
 
     modules = get_module_grid(corePOETS, "corePOETS");
-    modules = {};
+    // modules = {};
 
-    temp1 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
+    gate1 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
+    gate2 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
+    gate3 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
 
-    newGate = {
-        x: 0,
-        y: 0
-    };
+    core1 = JSON.parse(JSON.stringify(corePOETS)); // ugly, TODO
 
-    _.extend(newGate, temp1);
+    block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
 
-    modules["gate1"] = newGate;
+    modules["gate1"] = _.defaults(gate2, {x: -100, y:-50});
+    modules["gate2"] = _.defaults(gate3, {x: -100, y:+50});
+    modules["gate3"] = _.defaults(gate1, {x: 0, y:0});
+
+    // modules["core1"] = _.defaults(corePOETS, {x: 400, y:0});
+
+    modules["block1"] = _.defaults(norGate, {x: 400, y:-200});
 
     init_viewer("#svg1", modules);
 
-    // draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
-    // draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");
-    // draw_connection("corePOETS_1_1", "corePOETS_2_2", "E", "W");
+    draw_connection("gate1", "gate3", "y", "a");
+    draw_connection("gate2", "gate3", "y", "b");
+    draw_connection("gate3", "corePOETS_0_0", "y", "E");
+
+    draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
+    draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");
+    draw_connection("corePOETS_1_1", "corePOETS_2_2", "E", "W");
+
+    draw_connection("corePOETS_0_0", "block1", "N", "a");
 
 };

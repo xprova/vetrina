@@ -25,3 +25,8 @@ svg {
 svg:active{
     cursor: move;
 }
+
+.connector {
+	stroke-width: 1px;
+	stroke: black;
+}
