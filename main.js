@@ -24,7 +24,7 @@ corePOETS = {
 }
 
 gateAnd = {
-    svg: "logic-gates/gate-or.svg",
+    svg: "logic-gates/gate-xor.svg",
     class: "logic-gates",
     width: 50*1.0,
     height: 50*1.0,
@@ -36,7 +36,7 @@ gateAnd = {
 }
 
 gateNand = {
-    svg: "logic-gates/gate-nor.svg",
+    svg: "logic-gates/gate-xnor.svg",
     class: "logic-gates",
     width: 50*1.0,
     height: 50*1.0,
@@ -80,7 +80,7 @@ window.onload = function () {
 
     block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
 
-    var dx = 50;
+    var dx = 60;
     var dy = 25;
 
     modules["gate1"] = _.defaults(gate2, {x: -dx, y:+dy});
