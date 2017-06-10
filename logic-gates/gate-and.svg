@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="50"
-   height="50"
+   width="75"
+   height="75"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.91 r13725"
@@ -30,7 +30,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="9.83"
-     inkscape:cx="25"
+     inkscape:cx="37.5"
      inkscape:cy="50"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -44,9 +44,9 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:grid-bbox="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="838"
-     inkscape:window-x="-8"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:object-nodes="false"
      inkscape:object-paths="true"
@@ -85,11 +85,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      style="display:inline"
-     transform="translate(-36.109431,-11.057144)">
+     transform="translate(-36.109431,13.942856)">
     <path
        inkscape:connector-curvature="0"
        id="path6087"
-       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 64.081234,49.057115 c -7.176,0 -19.000001,2e-6 -19.000001,2e-6 l 0,-25.998573 19.000001,-0.0014 c 7.176,0 12.999995,5.823999 12.999995,13 0,7.176001 -5.823995,13 -12.999995,13 z m 12.999995,-12.999999 9.0564,0 m -50.056396,-6.499999 9.00006,0 m -9.00006,12.999998 9.00006,0" />
+       style="display:inline;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 78.067136,43.057101 c -10.764001,0 -28.500002,3e-6 -28.500002,3e-6 l 0,-38.99786 28.500002,-0.0021 c 10.764004,0 19.499994,8.735998 19.499994,19.5 0,10.764002 -8.73599,19.5 -19.499994,19.5 z m 19.499994,-19.499999 13.5846,0 m -75.084596,-9.749998 13.500088,0 m -13.50009,19.499997 13.50009,0" />
   </g>
 </svg>

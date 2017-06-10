@@ -27,7 +27,7 @@ svg:active{
 }
 
 .connector {
-	stroke-width: 1px;
+	stroke-width: 2px;
 	stroke: black;
 	stroke-linecap: round;
 }
