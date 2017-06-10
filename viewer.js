@@ -301,7 +301,7 @@ function drawModule(id, mod) {
 
         img.attr({preserveAspectRatio: "xMaxYMax"});
 
-        var t1 = gr.text(x + mod_w/2, y + mod_h, "gate1");
+        var t1 = gr.text(x + mod_w/2, y + mod_h, "");
 
         t1.attr(module_label_style);
 

@@ -23,18 +23,29 @@ corePOETS = {
     }
 }
 
-gate = {
-    svg: "logic-gates/gate-and.svg",
+gateAnd = {
+    svg: "logic-gates/gate-or.svg",
     class: "logic-gates",
-    width: 75,
-    height: 75,
+    width: 50*1.0,
+    height: 50*1.0,
     ports: {
-        "a": {x:0, y:31.5*1.5},
-        "b": {x:0, y:18.5*1.5},
-        "y": {x:50*1.5, y:25*1.5},
+        "a": {x:0, y:31.5*1.0},
+        "b": {x:0, y:18.5*1.0},
+        "y": {x:50*1.0, y:25*1.0},
     }
 }
 
+gateNand = {
+    svg: "logic-gates/gate-nor.svg",
+    class: "logic-gates",
+    width: 50*1.0,
+    height: 50*1.0,
+    ports: {
+        "a": {x:0, y:31.5*1.0},
+        "b": {x:0, y:18.5*1.0},
+        "y": {x:50*1.0, y:25*1.0},
+    }
+}
 
 function get_module_grid(template, id_) {
 
@@ -61,16 +72,19 @@ window.onload = function () {
     modules = get_module_grid(corePOETS, "corePOETS");
     // modules = {};
 
-    gate1 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
-    gate2 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
-    gate3 = JSON.parse(JSON.stringify(gate)); // ugly, TODO
+    gate1 = JSON.parse(JSON.stringify(gateAnd)); // ugly, TODO
+    gate2 = JSON.parse(JSON.stringify(gateNand)); // ugly, TODO
+    gate3 = JSON.parse(JSON.stringify(gateAnd)); // ugly, TODO
 
     core1 = JSON.parse(JSON.stringify(corePOETS)); // ugly, TODO
 
     block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
 
-    modules["gate1"] = _.defaults(gate2, {x: -100, y:+100});
-    modules["gate2"] = _.defaults(gate3, {x: -100, y:-100});
+    var dx = 50;
+    var dy = 25;
+
+    modules["gate1"] = _.defaults(gate2, {x: -dx, y:+dy});
+    modules["gate2"] = _.defaults(gate3, {x: -dx, y:-dy});
     modules["gate3"] = _.defaults(gate1, {x: 0, y:0});
 
     // modules["core1"] = _.defaults(corePOETS, {x: 400, y:0});
