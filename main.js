@@ -47,6 +47,18 @@ gateNand = {
     }
 }
 
+gateInverter = {
+    svg: "logic-gates/gate-buffer.svg",
+    class: "logic-gates",
+    width: 50*1.0,
+    height: 50*1.0,
+    ports: {
+        "a": {x:00*1.0, y:25*1.0},
+        "y": {x:50*1.0, y:25*1.0},
+    }
+}
+
+
 function get_module_grid(template, id_) {
 
     modules = {};
@@ -80,12 +92,15 @@ window.onload = function () {
 
     block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
 
-    var dx = 60;
+    gate4 = JSON.parse(JSON.stringify(gateInverter)); // ugly, TODO
+
+    var dx = 50;
     var dy = 25;
 
     modules["gate1"] = _.defaults(gate2, {x: -dx, y:+dy});
     modules["gate2"] = _.defaults(gate3, {x: -dx, y:-dy});
     modules["gate3"] = _.defaults(gate1, {x: 0, y:0});
+    modules["gate4"] = _.defaults(gate4, {x: +dx, y:0});
 
     // modules["core1"] = _.defaults(corePOETS, {x: 400, y:0});
 
@@ -95,7 +110,8 @@ window.onload = function () {
 
     draw_connection("gate1", "gate3", "y", "a");
     draw_connection("gate2", "gate3", "y", "b");
-    draw_connection("gate3", "corePOETS_0_0", "y", "E");
+    draw_connection("gate3", "gate4", "y", "a");
+    draw_connection("gate4", "corePOETS_0_0", "y", "E");
 
     draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
     draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");

@@ -205,34 +205,34 @@ function align_text(text_obj, x, y, halign, valign, margin) {
     var x0, y0;
 
     if (halign == "right")
-        x0 = x + 5;
+        x0 = x + margin;
     else if (halign == "center")
         x0 = x - w/2;
     else // (halign == "left")
-        x0 = x - w - 5;
+        x0 = x - w - margin;
 
     if (valign == "top")
-        y0 = y - h/2 - 5;
+        y0 = y - h/2 - margin;
     else if (valign == "middle")
         y0 = y;
     else // (valign == "bottom")
-        y0 = y + h/2 + 5;
+        y0 = y + h/2 + margin;
 
     text_obj.attr({x: x0, y:y0, alignmentBaseline: "central"});
 }
 
 function drawModule(id, mod) {
 
-    const mod_w = mod.hasOwnProperty("width") ? mod.width : 80;
-    const mod_h = mod.hasOwnProperty("height") ? mod.height : 80;
+    const mod_w = mod.width;
+    const mod_h = mod.height;
     const port_pin_r = 5;
     const port_edge_length = 15;
+    const class_ = mod.hasOwnProperty("class") ? mod.class : "module"
 
-    const port_line_style = {stroke: "black", class: "port-line"};
-    const port_label_style = {fontFamily: "Inconsolata", class: "port-label"};
-    const module_body_style = {fill: 'white', stroke: "black", class: "module-body"};
-    const module_label_style = {fontFamily: "Rambla", textAnchor: "Middle",
-        alignmentBaseline: "central", class: "module-label"};
+    const port_line_style    = {class: `${class_}-port-line`};
+    const port_label_style   = {class: `${class_}-port-label`};
+    const body_style         = {class: `${class_}-body`};
+    const module_label_style = {class: `${class_}-label`};
 
     var x = mod.x - mod_w/2;
     var y = mod.y - mod_h/2;
@@ -309,10 +309,11 @@ function drawModule(id, mod) {
 
         // block module
 
-        var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(module_body_style);
+        var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(body_style);
         var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
 
         t1.attr(module_label_style);
+        align_text(t1, x + mod_w/2, y + mod_h, "center", "bottom", 10);
 
         if (mod.hasOwnProperty("image")) {
             var img = gr.image(mod.image, x, y, mod_w, mod_h);
@@ -347,8 +348,6 @@ function draw_connection(mod1, mod2, port1, port2) {
     var m1 = modules[mod1];
     var m2 = modules[mod2];
 
-    console.log(m2.ports[port2]);
-
     var cx1 = m1.x - m1.width / 2;
     var cy1 = m1.y - m1.height / 2;
 
@@ -360,13 +359,8 @@ function draw_connection(mod1, mod2, port1, port2) {
     var x2 = cx2 + m2.ports[port2].x;
     var y2 = cy2 + m2.ports[port2].y;
 
-    console.log(`${x1}, ${y1} - ${x2}, ${y2}`);
+    var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} \
+        ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
 
-    // var l1 = connector_layer.line(x1, y1, x2, y2);
-    var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
-
-    l1.attr({
-        fill: "none",
-        class: "connector"
-    });
+    l1.attr({class: "connector"});
 }
