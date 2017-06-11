@@ -1,3 +1,7 @@
-.logic-gates .port-label {
-	/*fill: none;*/
+@import url('https://fonts.googleapis.com/css?family=Rambla');
+
+.logic-gates-label {
+	font-family: "Rambla";
+	text-anchor: "middle";
+	alignment-baseline: "central";
 }

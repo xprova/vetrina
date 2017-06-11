@@ -301,9 +301,10 @@ function drawModule(id, mod) {
 
         img.attr({preserveAspectRatio: "xMaxYMax"});
 
-        var t1 = gr.text(x + mod_w/2, y + mod_h, "");
+        var t1 = gr.text(x + mod_w/2, y + mod_h, mod.id);
 
         t1.attr(module_label_style);
+        align_text(t1, x + mod_w/2, y + mod_h, "center", "bottom", -10);
 
     } else {
 
