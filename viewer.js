@@ -19,6 +19,7 @@ var modules;
 Mousetrap.bind('0', reset_view);
 Mousetrap.bind(['+', '='], zoom_in);
 Mousetrap.bind('-', zoom_out);
+Mousetrap.bind('g', toggle_grid);
 
 function reset_view() {
     shift_view(0, 0);
@@ -35,6 +36,12 @@ function zoom_out() {
     scale = Math.max(scale / 1.2, 1);
     shift_view(shift.x, shift.y);
     return false;
+}
+
+function toggle_grid() {
+    current_style = grid_layer.attr("display");
+    new_style = current_style == 'inline' ? 'none' : 'inline';
+    grid_layer.attr({display: new_style});
 }
 
 // mouse handlers
