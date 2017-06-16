@@ -92,8 +92,29 @@ def get_po_cons(id_cons, arrangement):
         po_cons.append(po_layer_cons)
     return po_cons
 
-def rand_arrange(layers, id_cons):
+def arrange_rand(layers, id_cons):
     return [range(x) for x in layers]
+
+def arrange_busy_top(layers, id_cons, toggle_reverse = True):
+    arrangement = []
+    points = [[0]*n for n in layers]
+    # add points for connectios
+    for layer, layer_cons in enumerate(id_cons):
+        for (src, dst) in layer_cons:
+            points[layer][src] += 1
+            points[layer+1][dst] += 1
+    key_fun = lambda x : x[1]
+    R = True
+    for item in points:
+        tups = enumerate(item)
+        sorted_tups = sorted(tups, key=key_fun, reverse=R)
+        if toggle_reverse:
+            R = not R
+        sorted_inds = [x[0] for x in sorted_tups]
+        arrangement.append(sorted_inds)
+    # print arrangement
+    # return arrange_rand(layers, id_cons)
+    return arrangement
 
 def get_distrib(layers, connections, arrange_fun, samples=1000):
     # Generate list of crossed connection counts, sampled from
@@ -125,7 +146,7 @@ def main():
     # po_cons stores connections between gate positions
 
     print_test(layers, connections)
-    print "samples_rand = %s;" % get_distrib(layers, connections, rand_arrange)
+    print "samples_rand = %s;" % get_distrib(layers, connections, arrange_busy_top)
 
 if __name__ == "__main__":
     main()
