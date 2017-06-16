@@ -88,17 +88,22 @@ def get_po_cons(id_cons, arrangement):
         for (id1, id2) in layer_cons:
             pos1 = arrangement[layer].index(id1)
             pos2 = arrangement[layer+1].index(id2)
-            # pos_item = arrangement[layer][id1], arrangement[layer+1][id2]
             po_layer_cons.append((pos1, pos2))
         po_cons.append(po_layer_cons)
     return po_cons
 
-def get_distrib_random(layers, connections, samples=1000):
+def rand_arrange(layers, id_cons):
+    return [range(x) for x in layers]
+
+def get_distrib(layers, connections, arrange_fun, samples=1000):
     # Generate list of crossed connection counts, sampled from
     # randomly-generated id_cons
-    sample = lambda seed : \
-        count_cross(get_rand_id_cons(layers, connections, seed))
-    return [sample(seed) for seed in range(samples)]
+    def get_sample(seed):
+        id_cons = get_rand_id_cons(layers, connections, seed)
+        arrangement = arrange_fun(layers, id_cons)
+        po_cons = get_po_cons(id_cons, arrangement)
+        return count_cross(po_cons)
+    return [get_sample(seed) for seed in range(samples)]
 
 def print_test(layers, connections):
     # Perform basic function tests and print results
@@ -120,7 +125,7 @@ def main():
     # po_cons stores connections between gate positions
 
     print_test(layers, connections)
-    print "samples = %s;" % get_distrib_random(layers, connections)
+    print "samples_rand = %s;" % get_distrib(layers, connections, rand_arrange)
 
 if __name__ == "__main__":
     main()
