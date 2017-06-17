@@ -4,6 +4,8 @@ from random    import seed as set_seed
 from random    import sample
 from itertools import product
 from itertools import combinations
+from functools import partial
+from operator  import itemgetter
 
 """
 Notes on data representation:
@@ -93,7 +95,7 @@ def get_po_cons(id_cons, arrangement):
     return po_cons
 
 def arrange_rand(layers, id_cons):
-    return [range(x) for x in layers]
+    return [sample(range(x), x) for x in layers]
 
 def arrange_busy_top(layers, id_cons, toggle_reverse = True):
     arrangement = []
@@ -112,11 +114,18 @@ def arrange_busy_top(layers, id_cons, toggle_reverse = True):
             R = not R
         sorted_inds = [x[0] for x in sorted_tups]
         arrangement.append(sorted_inds)
-    # print arrangement
-    # return arrange_rand(layers, id_cons)
     return arrangement
 
-def get_distrib(layers, connections, arrange_fun, samples=1000):
+def arrange_best_of_n(layers, id_cons, n=5000):
+    get_po_cons_p = partial(get_po_cons, id_cons)
+    arrs = [arrange_rand(layers, id_cons) for _ in range(n)] # random arrs
+    po_cons = map(get_po_cons_p, arrs) # corresponding position connections
+    cross_counts = map(count_cross, po_cons) # corresponding counts
+    best_tup = min(zip(arrs, cross_counts), key=itemgetter(1))
+    best_arr = best_tup[0]
+    return best_arr
+
+def get_distrib(layers, connections, arrange_fun, nsamples=1000):
     # Generate list of crossed connection counts, sampled from
     # randomly-generated id_cons
     def get_sample(seed):
@@ -124,7 +133,7 @@ def get_distrib(layers, connections, arrange_fun, samples=1000):
         arrangement = arrange_fun(layers, id_cons)
         po_cons = get_po_cons(id_cons, arrangement)
         return count_cross(po_cons)
-    return [get_sample(seed) for seed in range(samples)]
+    return [get_sample(seed) for seed in range(nsamples)]
 
 def print_test(layers, connections):
     # Perform basic function tests and print results
@@ -137,6 +146,16 @@ def print_test(layers, connections):
     print "Crossed (po_cons) = %d" % count_cross(po_cons)
     print ""
 
+def mean(x):
+    return sum(x) / len(x)
+
+def eval_arr_algo(layers, connections, arr_algo, nsamples):
+    samples = get_distrib(layers, connections, arr_algo, nsamples)
+    print "%s = %s;" % (arr_algo.__name__, samples)
+    print ""
+    print "mean = %d" % mean(samples)
+
+
 def main():
 
     layers = [5, 5, 5] # gates in each layer
@@ -145,8 +164,8 @@ def main():
     # id_cons stores connections between gate ids
     # po_cons stores connections between gate positions
 
-    print_test(layers, connections)
-    print "samples_rand = %s;" % get_distrib(layers, connections, arrange_busy_top)
+    # print_test(layers, connections)
+    eval_arr_algo(layers, connections, arrange_best_of_n, 1)
 
 if __name__ == "__main__":
     main()
