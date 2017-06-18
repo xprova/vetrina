@@ -137,19 +137,19 @@ def arrange_busy_top(layers, id_cons, toggle_reverse = True):
 
 def arrange_ga(layers, id_cons):
 
-    npop  = 20  # population size
+    npop  = 100  # population size
     srate = 0.1 # selection rate (fraction of top individuals to reproduce)
-    iters = 15  # number of iterations
+    iters = 20  # number of iterations
 
     scount = int(srate * npop) # selection count
-
     nlayers = len(layers)
     layer_lists = [range(x) for x in layers]
+    ns_layers = [ind for (ind, gates) in enumerate(layers) if gates>1]
 
     def mutated(arrangement):
         # Return mutated solution
         new_arr = deepcopy(arrangement)
-        mlayer = randrange(nlayers)
+        mlayer = choice(ns_layers)
         gates = layer_lists[mlayer]
         a, b = sample(gates, 2)
         new_arr[mlayer][a], new_arr[mlayer][b] = \
@@ -201,13 +201,13 @@ def print_test(layers, connections):
     print ""
 
 def mean(x):
-    return sum(x) / len(x)
+    return float(sum(x)) / len(x)
 
 def eval_arr_algo(layers, connections, arr_algo, nsamples):
     samples = get_distrib(layers, connections, arr_algo, nsamples)
     print "%s = %s;" % (arr_algo.__name__, samples)
     print ""
-    print "mean = %d" % mean(samples)
+    print "mean = %1.1f" % mean(samples)
 
 
 def main():
