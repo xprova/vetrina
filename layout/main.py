@@ -137,9 +137,9 @@ def arrange_busy_top(layers, id_cons, toggle_reverse = True):
 
 def arrange_ga(layers, id_cons):
 
-    npop  = 100  # population size
+    npop  = 200  # population size
     srate = 0.1 # selection rate (fraction of top individuals to reproduce)
-    iters = 20  # number of iterations
+    iters = 50  # number of iterations
 
     scount = int(srate * npop) # selection count
     nlayers = len(layers)
@@ -186,8 +186,30 @@ def get_distrib(layers, connections, arrange_fun, nsamples=1000):
         id_cons = get_rand_circuit_id_cons(layers, connections, seed)
         arrangement = arrange_fun(layers, id_cons)
         po_cons = get_po_cons(id_cons, arrangement)
+        generate_dot_file(layers, po_cons)
         return count_cross(po_cons)
     return [get_sample(seed) for seed in range(nsamples)]
+
+def generate_dot_file(layers, cons):
+    lines = [
+        "graph G {",
+        "    rankdir=LR;",
+        "    node [shape=square];"
+        ]
+    show_gate = lambda layer, gate : '%s%d' % (chr(65 + layer), gate)
+    for layer_ind, gate_count in enumerate(layers):
+        gates = [show_gate(layer_ind, gate) for gate in range(gate_count)]
+        lines.append("    {rank=same %s}" % ' '.join(gates))
+    for layer_ind, layer_con in enumerate(cons):
+        for (src, dst) in layer_con:
+            src_g = show_gate(layer_ind, src)
+            dst_g = show_gate(layer_ind+1, dst)
+            lines.append("    %s -- %s;" % (src_g, dst_g))
+    lines.append("}")
+    lines.append("")
+    for item in lines:
+        print item
+
 
 def print_test(layers, connections):
     # Perform basic function tests and print results
@@ -212,15 +234,15 @@ def eval_arr_algo(layers, connections, arr_algo, nsamples):
 
 def main():
 
-    depth = 2 # gates per layer
-    layers = [5] * depth # layer list
+    depth = 3 # gates per layer
+    layers = [7] * depth # layer list
     connections = [] # connections between adjacent layers
 
     # id_cons stores connections between gate ids
     # po_cons stores connections between gate positions
 
     # print_test(layers, connections)
-    eval_arr_algo(layers, connections, arrange_ga, 100)
+    eval_arr_algo(layers, connections, arrange_ga, 1)
 
     # id_cons = get_rand_circuit_id_cons(layers, connections)
     # arrange_ga(layers, id_cons)
