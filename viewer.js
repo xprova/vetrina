@@ -20,6 +20,7 @@ Mousetrap.bind('-', zoom_out);
 Mousetrap.bind('g', toggle_grid);
 
 function reset_view() {
+    scale = 1;
     shift_view(0, 0);
     return false;
 }
