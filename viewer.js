@@ -234,10 +234,10 @@ function drawModule(id, mod) {
     const port_edge_length = 15;
     const class_ = mod.hasOwnProperty("class") ? mod.class : "module"
 
-    const port_line_style    = {class: `${class_}-port-line`};
-    const port_label_style   = {class: `${class_}-port-label`};
-    const body_style         = {class: `${class_}-body`};
-    const module_label_style = {class: `${class_}-label`};
+    const port_line_class    = `${class_}-port-line`;
+    const port_label_class   = `${class_}-port-label`;
+    const body_class         = `${class_}-body`;
+    const module_label_class = `${class_}-label`;
 
     var x = mod.x - mod_w/2;
     var y = mod.y - mod_h/2;
@@ -245,14 +245,13 @@ function drawModule(id, mod) {
     var gr = snap.g();
     gr.attr({id: id});
 
-    if (mod.hasOwnProperty("class")) {
-        gr.attr({class: mod.class});
-    }
+    if (mod.hasOwnProperty("class"))
+        gr.addClass(mod.class);
 
     function draw_port(x1, x2, y1, y2, label, halign, valign) {
-        gr.line(x1, y1, x2, y2).attr(port_line_style);
+        gr.line(x1, y1, x2, y2).addClass(port_line_class);
         gr.circle(x2, y2, port_pin_r);
-        text_obj = gr.text(x1, y1, label).attr(port_label_style);
+        text_obj = gr.text(x1, y1, label).addClass(port_label_class);
         align_text(text_obj, x1, y1, halign, valign, 5);
         mod.ports[label].x = x2 - x;
         mod.ports[label].y = y2 - y;
@@ -291,12 +290,13 @@ function drawModule(id, mod) {
     }
 
     function get_ports(position) {
+
         return _.chain(mod.ports)
             .map((x, y) => [y, x.position]) // [port, position] tuples
             .filter(x => x[1] == position) // keep tuples with correct position
             .map(_.first) // take port names
             .value();
-        }
+    }
 
     if (mod.hasOwnProperty("svg")) {
 
@@ -308,17 +308,20 @@ function drawModule(id, mod) {
 
         var t1 = gr.text(x + mod_w/2, y + mod_h, mod.id);
 
-        t1.attr(module_label_style);
+        t1.addClass(module_label_class);
+
         align_text(t1, x + mod_w/2, y + mod_h, "center", "bottom", -10);
 
     } else {
 
         // block module
 
-        var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5).attr(body_style);
+        var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5);
         var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
 
-        t1.attr(module_label_style);
+        r1.addClass(body_class);
+        t1.addClass(module_label_class);
+
         align_text(t1, x + mod_w/2, y + mod_h, "center", "bottom", 10);
 
         if (mod.hasOwnProperty("image")) {
@@ -368,5 +371,5 @@ function draw_connection(mod1, mod2, port1, port2) {
     var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} \
         ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
 
-    l1.attr({class: "connector"});
+    l1.addClass("connector");
 }
