@@ -47,11 +47,11 @@ svg:active{
 	stroke-linecap: round;
 }
 
-.grid-major{
+#grid_major line {
 	stroke: #dddddd;
 }
 
-.grid-minor	{
+#grid_minor line {
 	stroke: #dddddd;
 	stroke-dasharray: 1 2;
 }

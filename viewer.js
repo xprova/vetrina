@@ -120,7 +120,6 @@ function draw_grid (layer) {
     format_add_line = function (ind, line) {
         // apply line attributes then add to appropriate grid group
         var is_maj = ind % GRID_LINES_P_BLOCK == 0;
-        line.addClass(is_maj ? "grid-major" : "grid-minor");
         (is_maj ? grid_major_layer : grid_minor_layer).add(line);
     }
 
