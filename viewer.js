@@ -1,7 +1,5 @@
 const GRID_BLOCK = 200;
 const GRID_LINES_P_BLOCK = 4;
-const minor_attrs = ({stroke: '#dddddd', strokeDasharray: '1 2'});
-const major_attrs = ({stroke: '#dddddd'});
 
 var scale = 1;
 var snap;
@@ -122,7 +120,7 @@ function draw_grid (layer) {
     format_add_line = function (ind, line) {
         // apply line attributes then add to appropriate grid group
         var is_maj = ind % GRID_LINES_P_BLOCK == 0;
-        line.attr(is_maj ? major_attrs : minor_attrs);
+        line.addClass(is_maj ? "grid-major" : "grid-minor");
         (is_maj ? grid_major_layer : grid_minor_layer).add(line);
     }
 

@@ -46,3 +46,12 @@ svg:active{
 	stroke: black;
 	stroke-linecap: round;
 }
+
+.grid-major{
+	stroke: #dddddd;
+}
+
+.grid-minor	{
+	stroke: #dddddd;
+	stroke-dasharray: 1 2;
+}
