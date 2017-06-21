@@ -117,52 +117,55 @@ gateInverter = {
     }
 }
 
+
+// https://stackoverflow.com/a/43053803
+let cartesian_f = (a, b) =>
+    [].concat(...a.map(a => b.map(b => [].concat(a, b))));
+
+let product = (a, b, ...c) => b ? product(cartesian_f(a, b), ...c) : a;
+
 function get_module_grid(template, id_) {
 
     modules = {};
 
-    for (var i=0; i<5; i++) {
-        for (var j=0; j<5; j++) {
-            id = `${id_}_${i}_${j}`;
-            newNor = {
-                x: 200 * i + 200,
-                y: 200 * j,
-            };
-            temp1 = JSON.parse(JSON.stringify(template)); // ugly, TODO
-            _.extend(newNor, temp1);
-            modules[id] = newNor;
-        }
+    mod_tups = product(_.range(5), _.range(5));
+
+    const makeMod = function (mod_tup) {
+
+        [i, j] = mod_tup;
+
+        id = `${id_}_${i}_${j}`;
+
+        modules[id] = makeGate(template, {x: 200 * i + 200, y: 200 * j});
     }
 
+    _.map(mod_tups, makeMod);
+
     return modules;
+}
+
+function makeGate(template, attrs = {}) {
+
+    return _.chain(template).cloneDeep().extend(attrs).value();
 }
 
 window.onload = function () {
 
     modules = get_module_grid(corePOETS, "corePOETS");
-    // modules = {};
 
-    gate1 = JSON.parse(JSON.stringify(gateAnd)); // ugly, TODO
-    gate2 = JSON.parse(JSON.stringify(gateNand)); // ugly, TODO
-    gate3 = JSON.parse(JSON.stringify(gateAnd)); // ugly, TODO
+    core1 = makeGate(corePOETS);
 
-    core1 = JSON.parse(JSON.stringify(corePOETS)); // ugly, TODO
-
-    block1 = JSON.parse(JSON.stringify(norGate)); // ugly, TODO
-
-    gate4 = JSON.parse(JSON.stringify(gateInverter)); // ugly, TODO
+    block1 = makeGate(norGate);
 
     var dx = 50;
     var dy = 25;
 
-    modules["gate1"] = _.defaults(gate2, {x: -dx, y:+dy});
-    modules["gate2"] = _.defaults(gate3, {x: -dx, y:-dy});
-    modules["gate3"] = _.defaults(gate1, {x: 0, y:0});
-    modules["gate4"] = _.defaults(gate4, {x: +dx, y:0});
+    modules["gate1"] = makeGate(gateAnd, {x: -dx, y:+dy, id: "gate1"});
+    modules["gate2"] = makeGate(gateAnd, {x: -dx, y:-dy, id: "gate2"});
+    modules["gate3"] = makeGate(gateAnd, {x:0, y:0, id: "gate3"});
+    modules["gate4"] = makeGate(gateInverter, {x:dx, y:0, id: "gate4"});
 
-    // modules["core1"] = _.defaults(corePOETS, {x: 400, y:0});
-
-    modules["block1"] = _.defaults(norGate, {x: 400, y:-200});
+    modules["block1"] = makeGate(norGate, {x: 400, y:-200});
 
     _.each(nodes, function (node) {
 
@@ -172,8 +175,7 @@ window.onload = function () {
         nx = Math.round(node[1] * s)/s * 75 - 1500;
         ny = Math.round(node[2] * s)/s * 50 ;
 
-        node_gate = JSON.parse(JSON.stringify(gateTemplate)); // ugly, TODO
-        modules[id_] = _.defaults(node_gate, {x: nx, y:ny, id: id_});
+        modules[id_] = makeGate(gateTemplate, {x: nx, y:ny, id: id_});
 
     });
 
