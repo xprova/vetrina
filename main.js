@@ -1,128 +1,8 @@
-norGate = {
-    ports: {
-        "a": {position: "left"},
-        "b": {position: "left"},
-        "y": {position: "right"},
-        "c": {position: "top"},
-        "e": {position: "top"},
-        "z": {position: "top"},
-    },
-    width: 100,
-    height: 100
-}
-
-corePOETS = {
-    image: "poets/poets_logo_white.svg",
-    class: "poets",
-    width: 100,
-    height: 100,
-    ports: {
-        "W": {position: "left"},
-        "E": {position: "right"},
-        "N": {position: "top"},
-    }
-}
-
-gateAnd = {
-    svg: "logic-gates/gate-and.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:0, y:31.5*1.0},
-        "b": {x:0, y:18.5*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateOr = {
-    svg: "logic-gates/gate-or.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:0, y:31.5*1.0},
-        "b": {x:0, y:18.5*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateXor = {
-    svg: "logic-gates/gate-xor.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:0, y:31.5*1.0},
-        "b": {x:0, y:18.5*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-
-gateNor = {
-    svg: "logic-gates/gate-nor.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:0, y:31.5*1.0},
-        "b": {x:0, y:18.5*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateNand = {
-    svg: "logic-gates/gate-nand.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:0, y:31.5*1.0},
-        "b": {x:0, y:18.5*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateBuffer = {
-    svg: "logic-gates/gate-buffer.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:00*1.0, y:25*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateWire = {
-    svg: "logic-gates/gate-wire.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:00*1.0, y:25*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-gateInverter = {
-    svg: "logic-gates/gate-inverter.svg",
-    class: "logic-gates",
-    width: 50*1.0,
-    height: 50*1.0,
-    ports: {
-        "a": {x:00*1.0, y:25*1.0},
-        "y": {x:50*1.0, y:25*1.0},
-    }
-}
-
-
 // https://stackoverflow.com/a/43053803
-let cartesian_f = (a, b) =>
+const cartesian_f = (a, b) =>
     [].concat(...a.map(a => b.map(b => [].concat(a, b))));
 
-let product = (a, b, ...c) => b ? product(cartesian_f(a, b), ...c) : a;
+const product = (a, b, ...c) => b ? product(cartesian_f(a, b), ...c) : a;
 
 function get_module_grid(template, id_) {
 
@@ -157,8 +37,7 @@ window.onload = function () {
 
     block1 = makeGate(norGate);
 
-    var dx = 50;
-    var dy = 25;
+    const [dx, dy, s] = [50, 25, 5];
 
     modules["gate1"] = makeGate(gateAnd, {x: -dx, y:+dy, id: "gate1"});
     modules["gate2"] = makeGate(gateAnd, {x: -dx, y:-dy, id: "gate2"});
@@ -171,7 +50,6 @@ window.onload = function () {
 
         id_ = node[0];
         gateTemplate = node[3];
-        var s = 5;
         nx = Math.round(node[1] * s)/s * 75 - 1500;
         ny = Math.round(node[2] * s)/s * 50 ;
 
@@ -185,11 +63,8 @@ window.onload = function () {
 
         [from, to] = con;
 
-        if (modules.hasOwnProperty(from) && modules.hasOwnProperty(to)) {
-
+        if (modules.hasOwnProperty(from) && modules.hasOwnProperty(to))
             draw_connection(from, to, "y", "a");
-
-        }
 
     });
 
