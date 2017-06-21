@@ -91,3 +91,25 @@ gateInverter = {
         "y": {x:50, y:25},
     }
 }
+
+gateSource = {
+    svg: "logic-gates/gate-source.svg",
+    class: "logic-gates",
+    width: 50,
+    height: 50,
+    ports: {
+        "a": {x:00, y:25},
+        "y": {x:50, y:25},
+    }
+}
+
+gateSink = {
+    svg: "logic-gates/gate-sink.svg",
+    class: "logic-gates",
+    width: 50,
+    height: 50,
+    ports: {
+        "a": {x:00, y:25},
+        "y": {x:50, y:25},
+    }
+}
