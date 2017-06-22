@@ -48,12 +48,11 @@ window.onload = function () {
 
     _.each(nodes, function (node) {
 
-        id_ = node[0];
-        gateTemplate = node[3];
-        nx = Math.round(node[1] * s)/s * 60 - 1000;
-        ny = Math.round(node[2] * s)/s * 60 ;
+        [id_, x, y, gateTemplate] = node;
 
-        modules[id_] = makeGate(gateTemplate, {x: nx, y:ny, id: id_});
+        [nx, ny] = _.map([x, y], x => Math.round(x * s)/ s * 60);
+
+        modules[id_] = makeGate(gateTemplate, {x: nx - 1000, y:ny, id: id_});
 
     });
 
@@ -63,7 +62,7 @@ window.onload = function () {
 
         [from, to] = con;
 
-        if (modules.hasOwnProperty(from) && modules.hasOwnProperty(to))
+        if (_.has(modules, from) && _.has(modules, to))
             draw_connection(from, to, "y", "a");
 
     });
