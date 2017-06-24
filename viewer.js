@@ -13,6 +13,8 @@ var module_layer;
 var connector_layer;
 var cord_label;
 var modules;
+var offset_x;
+var offset_y;
 
 Mousetrap.bind('0', reset_view);
 Mousetrap.bind(['+', '='], (e) => zoom_in());
@@ -97,7 +99,7 @@ function mousemove_handler(e) {
 }
 
 function mousescroll_handler(e) {
-    mpoint = [e.x, e.y];
+    mpoint = [e.x - offset_x, e.y - offset_y];
     zoom_fun = e.wheelDelta > 0 ? zoom_in : zoom_out;
     zoom_fun(mpoint);
 }
@@ -225,7 +227,7 @@ function init_viewer(element_id, module_defs) {
 function window_resize_handler(event) {
 
     var bbox = document.getElementsByTagName('svg')[0].getBoundingClientRect();
-    [width, height] = [bbox.width, bbox.height];
+    [width, height, offset_x, offset_y] = [bbox.width, bbox.height, bbox.left, bbox.top];
 
     draw_grid(grid_layer);
     shift_view(shift.x, shift.y);
