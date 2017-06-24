@@ -15,8 +15,8 @@ var cord_label;
 var modules;
 
 Mousetrap.bind('0', reset_view);
-Mousetrap.bind(['+', '='], zoom_in);
-Mousetrap.bind('-', zoom_out);
+Mousetrap.bind(['+', '='], (e) => zoom_in());
+Mousetrap.bind('-', (e) => zoom_out());
 Mousetrap.bind('g', toggle_grid);
 
 function reset_view() {
@@ -25,15 +25,51 @@ function reset_view() {
     return false;
 }
 
-function zoom_in() {
-    scale = Math.min(scale * 1.2, 4);
-    shift_view(shift.x, shift.y);
+function get_point(mpoint) {
+    // Return the point (x,y) in svg coordinates corresponding to a
+    // mouse-coordinate "mpoint" (mx, my)
+    [mx, my] = mpoint;
+    delta_x = mx - width/2;
+    delta_y = my - height/2;
+    x = shift.x + delta_x / scale;
+    y = shift.y + delta_y / scale;
+    point = [x, y];
+    return point;
+}
+
+function get_mpoint(point) {
+    // Return the mouse-coordinate "mpoint" (mx, my) corresponding to a
+    // point (x, y) in svg coordinates
+    [x, y] = point;
+    delta_x = (x - shift.x) * scale;
+    delta_y = (y - shift.y) * scale;
+    mx = delta_x + width/2;
+    my = delta_y + height/2;
+    mpoint = [mx, my];
+    return mpoint;
+}
+
+function zoom_in(mpoint=null) {
+    new_scale = Math.min(scale * 1.2, 4);
+    zoom(new_scale, mpoint);
     return false;
 }
 
-function zoom_out() {
-    scale = Math.max(scale / 1.2, 1);
-    shift_view(shift.x, shift.y);
+function zoom_out(mpoint=null) {
+    new_scale = Math.max(scale / 1.2, 1);
+    zoom(new_scale, mpoint);
+    return false;
+}
+
+function zoom(new_scale, mpoint=null) {
+    if (_.isNull(mpoint))
+        mpoint = get_mpoint([shift.x, shift.y]);
+    point1 = get_point(mpoint);
+    scale = new_scale;
+    mpoint_after = get_mpoint(point1);
+    delta_m = _.zipWith(mpoint_after, mpoint, _.subtract);
+    delta = _.map(delta_m, x => x / scale);
+    shift_view(shift.x + delta[0], shift.y + delta[1]);
     return false;
 }
 
@@ -61,7 +97,9 @@ function mousemove_handler(e) {
 }
 
 function mousescroll_handler(e) {
-    (e.wheelDelta > 0 ? zoom_in : zoom_out)();
+    mpoint = [e.x, e.y];
+    zoom_fun = e.wheelDelta > 0 ? zoom_in : zoom_out;
+    zoom_fun(mpoint);
 }
 
 function shift_view(x, y) {
