@@ -3,6 +3,7 @@ const GRID_LINES_P_BLOCK = 4;
 
 var scale = 1;
 var snap;
+var snap_element_id;
 var width = 1000;
 var height = 1000;
 var shift = {x: 0, y: 0};
@@ -197,6 +198,7 @@ var addEvent = function(object, type, callback) {
 function init_viewer(element_id, module_defs) {
 
     snap = Snap(element_id);
+    snap_element_id = element_id.substr(1);
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
@@ -226,7 +228,8 @@ function init_viewer(element_id, module_defs) {
 
 function window_resize_handler(event) {
 
-    var bbox = document.getElementsByTagName('svg')[0].getBoundingClientRect();
+    snap_elem = document.getElementById(snap_element_id);
+    var bbox = snap_elem.getBoundingClientRect();
     [width, height, offset_x, offset_y] = [bbox.width, bbox.height, bbox.left, bbox.top];
 
     draw_grid(grid_layer);
