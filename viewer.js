@@ -1,5 +1,6 @@
 const GRID_BLOCK = 200;
 const GRID_LINES_P_BLOCK = 4;
+const PAN_STEP = 50;
 
 var scale = 1;
 var snap;
@@ -17,10 +18,24 @@ var modules;
 var offset_x;
 var offset_y;
 
-Mousetrap.bind('0', reset_view);
+Mousetrap.bind('0', (e) => reset_view());
 Mousetrap.bind(['+', '='], (e) => zoom_in());
 Mousetrap.bind('-', (e) => zoom_out());
-Mousetrap.bind('g', toggle_grid);
+Mousetrap.bind('g', (e) => toggle_grid());
+Mousetrap.bind('right', (e) => pan('right'));
+Mousetrap.bind('left', (e) => pan('left'));
+Mousetrap.bind('down', (e) => pan('down'));
+Mousetrap.bind('up', (e) => pan('up'));
+
+function pan(direction) {
+    var new_x = shift.x;
+    var new_y = shift.y;
+    new_x += direction == 'right' ? PAN_STEP : 0;
+    new_x += direction == 'left' ? -PAN_STEP : 0;
+    new_y += direction == 'down' ? +PAN_STEP : 0;
+    new_y += direction == 'up' ? -PAN_STEP : 0;
+    shift_view(new_x, new_y);
+}
 
 function reset_view() {
     scale = 1;
