@@ -3,6 +3,8 @@
 
 body {
 	background: #eeeeee;
+	margin: 0;
+	display: grid;
 }
 
 svg {
