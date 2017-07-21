@@ -5,11 +5,14 @@ body {
 	background: #eeeeee;
 	margin: 0;
 	display: grid;
+	grid-template-columns: 100%;
+	grid-template-rows: 100%;
+	border: solid 1px #dddddd;
 }
 
 svg {
 	background: white;
-	border: solid 1px #dddddd;
+	border: solid 0px #dddddd;
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none; /* Safari */
 	-khtml-user-select: none; /* Konqueror HTML */
@@ -19,7 +22,7 @@ svg {
     supported by Chrome and Opera */
     cursor: default;
     width: 100%;
-    height: 98%;
+    height: 100%;
 }
 
 svg:active{
