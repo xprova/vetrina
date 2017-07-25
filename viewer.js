@@ -46,35 +46,35 @@ function reset_view() {
 function get_point(mpoint) {
     // Return the point (x,y) in svg coordinates corresponding to a
     // mouse-coordinate "mpoint" (mx, my)
-    [mx, my] = mpoint;
-    delta_x = mx - width/2;
-    delta_y = my - height/2;
-    x = shift.x + delta_x / scale;
-    y = shift.y + delta_y / scale;
-    point = [x, y];
+    const [mx, my] = mpoint;
+    const delta_x = mx - width/2;
+    const delta_y = my - height/2;
+    const x = shift.x + delta_x / scale;
+    const y = shift.y + delta_y / scale;
+    const point = [x, y];
     return point;
 }
 
 function get_mpoint(point) {
     // Return the mouse-coordinate "mpoint" (mx, my) corresponding to a
     // point (x, y) in svg coordinates
-    [x, y] = point;
-    delta_x = (x - shift.x) * scale;
-    delta_y = (y - shift.y) * scale;
-    mx = delta_x + width/2;
-    my = delta_y + height/2;
-    mpoint = [mx, my];
+    const [x, y] = point;
+    const delta_x = (x - shift.x) * scale;
+    const delta_y = (y - shift.y) * scale;
+    const mx = delta_x + width/2;
+    const my = delta_y + height/2;
+    const mpoint = [mx, my];
     return mpoint;
 }
 
 function zoom_in(mpoint=null) {
-    new_scale = Math.min(scale * 1.2, 4);
+    const new_scale = Math.min(scale * 1.2, 4);
     zoom(new_scale, mpoint);
     return false;
 }
 
 function zoom_out(mpoint=null) {
-    new_scale = Math.max(scale / 1.2, 1);
+    const new_scale = Math.max(scale / 1.2, 1);
     zoom(new_scale, mpoint);
     return false;
 }
@@ -82,18 +82,18 @@ function zoom_out(mpoint=null) {
 function zoom(new_scale, mpoint=null) {
     if (_.isNull(mpoint))
         mpoint = get_mpoint([shift.x, shift.y]);
-    point1 = get_point(mpoint);
+    var point1 = get_point(mpoint);
     scale = new_scale;
-    mpoint_after = get_mpoint(point1);
-    delta_m = _.zipWith(mpoint_after, mpoint, _.subtract);
-    delta = _.map(delta_m, x => x / scale);
+    var mpoint_after = get_mpoint(point1);
+    var delta_m = _.zipWith(mpoint_after, mpoint, _.subtract);
+    var delta = _.map(delta_m, x => x / scale);
     shift_view(shift.x + delta[0], shift.y + delta[1]);
     return false;
 }
 
 function toggle_grid() {
-    current_style = grid_layer.attr("display");
-    new_style = current_style == 'inline' ? 'none' : 'inline';
+    var current_style = grid_layer.attr("display");
+    var new_style = current_style == 'inline' ? 'none' : 'inline';
     grid_layer.attr({display: new_style});
 }
 
@@ -108,15 +108,15 @@ function mousedown_handler(e) {
 
 function mousemove_handler(e) {
     if (e.buttons == 1) {
-        new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
-        new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
+        var new_x = shift_anchor.x - (e.x - drag_start.x) / scale;
+        var new_y = shift_anchor.y - (e.y - drag_start.y) / scale;
         shift_view(new_x, new_y);
     }
 }
 
 function mousescroll_handler(e) {
-    mpoint = [e.x - offset_x, e.y - offset_y];
-    zoom_fun = e.wheelDelta > 0 ? zoom_in : zoom_out;
+    var mpoint = [e.x - offset_x, e.y - offset_y];
+    var zoom_fun = e.wheelDelta > 0 ? zoom_in : zoom_out;
     zoom_fun(mpoint);
 }
 
@@ -139,7 +139,7 @@ function shift_view(x, y) {
 
     // re-position and adjust scale of coordinate label
 
-    cord_label_margin = 10 / scale;
+    var cord_label_margin = 10 / scale;
 
     var rx = Math.round(x);
     var ry = Math.round(y);
