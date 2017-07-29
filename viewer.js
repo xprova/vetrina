@@ -22,10 +22,27 @@ Mousetrap.bind('0', (e) => reset_view());
 Mousetrap.bind(['+', '='], (e) => zoom_in());
 Mousetrap.bind('-', (e) => zoom_out());
 Mousetrap.bind('g', (e) => toggle_grid());
+Mousetrap.bind('ctrl+p', (e) => show_palette(true));
+Mousetrap.bind('escape', (e) => show_palette(false));
 Mousetrap.bind('right', (e) => pan('right'));
 Mousetrap.bind('left', (e) => pan('left'));
 Mousetrap.bind('down', (e) => pan('down'));
 Mousetrap.bind('up', (e) => pan('up'));
+
+function show_palette(visible) {
+
+    pal = document.getElementById('palette');
+    pal_inp = document.getElementById('palette-input');
+
+    if (visible) {
+        pal.style.visibility = 'visible';
+        pal_inp.focus();
+    } else {
+        pal.style.visibility = 'hidden';
+    }
+
+    return false;
+}
 
 function pan(direction) {
     var new_x = shift.x;
