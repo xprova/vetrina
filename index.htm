@@ -2,6 +2,7 @@
 <head>
     <meta charset="utf-8" />
     <title>LayoutJS Demo</title>
+    <script src="js/angular.min.js"></script>
     <script src="js/snap.svg-min.js"></script>
     <script src="js/mousetrap.min.js"></script>
     <script src="js/lodash.js"></script>
@@ -13,14 +14,35 @@
     <link rel="stylesheet" type="text/css" href="poets/poets-styles.css">
     <link rel="stylesheet" type="text/css" href="logic-gates/logic-gates-styles.css">
 </head>
-<body>
+<body ng-app="project">
     <svg id="svg1" class="unselectable"></svg>
-    <div id="palette" class="palette">
-        <input type="test" name="test" id="palette-input">
-        <div class="item unselectable">corePOETS_1_0 <span class="faint">(POETS Core)</span></div>
-        <div class="item unselectable">corePOETS_2_0 <span class="faint">(POETS Core)</span></div>
-        <div class="item unselectable">corePOETS_3_0 <span class="faint">(POETS Core)</span></div>
-        <div class="item unselectable">corePOETS_3_0 <span class="faint">(POETS Core)</span></div>
+    <div id="palette" class="palette" ng-controller="paletteController">
+        <input id="palette-input">
+        <div ng-repeat="item in items">
+            <div class="item unselectable">
+                {{ item.label }}
+                <span class="faint">
+                    {{ item.sublabel }}
+                </span>
+            </div>
+        </div>
     </div>
+    <script type="text/javascript">
+
+        var module = angular.module('project', []);
+
+        function paletteController($scope) {
+
+            $scope.items = [
+            { "label": "corePOETS_1_0", "sublabel": "(POETS Core)" },
+            { "label": "corePOETS_2_0", "sublabel": "(POETS Core)" },
+            { "label": "corePOETS_3_0", "sublabel": "(POETS Core)" },
+            { "label": "corePOETS_4_0", "sublabel": "(POETS Core)" },
+            ]
+
+        }
+
+        module.controller('paletteController', paletteController);
+    </script>
 </body>
 </html>
