@@ -16,14 +16,22 @@
 </head>
 <body ng-app="project">
     <svg id="svg1" class="unselectable"></svg>
-    <div id="palette" class="palette" ng-controller="paletteController">
+    <div id="palette" class="palette" ng-controller="paletteController" autoscroll="">
         <input id="palette-input" ng-model="query" ng-change="onQueryChange()">
-        <div ng-repeat="item in matching_items">
-            <div class="item unselectable">
-                {{ item.label }}
-                <span class="faint">
-                    {{ item.sublabel }}
-                </span>
+        <div class="results">
+            <div ng-repeat="item in matching_items">
+                <div class="item unselectable">
+                    {{ item.label }}
+                    <span class="faint" style="margin-left: 4px;">
+                        {{ item.sublabel }}
+                    </span>
+                    <span class="faint" style="float: right; font-size: 0.8em;">
+                        {{ item.shortcut }}
+                    </span>
+                    <div class="faint" style="font-size: 0.8em; margin-top: 2px;">
+                        {{ item.info }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,18 +41,32 @@
 
         function paletteController($scope) {
 
+            var corePOETS = {
+                "info": "System Core",
+                "shortcut": "Ctrl + T"
+            };
+
+            var andGate = {
+                "info": "Logic Gate (AND)"
+            };
+
             var items = [
-            { "label": "corePOETS_1_0", "sublabel": "(POETS Core)" },
-            { "label": "corePOETS_2_0", "sublabel": "(POETS Core)" },
-            { "label": "corePOETS_3_0", "sublabel": "(POETS Core)" },
-            { "label": "corePOETS_4_0", "sublabel": "(POETS Core)" },
-            { "label": "n2", "sublabel": "(AND Gate)" },
-            { "label": "n3", "sublabel": "(AND Gate)" },
-            { "label": "n7", "sublabel": "(AND Gate)" },
-            { "label": "n8", "sublabel": "(AND Gate)" },
+            _.extend({ "label": "corePOETS_1_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_2_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_3_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_4_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_5_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_6_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_7_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_8_0" }, corePOETS),
+            _.extend({ "label": "corePOETS_9_0" }, corePOETS),
+            _.extend({ "label": "n2" }, andGate),
+            _.extend({ "label": "n3" }, andGate),
+            _.extend({ "label": "n7" }, andGate),
+            _.extend({ "label": "n8" }, andGate),
             ]
 
-            var max_results = 6;
+            var max_results = 200;
 
             $scope.query = "";
             $scope.matching_items = $scope.items;
@@ -54,10 +76,10 @@
                 var find = (item) => item.label.indexOf($scope.query) != -1;
 
                 $scope.matching_items = _
-                    .chain(items)
-                    .filter(find)
-                    .take(max_results)
-                    .value();
+                .chain(items)
+                .filter(find)
+                .take(max_results)
+                .value();
 
             }
 

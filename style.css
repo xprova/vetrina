@@ -78,7 +78,17 @@ svg:active{
 	visibility: hidden;
 }
 
+.blurred {
+	filter: blur(10px);
+}
+
+.palette > .results {
+	max-height: 400px;
+	overflow-y: auto;
+}
+
 .palette input, .palette input:focus {
+	border: solid 2px rgba(0, 0, 0, 0.15);
 	font-family: "Rambla";
 	font-size: 20px;
 	width: 100%;
@@ -88,7 +98,7 @@ svg:active{
 }
 
 .palette .item {
-	padding: 14px;
+	padding: 8px;
 	border-bottom: solid 1px rgba(0, 0, 0, 0.05);
 	cursor: hand;
 	color: #263238;
@@ -102,10 +112,26 @@ svg:active{
 
 .faint {
 	font-size: 18px;
-	margin-left: 10px;
 	color: #607D8B;
 }
 
 .item:hover > .faint {
 	color: rgba(255,255,255,0.5);
+}
+
+.palette > .results::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+}
+
+.palette > .results::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.palette > .results::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
 }
