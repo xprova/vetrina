@@ -56,7 +56,9 @@ window.onload = function () {
 
     });
 
-    init_viewer("#svg1", modules);
+    svg_element = document.getElementById('svg1');
+
+    init_viewer(svg_element, modules);
 
     _.each(connections, function (con) {
 

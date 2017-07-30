@@ -15,6 +15,7 @@ svg {
     cursor: default;
     width: 100%;
     height: 100%;
+    position: absolute;
 }
 
 svg:active{
@@ -73,9 +74,8 @@ svg:active{
 	font-family: "Rambla";
 	font-size: 20px;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-	visibility: visible;
 	border-radius: 6px;
-
+	visibility: hidden;
 }
 
 .palette input, .palette input:focus {

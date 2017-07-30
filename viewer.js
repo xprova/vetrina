@@ -4,7 +4,8 @@ const PAN_STEP = 50;
 
 var scale = 1;
 var snap;
-var snap_element_id;
+var snap_element;
+var palette_visible = false;
 var width = 1000;
 var height = 1000;
 var shift = {x: 0, y: 0};
@@ -18,21 +19,29 @@ var modules;
 var offset_x;
 var offset_y;
 
-Mousetrap.bind('0', (e) => reset_view());
-Mousetrap.bind(['+', '='], (e) => zoom_in());
-Mousetrap.bind('-', (e) => zoom_out());
-Mousetrap.bind('g', (e) => toggle_grid());
-Mousetrap.bind('ctrl+p', (e) => show_palette(true));
-Mousetrap.bind('escape', (e) => show_palette(false));
-Mousetrap.bind('right', (e) => pan('right'));
-Mousetrap.bind('left', (e) => pan('left'));
-Mousetrap.bind('down', (e) => pan('down'));
-Mousetrap.bind('up', (e) => pan('up'));
+function bind_svg_keys() {
+    var inp = document.querySelector("#palette-input");
+    Mousetrap.bind('0',        (e) => reset_view());
+    Mousetrap.bind(['+', '='], (e) => zoom_in());
+    Mousetrap.bind('-',        (e) => zoom_out());
+    Mousetrap.bind('g',        (e) => toggle_grid());
+    Mousetrap.bind('ctrl+p',   (e) => toggle_palette());
+    Mousetrap.bind('right',    (e) => pan('right'));
+    Mousetrap.bind('left',     (e) => pan('left'));
+    Mousetrap.bind('down',     (e) => pan('down'));
+    Mousetrap.bind('up',       (e) => pan('up'));
 
-function show_palette(visible) {
+    Mousetrap(inp).bind('ctrl+p',   (e) => toggle_palette());
+    Mousetrap(inp).bind('escape',   (e) => toggle_palette(false));
+}
+
+function toggle_palette(visible) {
 
     pal = document.getElementById('palette');
     pal_inp = document.getElementById('palette-input');
+
+    if (visible === undefined)
+        var visible = !palette_visible;
 
     if (visible) {
         pal.style.visibility = 'visible';
@@ -40,6 +49,8 @@ function show_palette(visible) {
     } else {
         pal.style.visibility = 'hidden';
     }
+
+    palette_visible = visible;
 
     return false;
 }
@@ -227,10 +238,13 @@ var addEvent = function(object, type, callback) {
     }
 };
 
-function init_viewer(element_id, module_defs) {
+function init_viewer(element, module_defs) {
 
-    snap = Snap(element_id);
-    snap_element_id = element_id.substr(1);
+    snap = Snap(element);
+
+    snap_element = element;
+
+    addEvent(snap_element, "mousedown", (e) => toggle_palette(false));
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
@@ -256,12 +270,15 @@ function init_viewer(element_id, module_defs) {
 
     shift_view(0, 0);
 
+    bind_svg_keys();
+
+    toggle_palette(true);
+
 }
 
 function window_resize_handler(event) {
 
-    snap_elem = document.getElementById(snap_element_id);
-    var bbox = snap_elem.getBoundingClientRect();
+    var bbox = snap_element.getBoundingClientRect();
     [width, height, offset_x, offset_y] = [bbox.width, bbox.height, bbox.left, bbox.top];
 
     draw_grid(grid_layer);
