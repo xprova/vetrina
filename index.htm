@@ -17,8 +17,8 @@
 <body ng-app="project">
     <svg id="svg1" class="unselectable"></svg>
     <div id="palette" class="palette" ng-controller="paletteController">
-        <input id="palette-input">
-        <div ng-repeat="item in items">
+        <input id="palette-input" ng-model="query" ng-change="onQueryChange()">
+        <div ng-repeat="item in matching_items">
             <div class="item unselectable">
                 {{ item.label }}
                 <span class="faint">
@@ -33,12 +33,35 @@
 
         function paletteController($scope) {
 
-            $scope.items = [
+            var items = [
             { "label": "corePOETS_1_0", "sublabel": "(POETS Core)" },
             { "label": "corePOETS_2_0", "sublabel": "(POETS Core)" },
             { "label": "corePOETS_3_0", "sublabel": "(POETS Core)" },
             { "label": "corePOETS_4_0", "sublabel": "(POETS Core)" },
+            { "label": "n2", "sublabel": "(AND Gate)" },
+            { "label": "n3", "sublabel": "(AND Gate)" },
+            { "label": "n7", "sublabel": "(AND Gate)" },
+            { "label": "n8", "sublabel": "(AND Gate)" },
             ]
+
+            var max_results = 6;
+
+            $scope.query = "";
+            $scope.matching_items = $scope.items;
+
+            $scope.onQueryChange = function() {
+
+                var find = (item) => item.label.indexOf($scope.query) != -1;
+
+                $scope.matching_items = _
+                    .chain(items)
+                    .filter(find)
+                    .take(max_results)
+                    .value();
+
+            }
+
+            $scope.onQueryChange();
 
         }
 
