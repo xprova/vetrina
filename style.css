@@ -64,6 +64,12 @@ svg:active{
 	stroke-dasharray: 1 2;
 }
 
+.blurred {
+	filter: blur(10px);
+}
+
+/* command palette */
+
 .palette {
 	position: absolute;
 	width: 500px;
@@ -78,14 +84,7 @@ svg:active{
 	visibility: hidden;
 }
 
-.blurred {
-	filter: blur(10px);
-}
-
-.palette > .results {
-	max-height: 400px;
-	overflow-y: auto;
-}
+/* palette input */
 
 .palette input, .palette input:focus {
 	border: solid 2px rgba(0, 0, 0, 0.15);
@@ -97,26 +96,11 @@ svg:active{
 	margin-bottom: 4px;
 }
 
-.palette .item {
-	padding: 8px;
-	border-bottom: solid 1px rgba(0, 0, 0, 0.05);
-	cursor: hand;
-	color: #263238;
-}
+/* palette results list*/
 
-.palette .item:hover {
-	background-color: #607D8B;
-	border-bottom: solid 1px rgba(0,0,0,0);
-	color: white;
-}
-
-.faint {
-	font-size: 18px;
-	color: #607D8B;
-}
-
-.item:hover > .faint {
-	color: rgba(255,255,255,0.5);
+.palette > .results {
+	max-height: 400px;
+	overflow-y: auto;
 }
 
 .palette > .results::-webkit-scrollbar
@@ -136,9 +120,32 @@ svg:active{
   border-radius: 4px;
 }
 
-.item b {
+/* palette items */
+
+.palette .item {
+	padding: 8px;
+	border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+	cursor: hand;
+	color: #263238;
+}
+
+.palette .item .faint {
+	font-size: 18px;
+	color: #607D8B;
+}
+
+.palette .item b {
 	background-color: rgba(0,0,0,0.08);
-	/*color: rgba(0,0,0,0.95);*/
 	font-weight: normal;
 	border-radius: 4px;
+}
+
+.palette .item .selected {
+	background-color: #607D8B;
+	border-bottom: solid 1px rgba(0,0,0,0);
+	color: white;
+}
+
+.palette .item .selected > .faint {
+	color: rgba(255,255,255,0.5);
 }
