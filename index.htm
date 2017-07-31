@@ -109,7 +109,6 @@
 
                 for (var i=0; i<len; i++) {
                     if (text[i] == term[j]) {
-                        // console.log("found " + term[j] + " = " + (10 - dist) + " points");
                         points += 10 - dist;
                         indices.push(i);
                         j += 1;
@@ -125,18 +124,7 @@
 
             }
 
-            // var points = fuzzy_match("abcx", "xxaaxbcx");
-            // console.log(points);
-
             $scope.onQueryChange = function() {
-
-                // var find = (item) => item.label.indexOf($scope.query) != -1;
-
-                // $scope.matching_items = _
-                // .chain(items)
-                // .filter(find)
-                // .take(max_results)
-                // .value();
 
                 fuzzy_m = (item) => fuzzy_match($scope.query, item["label"]);
 
@@ -160,12 +148,10 @@
 
                     var term_chr = (last_char && prev_char_exists) ? (chr + "</b>") : chr;
 
-                    if (char_exists) {
+                    if (char_exists)
                         return prev_char_exists ? term_chr : ("<b>" + term_chr);
-                    } else {
+                    else
                         return prev_char_exists ? ("</b>" + term_chr) : term_chr;
-                    }
-
 
                 }).join("");
 
