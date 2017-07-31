@@ -21,7 +21,7 @@
         <div class="results">
             <div ng-repeat="item in matching_items">
                 <div class="item unselectable">
-                    {{ item.label }}
+                    <span ng-bind-html="highlight(item)"></span>
                     <span class="faint" style="margin-left: 4px;">
                         {{ item.sublabel }}
                     </span>
@@ -39,7 +39,15 @@
 
         var module = angular.module('project', []);
 
-        function paletteController($scope) {
+        function paletteController($scope, $sce) {
+
+            var ram = {
+                "info": "RAM Module (512 MB)"
+            };
+
+            var router = {
+                "info": "Network-on-chip Router (5 ports)"
+            };
 
             var corePOETS = {
                 "info": "System Core",
@@ -51,6 +59,14 @@
             };
 
             var items = [
+            _.extend({ "label": "ram0" }, ram),
+            _.extend({ "label": "ram1" }, ram),
+            _.extend({ "label": "ram2" }, ram),
+            _.extend({ "label": "ram3" }, ram),
+            _.extend({ "label": "router0" }, router),
+            _.extend({ "label": "router1" }, router),
+            _.extend({ "label": "router2" }, router),
+            _.extend({ "label": "router3" }, router),
             _.extend({ "label": "corePOETS_1_0" }, corePOETS),
             _.extend({ "label": "corePOETS_2_0" }, corePOETS),
             _.extend({ "label": "corePOETS_3_0" }, corePOETS),
@@ -68,26 +84,99 @@
 
             var max_results = 200;
 
+            options = {
+                keys: ["label"],
+                includeMatches: true,
+                threshold: 0.8,
+                distance: 0,
+            }
+
             $scope.query = "";
             $scope.matching_items = $scope.items;
 
+            function fuzzy_match(term, text) {
+
+                term = term.toLowerCase();
+                text = text.toLowerCase();
+
+                term = term.replace(/[ ]/g, "");
+
+                var j = 0; // term index
+                var dist = 0; // distance since last matched char
+                var len = text.length; // grab this in a local var for performance
+                var points = 0;
+                var indices = [];
+
+                for (var i=0; i<len; i++) {
+                    if (text[i] == term[j]) {
+                        // console.log("found " + term[j] + " = " + (10 - dist) + " points");
+                        points += 10 - dist;
+                        indices.push(i);
+                        j += 1;
+                        dist = 0;
+                    } else {
+                        dist += 1;
+                    }
+                }
+
+                var match = j == term.length;
+
+                return match ? {points: points, indices: indices} : null;
+
+            }
+
+            // var points = fuzzy_match("abcx", "xxaaxbcx");
+            // console.log(points);
+
             $scope.onQueryChange = function() {
 
-                var find = (item) => item.label.indexOf($scope.query) != -1;
+                // var find = (item) => item.label.indexOf($scope.query) != -1;
+
+                // $scope.matching_items = _
+                // .chain(items)
+                // .filter(find)
+                // .take(max_results)
+                // .value();
+
+                fuzzy_m = (item) => fuzzy_match($scope.query, item["label"]);
+
+                results = _.map(items, fuzzy_m);
 
                 $scope.matching_items = _
                 .chain(items)
-                .filter(find)
-                .take(max_results)
+                .zip(results)
+                .filter(e => e[1] != null) // remove mismatches
+                .map(e => _.extend(e[0], e[1]))
                 .value();
 
+            }
+
+            $scope.highlight = function(item) {
+                var new_label = _.map(item.label, function (chr, ind, chrs) {
+
+                    var char_exists = item.indices.indexOf(ind) != -1;
+                    var prev_char_exists = item.indices.indexOf(ind-1) != -1;
+                    var last_char = ind == item.label.length;
+
+                    var term_chr = (last_char && prev_char_exists) ? (chr + "</b>") : chr;
+
+                    if (char_exists) {
+                        return prev_char_exists ? term_chr : ("<b>" + term_chr);
+                    } else {
+                        return prev_char_exists ? ("</b>" + term_chr) : term_chr;
+                    }
+
+
+                }).join("");
+
+                return $sce.trustAsHtml(new_label);
             }
 
             $scope.onQueryChange();
 
         }
 
-        module.controller('paletteController', paletteController);
+        module.controller('paletteController', ['$scope', '$sce', paletteController]);
     </script>
 </body>
 </html>
