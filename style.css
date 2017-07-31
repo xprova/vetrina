@@ -105,6 +105,7 @@ svg:active{
 	animation-duration: 0.1s;
 	animation-fill-mode: forwards;
 	animation-timing-function: ease-in;
+	pointer-events: none;
 }
 
 /* palette input */
