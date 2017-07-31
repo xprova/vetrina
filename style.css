@@ -81,7 +81,30 @@ svg:active{
 	font-size: 20px;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 	border-radius: 6px;
-	visibility: hidden;
+}
+
+@keyframes bring_up {
+    from {opacity: 0.0; transform: translateY(05px);}
+    to   {opacity: 1.0; transform: translateY(00px);}
+}
+
+@keyframes bring_down {
+    from {opacity: 1.0; transform: translateY(00px);}
+    to   {opacity: 0.0; transform: translateY(05px);}
+}
+
+.palette.visible {
+	animation-name: bring_up;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+}
+
+.palette:not(.visible) {
+	animation-name: bring_down;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
 }
 
 /* palette input */

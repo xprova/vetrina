@@ -18,9 +18,10 @@ var cord_label;
 var modules;
 var offset_x;
 var offset_y;
+var palette;
+var painput; // palette input
 
 function bind_svg_keys() {
-    var inp = document.querySelector("#palette-input");
     Mousetrap.bind('0',        (e) => reset_view());
     Mousetrap.bind(['+', '='], (e) => zoom_in());
     Mousetrap.bind('-',        (e) => zoom_out());
@@ -31,23 +32,25 @@ function bind_svg_keys() {
     Mousetrap.bind('down',     (e) => pan('down'));
     Mousetrap.bind('up',       (e) => pan('up'));
 
-    Mousetrap(inp).bind('ctrl+p',   (e) => toggle_palette());
-    Mousetrap(inp).bind('escape',   (e) => toggle_palette(false));
+    Mousetrap(painput).bind('ctrl+p',   (e) => toggle_palette());
+    Mousetrap(painput).bind('escape',   (e) => toggle_palette(false));
 }
 
 function toggle_palette(visible) {
-
-    pal = document.getElementById('palette');
-    pal_inp = document.getElementById('palette-input');
 
     if (visible === undefined)
         var visible = !palette_visible;
 
     if (visible) {
-        pal.style.visibility = 'visible';
-        pal_inp.focus();
+        palette.classList.add('visible');
+        var scope = angular.element(painput).scope();
+        scope.$apply(function() {
+            scope.query = '';
+            scope.onQueryChange();
+        })
+        painput.focus();
     } else {
-        pal.style.visibility = 'hidden';
+        palette.classList.remove('visible');
     }
 
     palette_visible = visible;
@@ -243,6 +246,9 @@ function init_viewer(element, module_defs) {
     snap = Snap(element);
 
     snap_element = element;
+
+    palette = document.querySelector('#palette');
+    painput = document.querySelector('#palette-input');
 
     addEvent(snap_element, "mousedown", (e) => toggle_palette(false));
 
