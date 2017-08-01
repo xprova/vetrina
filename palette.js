@@ -170,6 +170,22 @@ function paletteController($scope, $sce) {
 
 }
 
-module.controller('paletteController', ['$scope', '$sce', paletteController]);
+function makePalette() {
+
+    return {
+        scope: {
+            // info: '=',
+        },
+        bindings: {
+            // onChoose: '&',
+        },
+        templateUrl: 'comp_palette.htm',
+        controller: paletteController,
+    }
+}
+
+module.directive('palette', makePalette);
+
+// module.controller('paletteController', ['$scope', '$sce', paletteController]);
 
 })();
