@@ -18,44 +18,17 @@ var cord_label;
 var modules;
 var offset_x;
 var offset_y;
-var palette;
-var painput; // palette input
 
 function bind_svg_keys() {
     Mousetrap.bind('0',        (e) => reset_view());
     Mousetrap.bind(['+', '='], (e) => zoom_in());
     Mousetrap.bind('-',        (e) => zoom_out());
     Mousetrap.bind('g',        (e) => toggle_grid());
-    Mousetrap.bind('ctrl+p',   (e) => toggle_palette());
+    Mousetrap.bind('ctrl+p',   (e) => palette.show());
     Mousetrap.bind('right',    (e) => pan('right'));
     Mousetrap.bind('left',     (e) => pan('left'));
     Mousetrap.bind('down',     (e) => pan('down'));
     Mousetrap.bind('up',       (e) => pan('up'));
-
-    Mousetrap(painput).bind('ctrl+p',   (e) => toggle_palette());
-    Mousetrap(painput).bind('escape',   (e) => toggle_palette(false));
-}
-
-function toggle_palette(visible) {
-
-    if (visible === undefined)
-        var visible = !palette_visible;
-
-    if (visible) {
-        palette.classList.add('visible');
-        var scope = angular.element(painput).scope();
-        scope.$apply(function() {
-            scope.query = '';
-            scope.onQueryChange();
-        })
-        painput.focus();
-    } else {
-        palette.classList.remove('visible');
-    }
-
-    palette_visible = visible;
-
-    return false;
 }
 
 function pan(direction) {
@@ -247,10 +220,7 @@ function init_viewer(element, module_defs) {
 
     snap_element = element;
 
-    palette = document.querySelector('#palette');
-    painput = document.querySelector('#palette-input');
-
-    addEvent(snap_element, "mousedown", (e) => toggle_palette(false));
+    addEvent(snap_element, "mousedown", (e) => palette.hide());
 
     snap.mousedown(mousedown_handler);
     snap.mousemove(mousemove_handler);
@@ -277,8 +247,6 @@ function init_viewer(element, module_defs) {
     shift_view(0, 0);
 
     bind_svg_keys();
-
-    toggle_palette(true);
 
 }
 

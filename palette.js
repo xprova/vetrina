@@ -1,4 +1,4 @@
-(function() {
+palette = (function() {
 
 'use strict';
 
@@ -140,14 +140,17 @@ function paletteController($scope, $sce) {
             $scope.selected = Math.max(0, $scope.selected - 1);
             scroll_to_selected_item(false);
             return false;
-        } else if (e.key === "Enter") {
-            toggle_palette(false);
+        } else if (e.key === "Enter" || e.key === "Escape") {
+            var painput = document.querySelector('#palette-input');
+            toggle(false);
+            painput.blur(); // move focus away to avoid capturing future keystrokes
             return false;
         }
-
+        return false;
     }
 
     $scope.highlight = function(item) {
+
         var new_label = _.map(item.label, function (chr, ind, chrs) {
 
             var char_exists = item.indices.indexOf(ind) != -1;
@@ -170,22 +173,40 @@ function paletteController($scope, $sce) {
 
 }
 
-function makePalette() {
+module.directive('palette', () => ({
+    templateUrl: 'comp_palette.htm',
+    controller: paletteController,
+}));
 
-    return {
-        scope: {
-            // info: '=',
-        },
-        bindings: {
-            // onChoose: '&',
-        },
-        templateUrl: 'comp_palette.htm',
-        controller: paletteController,
+function toggle(visible) {
+
+    var palette = document.querySelector('#palette');
+    var painput = document.querySelector('#palette-input');
+
+    if (visible === undefined)
+        var visible = !palette.classList.contains('visible');
+
+    if (visible) {
+        palette.classList.add('visible');
+        var scope = angular.element(painput).scope();
+        scope.$apply(function() {
+            scope.query = '';
+            scope.onQueryChange();
+        })
+        painput.focus();
+    } else {
+        palette.classList.remove('visible');
     }
+
+    palette_visible = visible;
+
+    return false;
 }
 
-module.directive('palette', makePalette);
-
-// module.controller('paletteController', ['$scope', '$sce', paletteController]);
+return {
+    show   : () => (toggle(true)),
+    hide   : () => (toggle(false)),
+    toggle : () => (toggle()),
+}
 
 })();
