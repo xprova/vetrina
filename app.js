@@ -1,3 +1,9 @@
+(function () {
+
+'use strict';
+
+var modules = {};
+
 // https://stackoverflow.com/a/43053803
 const cartesian_f = (a, b) =>
     [].concat(...a.map(a => b.map(b => [].concat(a, b))));
@@ -8,13 +14,13 @@ function get_module_grid(template, id_) {
 
     modules = {};
 
-    mod_tups = product(_.range(5), _.range(5));
+    var mod_tups = product(_.range(5), _.range(5));
 
     const makeMod = function (mod_tup) {
 
-        [i, j] = mod_tup;
+        var [i, j] = mod_tup;
 
-        id = `${id_}_${i}_${j}`;
+        var id = `${id_}_${i}_${j}`;
 
         modules[id] = makeGate(template, {x: 200 * i + 200, y: 200 * j});
     }
@@ -33,9 +39,9 @@ window.onload = function () {
 
     modules = get_module_grid(corePOETS, "corePOETS");
 
-    core1 = makeGate(corePOETS);
+    var core1 = makeGate(corePOETS);
 
-    block1 = makeGate(norGate);
+    var block1 = makeGate(norGate);
 
     const [dx, dy, s] = [50, 25, 5];
 
@@ -48,40 +54,40 @@ window.onload = function () {
 
     _.each(nodes, function (node) {
 
-        [id_, x, y, gateTemplate] = node;
+        var [id_, x, y, gateTemplate] = node;
 
-        [nx, ny] = _.map([x, y], x => Math.round(x * s)/ s * 60);
+        var [nx, ny] = _.map([x, y], x => Math.round(x * s)/ s * 60);
 
         modules[id_] = makeGate(gateTemplate, {x: nx - 1000, y:ny, id: id_});
 
     });
 
-    svg_element = document.getElementById('svg1');
+    var svg_element = document.getElementById('svg1');
 
-    init_viewer(svg_element, modules);
+    viewer.init_viewer(svg_element, modules);
 
     _.each(connections, function (con) {
 
-        [from, to] = con;
+        var [from, to] = con;
 
         if (_.has(modules, from) && _.has(modules, to))
-            draw_connection(from, to, "y", "a");
+            viewer.draw_connection(from, to, "y", "a");
 
     });
 
-    draw_connection("gate1", "gate3", "y", "a");
-    draw_connection("gate2", "gate3", "y", "b");
-    draw_connection("gate3", "gate4", "y", "a");
-    draw_connection("gate4", "corePOETS_0_0", "y", "E");
+    viewer.draw_connection("gate1", "gate3", "y", "a");
+    viewer.draw_connection("gate2", "gate3", "y", "b");
+    viewer.draw_connection("gate3", "gate4", "y", "a");
+    viewer.draw_connection("gate4", "corePOETS_0_0", "y", "E");
 
-    draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
-    draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");
-    draw_connection("corePOETS_1_1", "corePOETS_2_2", "E", "W");
+    viewer.draw_connection("corePOETS_0_0", "corePOETS_1_1", "E", "W");
+    viewer.draw_connection("corePOETS_1_1", "corePOETS_2_0", "E", "W");
+    viewer.draw_connection("corePOETS_1_1", "corePOETS_2_2", "E", "W");
 
-    draw_connection("corePOETS_0_0", "block1", "N", "a");
+    viewer.draw_connection("corePOETS_0_0", "block1", "N", "a");
 };
 
-nodes = [
+var nodes = [
     ["n3",    "0.375",   "8.8889",  gateSource],
     ["n5",    "0.375",   "6.7361",  gateSource],
     ["n6",    "0.375",   "4.5417",  gateSource],
@@ -115,7 +121,7 @@ nodes = [
     ["n23",   "10.75",   "7.0417",  gateXor]
 ]
 
-connections = [
+var connections = [
     ["n3", "n18"],
     ["n4", "n22b"],
     ["n6", "n8"],
@@ -153,3 +159,5 @@ connections = [
     ["n24", "n19"],
     ["n24", "n10"]
 ]
+
+})();

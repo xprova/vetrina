@@ -1,3 +1,7 @@
+viewer = (function() {
+
+'use strict';
+
 const GRID_BLOCK = 200;
 const GRID_LINES_P_BLOCK = 4;
 const PAN_STEP = 50;
@@ -178,19 +182,19 @@ function draw_grid (layer) {
 
     var gr = GRID_BLOCK;
 
-    format_add_line = function (ind, line) {
+    function format_add_line(ind, line) {
         // apply line attributes then add to appropriate grid group
         var is_maj = ind % GRID_LINES_P_BLOCK == 0;
         (is_maj ? grid_major_layer : grid_minor_layer).add(line);
     }
 
-    draw_hline = function (ind) {
+    function draw_hline(ind) {
         var xi = ind * GRID_BLOCK / GRID_LINES_P_BLOCK;
         var line = snap.line(xi, -h2, xi, h2 + gr);
         format_add_line(ind, line);
     }
 
-    draw_vline = function (ind) {
+    function draw_vline(ind) {
         var yi = ind * GRID_BLOCK / GRID_LINES_P_BLOCK;
         var line = snap.line(-w2, yi, w2 + gr, yi);
         format_add_line(ind, line);
@@ -317,7 +321,7 @@ function drawModule(id, mod) {
     function draw_port(x1, x2, y1, y2, label, halign, valign) {
         gr.line(x1, y1, x2, y2).addClass(port_line_class);
         gr.circle(x2, y2, port_pin_r);
-        text_obj = gr.text(x1, y1, label).addClass(port_label_class);
+        var text_obj = gr.text(x1, y1, label).addClass(port_label_class);
         align_text(text_obj, x1, y1, halign, valign, 5);
         mod.ports[label].x = x2 - x;
         mod.ports[label].y = y2 - y;
@@ -439,3 +443,10 @@ function draw_connection(mod1, mod2, port1, port2) {
 
     l1.addClass("connector");
 }
+
+return {
+    init_viewer: init_viewer,
+    draw_connection: draw_connection,
+}
+
+})();

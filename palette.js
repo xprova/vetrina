@@ -198,8 +198,6 @@ function toggle(visible) {
         palette.classList.remove('visible');
     }
 
-    palette_visible = visible;
-
     return false;
 }
 
