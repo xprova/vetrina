@@ -1,0 +1,19 @@
+<div id="palette" class="palette" autoscroll="">
+    <input id="palette-input" ng-model="query" ng-change="onQueryChange()" ng-keydown="input_keypress($event)">
+    <div id="results" class="results">
+        <div ng-repeat="item in matching_items">
+        <div id="item_{{$index}}" class="item unselectable {{ $index == selected ? 'selected' : '' }}" ng-mouseenter="select_item($index)">
+                <span ng-bind-html="highlight(item)"></span>
+                <span class="faint" style="margin-left: 4px;">
+                    {{ item.sublabel }}
+                </span>
+                <span class="faint" style="float: right; font-size: 0.8em;">
+                    {{ item.shortcut }}
+                </span>
+                <div class="faint" style="font-size: 0.8em; margin-top: 2px;">
+                    {{ item.info }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
