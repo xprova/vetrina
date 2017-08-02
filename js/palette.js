@@ -174,7 +174,7 @@ function paletteController($scope, $sce) {
 }
 
 module.directive('palette', () => ({
-    templateUrl: 'htm/comp_palette.htm',
+    templateUrl: 'htm/palette.htm',
     controller: paletteController,
 }));
 

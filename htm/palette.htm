@@ -4,13 +4,13 @@
         <div ng-repeat="item in matching_items">
         <div id="item_{{$index}}" class="item unselectable {{ $index == selected ? 'selected' : '' }}" ng-mouseenter="select_item($index)">
                 <span ng-bind-html="highlight(item)"></span>
-                <span class="faint" style="margin-left: 4px;">
+                <span class="faint sublabel">
                     {{ item.sublabel }}
                 </span>
-                <span class="faint" style="float: right; font-size: 0.8em;">
+                <span class="faint shortcut t1">
                     {{ item.shortcut }}
                 </span>
-                <div class="faint" style="font-size: 0.8em; margin-top: 2px;">
+                <div class="faint info">
                     {{ item.info }}
                 </div>
             </div>

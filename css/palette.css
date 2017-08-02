@@ -105,3 +105,19 @@
 .palette .item.selected > .faint {
 	color: rgba(255,255,255,0.5);
 }
+
+/* palette sublabels */
+
+.palette > .results .item > .sublabel {
+	margin-left: 4px;
+}
+
+.palette > .results .item > .shortcut {
+	float: right;
+	font-size: 0.8em;
+}
+
+.palette > .results .item > .info {
+	font-size: 0.8em;
+	margin-top: 2px;
+}
