@@ -1,20 +1,11 @@
 /* command palette */
 
-.palette-container {
-	width: 100%;
-	height: 100%;
-	padding: 150px;
-	display: flex;
-	box-sizing: border-box;
-	justify-content: center;
-}
-
 .palette {
 	justify-self: center;
 	align-self: flex-start;
 	width: 500px;
 	background-color: #ECEFF1;
-	border: solid 2px rgba(0, 0, 0, 0.1);
+	border: solid 2px #CFD8DC;
 	margin: 150px;
 	padding: 10px;
 	font-family: "Rambla";
