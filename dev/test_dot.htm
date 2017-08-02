@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<script src="js/viz-lite.js"></script>
-		<script src="js/underscore-min.js"></script>
+		<script src="js/lib/viz-lite.js"></script>
+		<script src="js/lib/lodash.js"></script>
 	</head>
 	<body>
 		<script type="text/javascript">
@@ -68,7 +68,7 @@
 			});
 
 			label_groups = _.map(sorted_groups, function (group) {
-				return _.pluck(group, 'label');
+				return _.map(group, x => x.label);
 			});
 
 			_.each(label_groups, function (sgroup) {

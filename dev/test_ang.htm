@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AngularJS Test</title>
+    <script src="js/lib/angular.min.js"></script>
+</head>
+<body ng-app="app1">
+    <!-- <div ng-controller="controller1"> -->
+        <!-- x = {{ x }} -->
+        <!-- <button onclick="dostuff">Button1</button> -->
+    <!-- </div> -->
+    <counter info="3" onClick="alert(5)"></counter>
+</body>
+<script type="text/javascript">
+
+    var app = angular.module("app1", []);
+
+    function controller1($scope, greeting) {
+        $scope.x = greeting(2);
+        $scope.count = 10;
+        $scope.makeAlert = function() {
+            alert(5);
+        }
+    }
+
+    app.controller('controller1', controller1);
+
+    app.value('greeting', (x) => x + 2);
+
+    function makeCounter() {
+        return {
+            scope: {
+                info: '=',
+            },
+            bindings: {
+                onClick: '&',
+            },
+            template: '<div>x = {{ counter }} </div><button ng-click="doStuff">Send</button>',
+            controller: function($scope, greeting) {
+                $scope.counter = greeting($scope.info);
+            }
+        }
+    }
+
+    app.directive('counter', makeCounter);
+
+</script>
+</html>

@@ -1,0 +1,107 @@
+/* command palette */
+
+.palette {
+	position: absolute;
+	width: 500px;
+	background-color: #ECEFF1;
+	border: solid 2px rgba(0, 0, 0, 0.1);
+	margin: 200px;
+	padding: 10px;
+	font-family: "Rambla";
+	font-size: 20px;
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+	border-radius: 6px;
+}
+
+@keyframes bring_up {
+    from {opacity: 0.0; transform: translateY(05px);}
+    to   {opacity: 1.0; transform: translateY(00px);}
+}
+
+@keyframes bring_down {
+    from {opacity: 1.0; transform: translateY(00px);}
+    to   {opacity: 0.0; transform: translateY(05px);}
+}
+
+.palette.visible {
+	animation-name: bring_up;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+}
+
+.palette:not(.visible) {
+	animation-name: bring_down;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+	pointer-events: none;
+}
+
+/* palette input */
+
+.palette input, .palette input:focus {
+	border: solid 2px rgba(0, 0, 0, 0.15);
+	font-family: "Rambla";
+	font-size: 20px;
+	width: 100%;
+	padding: 8px;
+	outline: none;
+	margin-bottom: 4px;
+}
+
+/* palette results list*/
+
+.palette > .results {
+	max-height: 420; /* (item height = 70px) x item_count */
+	overflow-y: auto;
+}
+
+.palette > .results::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+}
+
+.palette > .results::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.palette > .results::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+/* palette items */
+
+.palette .item {
+	padding: 8px;
+	border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+	cursor: hand;
+	color: #263238;
+	height: 70px;
+	box-sizing: border-box;
+}
+
+.palette .item .faint {
+	font-size: 18px;
+	color: #607D8B;
+}
+
+.palette .item b {
+	background-color: rgba(0,0,0,0.08);
+	font-weight: normal;
+	border-radius: 4px;
+}
+
+.palette .item.selected {
+	background-color: #607D8B;
+	border-bottom: solid 1px rgba(0,0,0,0);
+	color: white;
+}
+
+.palette .item.selected > .faint {
+	color: rgba(255,255,255,0.5);
+}
