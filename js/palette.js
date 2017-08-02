@@ -182,19 +182,22 @@ function toggle(visible) {
 
     var palette = document.querySelector('#palette');
     var painput = document.querySelector('#palette-input');
+    var current_visible = palette.classList.contains('visible');
 
     if (visible === undefined)
-        var visible = !palette.classList.contains('visible');
+        var visible = !current_visible;
 
-    if (visible) {
+    if (visible && !current_visible) {
         palette.classList.add('visible');
+        palette.classList.remove('invisible');
         var scope = angular.element(painput).scope();
         scope.$apply(function() {
             scope.query = '';
             scope.onQueryChange();
         })
         painput.focus();
-    } else {
+    } else if (!visible && current_visible) {
+        palette.classList.add('invisible');
         palette.classList.remove('visible');
     }
 

@@ -11,6 +11,7 @@
 	font-size: 20px;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 	border-radius: 6px;
+	visibility: hidden; /* invisible initially */
 }
 
 @keyframes bring_up {
@@ -24,13 +25,15 @@
 }
 
 .palette.visible {
+	visibility: visible;
 	animation-name: bring_up;
 	animation-duration: 0.1s;
 	animation-fill-mode: forwards;
 	animation-timing-function: ease-in;
 }
 
-.palette:not(.visible) {
+.palette.invisible {
+	visibility: visible; /* during animation */
 	animation-name: bring_down;
 	animation-duration: 0.1s;
 	animation-fill-mode: forwards;
