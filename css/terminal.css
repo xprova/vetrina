@@ -6,10 +6,10 @@
 	width: 100%;
 	height: 350px;
 	box-sizing: border-box;
+	visibility: hidden; /* hidden initially */
 }
 
 .terminal {
-	visibility: hidden; /* hidden initially */
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
@@ -55,7 +55,7 @@
     to   {opacity: 0.0; transform: translateY(10px);}
 }
 
-.terminal.visible {
+.terminal-container.visible {
 	visibility: visible;
 	animation-name: terminal-show;
 	animation-duration: 0.1s;
@@ -63,11 +63,18 @@
 	animation-timing-function: ease-in;
 }
 
-.terminal.invisible {
+.terminal-container.invisible {
 	visibility: visible; /* during animation */
 	animation-name: terminal-hide;
 	animation-duration: 0.1s;
 	animation-fill-mode: forwards;
 	animation-timing-function: ease-in;
+	pointer-events: none;
+}
+
+.terminal-container.invisible,
+.terminal-container.invisible div,
+.terminal-container.invisible input,
+.terminal-container.invisible textarea {
 	pointer-events: none;
 }

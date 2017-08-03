@@ -66,18 +66,18 @@ drwxr-xr-x+ 1 User None    0 Aug  2 20:00 poets
 
         function toggle_terminal() {
             var inp = document.getElementById("input1");
-            var terminal = document.querySelector(".terminal");
-            var cur_visible = terminal.classList.contains("visible");
+            var container = document.querySelector(".terminal-container");
+            var cur_visible = container.classList.contains("visible");
             if (cur_visible) {
-                terminal.style.visiblility = 'visible';
-                terminal.classList.remove("visible");
-                terminal.classList.add("invisible");
+                container.style.visiblility = 'visible';
+                container.classList.remove("visible");
+                container.classList.add("invisible");
                 inp.blur();
             } else {
                 scroll_bottom();
-                terminal.style.visiblility = 'visible';
-                terminal.classList.add("visible");
-                terminal.classList.remove("invisible");
+                container.style.visiblility = 'visible';
+                container.classList.add("visible");
+                container.classList.remove("invisible");
                 /* call inp.focus() after animation to avoid a scroll glitch */
                 setTimeout(() => inp.focus(), 150);
             }
