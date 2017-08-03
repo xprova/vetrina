@@ -10,6 +10,7 @@
     <script src="logic-gates/logic-gates-defs.js"></script>
     <script src="js/palette.js"></script>
     <script src="js/viewer.js"></script>
+    <script src="js/terminal.js"></script>
     <script src="js/app.js"></script>
     <link rel="stylesheet" type="text/css" href="css/viewer.css">
     <link rel="stylesheet" type="text/css" href="css/palette.css">
@@ -43,45 +44,8 @@ drwxr-xr-x+ 1 User None    0 Aug  2 20:00 poets
 -rwxr-xr-x  1 User None  27K Aug  2 00:43 project.sublime-workspace
 </pre>
             </div>
-            <input id="input1" autofocus="false" onkeydown="return keypress(event)"></input>
+            <input id="input1" autofocus="false" onkeydown="return terminal.keypress(event)"></input>
         </div>
     </div>
-    <script type="text/javascript">
-        function keypress(event) {
-            var elem = document.getElementById("input1");
-            var content = document.querySelector(".content1");
-            if (event.code === "Enter") {
-                content.innerText += elem.value + "\n";
-                scroll_bottom();
-                elem.value = "";
-            }
-            if (event.code === "Escape")
-                toggle_terminal();
-        }
-
-        function scroll_bottom() {
-            var terminal = document.querySelector(".inner1");
-            terminal.scrollTop = terminal.scrollHeight - terminal.clientHeight;
-        }
-
-        function toggle_terminal() {
-            var inp = document.getElementById("input1");
-            var container = document.querySelector(".terminal-container");
-            var cur_visible = container.classList.contains("visible");
-            if (cur_visible) {
-                container.style.visiblility = 'visible';
-                container.classList.remove("visible");
-                container.classList.add("invisible");
-                inp.blur();
-            } else {
-                scroll_bottom();
-                container.style.visiblility = 'visible';
-                container.classList.add("visible");
-                container.classList.remove("invisible");
-                /* call inp.focus() after animation to avoid a scroll glitch */
-                setTimeout(() => inp.focus(), 150);
-            }
-        }
-    </script>
 </body>
 </html>
