@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
-.terminal-container {
+div[terminal-container] {
 	position: absolute;
 	align-self: flex-end;
 	width: 100%;
@@ -9,7 +9,7 @@
 	visibility: hidden; /* hidden initially */
 }
 
-.terminal {
+div[terminal] {
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
@@ -20,8 +20,8 @@
 	line-height: 125%;
 	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
 }
-.terminal > div > pre,
-.terminal > input {
+div[terminal] > div[scrollable],
+div[terminal] > input[command] {
 	font-family: 'Inconsolata';
 	font-size: 18px;
 	background-color: #ECEFF1;
@@ -29,19 +29,19 @@
 	margin: 0;
 }
 
-.terminal > div,
-.terminal > input {
+div[terminal] > div[scrollable],
+div[terminal] > input[command] {
 	border: none;
 	border-top: solid 1px white;
 }
 
-.terminal > div {
+div[terminal] > div[scrollable] {
 	height: 100%;
 	overflow-y: auto;
 	border-bottom: solid 2px #CFD8DC;
 }
 
-.terminal > input {
+div[terminal] > input[command] {
 	outline: none;
 }
 
@@ -55,7 +55,7 @@
     to   {opacity: 0.0; transform: translateY(10px);}
 }
 
-.terminal-container.visible {
+div[terminal-container].visible {
 	visibility: visible;
 	animation-name: terminal-show;
 	animation-duration: 0.1s;
@@ -63,7 +63,7 @@
 	animation-timing-function: ease-in;
 }
 
-.terminal-container.invisible {
+div[terminal-container].invisible {
 	visibility: visible; /* during animation */
 	animation-name: terminal-hide;
 	animation-duration: 0.1s;
@@ -72,9 +72,7 @@
 	pointer-events: none;
 }
 
-.terminal-container.invisible,
-.terminal-container.invisible div,
-.terminal-container.invisible input,
-.terminal-container.invisible textarea {
+div[terminal-container].invisible,
+div[terminal-container].invisible * {
 	pointer-events: none;
 }

@@ -35,7 +35,7 @@ function makeGate(template, attrs = {}) {
     return _.chain(template).cloneDeep().extend(attrs).value();
 }
 
-window.onload = function () {
+function onload_handler () {
 
     modules = get_module_grid(corePOETS, "corePOETS");
 
@@ -86,6 +86,19 @@ window.onload = function () {
 
     viewer.draw_connection("corePOETS_0_0", "block1", "N", "a");
 };
+
+var addEvent = function(object, type, callback) {
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
+
+addEvent(window, "load", onload_handler);
 
 var nodes = [
     ["n3",    "0.375",   "8.8889",  gateSource],

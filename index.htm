@@ -22,30 +22,10 @@
 <body ng-app="project">
     <svg id="svg1" class="unselectable"></svg>
     <palette></palette>
-    <div class="terminal-container">
-        <div class="terminal">
-            <div class="inner1">
-                <pre class="content1">
-total 56K
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 css
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 dev
-drwxr-xr-x+ 1 User None    0 Jul 25 00:17 grid_layout
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 htm
-drwxr-xr-x+ 1 User None    0 Aug  2 20:01 js
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 layout
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 logic-gates
-drwxr-xr-x+ 1 User None    0 Jul 30 21:16 node_modules
-drwxr-xr-x+ 1 User None    0 Aug  2 20:00 poets
--rw-r--r--  1 User None   96 Jul 30 21:16 setup
--rw-r--r--  1 User None 1.4K Aug  3 00:10 index.htm
--rw-r--r--  1 User None 2.5K Aug  2 20:00 bs-config.js
--rw-r--r--  1 User None   80 Aug  2 20:00 package.json
--rw-r--r--  1 User None  159 Jun 27 22:49 README.md
--rw-r--r--  1 User None  127 Aug  2 20:00 project.sublime-project
--rwxr-xr-x  1 User None  27K Aug  2 00:43 project.sublime-workspace
-</pre>
-            </div>
-            <input id="input1" autofocus="false" onkeydown="return terminal.keypress(event)"></input>
+    <div terminal-container>
+        <div terminal>
+            <div scrollable></div>
+            <input command/>
         </div>
     </div>
 </body>
