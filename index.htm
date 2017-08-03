@@ -22,8 +22,8 @@
     <palette></palette>
     <div class="terminal-container">
         <div class="terminal">
-            <div>
-                <pre>
+            <div class="inner1">
+                <pre class="content1">
 total 56K
 drwxr-xr-x+ 1 User None    0 Aug  2 20:00 css
 drwxr-xr-x+ 1 User None    0 Aug  2 20:00 dev
@@ -41,16 +41,46 @@ drwxr-xr-x+ 1 User None    0 Aug  2 20:00 poets
 -rw-r--r--  1 User None  159 Jun 27 22:49 README.md
 -rw-r--r--  1 User None  127 Aug  2 20:00 project.sublime-project
 -rwxr-xr-x  1 User None  27K Aug  2 00:43 project.sublime-workspace
-                </pre>
+</pre>
             </div>
-            <input id="input1" autofocus="true" onkeypress="keypress(event)"></input>
+            <input id="input1" autofocus="false" onkeydown="return keypress(event)"></input>
         </div>
     </div>
     <script type="text/javascript">
         function keypress(event) {
             var elem = document.getElementById("input1");
-            if (event.code === "Enter")
+            var content = document.querySelector(".content1");
+            if (event.code === "Enter") {
+                content.innerText += elem.value + "\n";
+                scroll_bottom();
                 elem.value = "";
+            }
+            if (event.code === "Escape")
+                toggle_terminal();
+        }
+
+        function scroll_bottom() {
+            var terminal = document.querySelector(".inner1");
+            terminal.scrollTop = terminal.scrollHeight - terminal.clientHeight;
+        }
+
+        function toggle_terminal() {
+            var inp = document.getElementById("input1");
+            var terminal = document.querySelector(".terminal");
+            var cur_visible = terminal.classList.contains("visible");
+            if (cur_visible) {
+                terminal.style.visiblility = 'visible';
+                terminal.classList.remove("visible");
+                terminal.classList.add("invisible");
+                inp.blur();
+            } else {
+                scroll_bottom();
+                terminal.style.visiblility = 'visible';
+                terminal.classList.add("visible");
+                terminal.classList.remove("invisible");
+                /* call inp.focus() after animation to avoid a scroll glitch */
+                setTimeout(() => inp.focus(), 150);
+            }
         }
     </script>
 </body>

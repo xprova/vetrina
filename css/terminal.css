@@ -9,6 +9,7 @@
 }
 
 .terminal {
+	visibility: hidden; /* hidden initially */
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
@@ -30,10 +31,8 @@
 
 .terminal > div,
 .terminal > input {
-	border: solid 1px white;
-	border-bottom: none;
-	border-right: none;
-
+	border: none;
+	border-top: solid 1px white;
 }
 
 .terminal > div {
@@ -44,4 +43,31 @@
 
 .terminal > input {
 	outline: none;
+}
+
+@keyframes terminal-show {
+    from {opacity: 0.0; transform: translateY(10px);}
+    to   {opacity: 1.0; transform: translateY(00px);}
+}
+
+@keyframes terminal-hide {
+    from {opacity: 1.0; transform: translateY(00px);}
+    to   {opacity: 0.0; transform: translateY(10px);}
+}
+
+.terminal.visible {
+	visibility: visible;
+	animation-name: terminal-show;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+}
+
+.terminal.invisible {
+	visibility: visible; /* during animation */
+	animation-name: terminal-hide;
+	animation-duration: 0.1s;
+	animation-fill-mode: forwards;
+	animation-timing-function: ease-in;
+	pointer-events: none;
 }

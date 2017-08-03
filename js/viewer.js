@@ -29,6 +29,7 @@ function bind_svg_keys() {
     Mousetrap.bind('-',        (e) => zoom_out());
     Mousetrap.bind('g',        (e) => toggle_grid());
     Mousetrap.bind('ctrl+p',   (e) => palette.show());
+    Mousetrap.bind("'",   (e) => toggle_terminal());
     Mousetrap.bind('right',    (e) => pan('right'));
     Mousetrap.bind('left',     (e) => pan('left'));
     Mousetrap.bind('down',     (e) => pan('down'));
