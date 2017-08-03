@@ -23,19 +23,6 @@ var modules;
 var offset_x;
 var offset_y;
 
-function bind_svg_keys() {
-    Mousetrap.bind('0',        (e) => reset_view());
-    Mousetrap.bind(['+', '='], (e) => zoom_in());
-    Mousetrap.bind('-',        (e) => zoom_out());
-    Mousetrap.bind('g',        (e) => toggle_grid());
-    Mousetrap.bind('ctrl+p',   (e) => palette.show());
-    Mousetrap.bind("'",        (e) => terminal.toggle());
-    Mousetrap.bind('right',    (e) => pan('right'));
-    Mousetrap.bind('left',     (e) => pan('left'));
-    Mousetrap.bind('down',     (e) => pan('down'));
-    Mousetrap.bind('up',       (e) => pan('up'));
-}
-
 function pan(direction) {
     var new_x = shift.x;
     var new_y = shift.y;
@@ -219,7 +206,7 @@ var addEvent = function(object, type, callback) {
     }
 };
 
-function init_viewer(element, module_defs) {
+function init(element, module_defs) {
 
     snap = Snap(element);
 
@@ -250,8 +237,6 @@ function init_viewer(element, module_defs) {
     window_resize_handler();
 
     shift_view(0, 0);
-
-    bind_svg_keys();
 
 }
 
@@ -446,8 +431,13 @@ function draw_connection(mod1, mod2, port1, port2) {
 }
 
 return {
-    init_viewer: init_viewer,
-    draw_connection: draw_connection,
+    init,
+    draw_connection,
+    reset_view,
+    zoom_in,
+    zoom_out,
+    toggle_grid,
+    pan,
 }
 
 })();

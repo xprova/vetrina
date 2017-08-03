@@ -64,7 +64,7 @@ window.onload = function () {
 
     var svg_element = document.getElementById('svg1');
 
-    viewer.init_viewer(svg_element, modules);
+    viewer.init(svg_element, modules);
 
     _.each(connections, function (con) {
 
