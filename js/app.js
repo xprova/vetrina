@@ -2,11 +2,8 @@
 
     'use strict';
 
-    var modules = {};
-
-    // https://stackoverflow.com/a/43053803
-
     function product (a, b, ...c) {
+        // https://stackoverflow.com/a/43053803
         function cartesian_f (a, b) {
             return [].concat(...a.map(a => b.map(b => [].concat(a, b))));
         }

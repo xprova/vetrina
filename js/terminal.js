@@ -69,6 +69,6 @@ terminal = (function() {
         }
     }
 
-    return {toggle, keypress};
+    return {toggle};
 
 })();
