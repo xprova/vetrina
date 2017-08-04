@@ -19,7 +19,7 @@ var grid_layer;
 var module_layer;
 var connector_layer;
 var cord_label;
-var modules;
+var modules = {};
 var offset_x;
 var offset_y;
 
@@ -206,11 +206,11 @@ var addEvent = function(object, type, callback) {
     }
 };
 
-function init(element, module_defs) {
+function init(selector) {
 
-    snap = Snap(element);
+    snap_element = document.querySelector(selector);
 
-    snap_element = element;
+    snap = Snap(snap_element);
 
     addEvent(snap_element, "mousedown", (e) => palette.hide());
 
@@ -227,10 +227,6 @@ function init(element, module_defs) {
     module_layer.attr({id: "modules"});
 
     draw_grid(grid_layer);
-
-    modules = module_defs;
-
-    _.map(module_defs, (mod, id) => module_layer.add(drawModule(id, mod)));
 
     cord_label = snap.text(0, 0, "").attr({fontFamily: "Inconsolata"});
 
@@ -282,10 +278,14 @@ function align_text(text_obj, x, y, halign, valign, margin) {
     text_obj.attr({x: x0, y:y0, alignmentBaseline: "central"});
 }
 
-function drawModule(id, mod) {
+function add_module(mod) {
 
-    const mod_w = mod.width;
-    const mod_h = mod.height;
+    const mod_w = mod.width || 100;
+    const mod_h = mod.height || 100;
+
+    const mod_x = mod.x || 0;
+    const mod_y = mod.y || 0;
+
     const port_pin_r = 5;
     const port_edge_length = 15;
     const class_ = mod.hasOwnProperty("class") ? mod.class : "module"
@@ -295,11 +295,11 @@ function drawModule(id, mod) {
     const body_class         = `${class_}-body`;
     const module_label_class = `${class_}-label`;
 
-    var x = mod.x - mod_w/2;
-    var y = mod.y - mod_h/2;
+    var x = mod_x - mod_w/2;
+    var y = mod_y - mod_h/2;
 
     var gr = snap.g();
-    gr.attr({id: id});
+    gr.attr({id: mod.id});
 
     if (mod.hasOwnProperty("class"))
         gr.addClass(mod.class);
@@ -373,7 +373,7 @@ function drawModule(id, mod) {
         // block module
 
         var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5);
-        var t1 = gr.text(x + mod_w/2, y + mod_h + 20, id);
+        var t1 = gr.text(x + mod_w/2, y + mod_h + 20, mod.id);
 
         r1.addClass(body_class);
         t1.addClass(module_label_class);
@@ -405,24 +405,38 @@ function drawModule(id, mod) {
 
     }
 
-    return gr;
+    modules[mod.id] = mod;
+
 }
 
-function draw_connection(mod1, mod2, port1, port2) {
+function add_connection(mod1, mod2, port1, port2) {
 
     var m1 = modules[mod1];
     var m2 = modules[mod2];
 
-    var cx1 = m1.x - m1.width / 2;
+    if (m1 == null)
+        console.error(`could not find module ${mod1}`);
+    if (m2 == null)
+        console.error(`could not find module ${mod2}`);
+
+    var p1 = m1.ports[port1];
+    var p2 = m2.ports[port2];
+
+    if (p1 == null)
+        console.error(`module ${mod1} does not have port ${port1}`);
+    if (p2 == null)
+        console.error(`module ${mod2} does not have port ${port2}`);
+
+    var cx1 = m1.x - m1.width  / 2;
     var cy1 = m1.y - m1.height / 2;
 
-    var cx2 = m2.x - m2.width / 2;
+    var cx2 = m2.x - m2.width  / 2;
     var cy2 = m2.y - m2.height / 2;
 
-    var x1 = cx1 + m1.ports[port1].x;
-    var y1 = cy1 + m1.ports[port1].y;
-    var x2 = cx2 + m2.ports[port2].x;
-    var y2 = cy2 + m2.ports[port2].y;
+    var x1 = cx1 + p1.x;
+    var y1 = cy1 + p1.y;
+    var x2 = cx2 + p2.x;
+    var y2 = cy2 + p2.y;
 
     var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} \
         ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
@@ -432,7 +446,8 @@ function draw_connection(mod1, mod2, port1, port2) {
 
 return {
     init,
-    draw_connection,
+    add_module,
+    add_connection,
     reset_view,
     zoom_in,
     zoom_out,
