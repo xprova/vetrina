@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import layoutjs
-
-
 class MyApp():
 
     counter = 0
@@ -20,10 +17,3 @@ class MyApp():
             return {"result": "you said x = %s" % msg["x"],
                 "counter": self.counter}
 
-
-def main():
-    layoutjs.run(MyApp())
-
-
-if __name__ == '__main__':
-    main()
