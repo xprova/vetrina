@@ -44,10 +44,21 @@ def run(handler, debug=True):
             log_event(sid, "disconnected", "grey")
 
     @sio.on('msg')
-    async def message(sid, data):
+    async def message(sid, request):
         if debug:
-            log_event(sid, str(data), "green")
-        response = handler(data)
+            log_event(sid, str(request), "green")
+        if "call" in request:
+            kwargs = request.get("args") or {}
+            if hasattr(handler, request["call"]):
+                method = getattr(handler, request["call"])
+                try:
+                    response = method(**kwargs)
+                except Exception as exp:
+                    response = {"error": True, "description": str(exp)}
+            else:
+                response = {"error": True, "description": "no such method"}
+        else:
+            response = {"error": True, "description": "invalid request"}
         log_event(sid, response, "cyan")
         return response
 

@@ -7,6 +7,9 @@ class MyApp():
 
     counter = 0
 
+    def count(self, until=10):
+        return list(range(until))
+
     def __call__(self, msg):
         if not msg:
             return {"result": "you sent an empty message"}

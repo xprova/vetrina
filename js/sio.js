@@ -17,6 +17,10 @@ sio = (function () {
 		});
 	}
 
+	function call(method, args={}, callback) {
+		send({call: method, args:args}, callback);
+	}
+
 	socket.on('connect', () => {
 		if (debug) log('connected');
 	});
@@ -25,6 +29,6 @@ sio = (function () {
 		if (debug) log('disconnected');
 	});
 
-	return {send};
+	return {send, call};
 
 })();
