@@ -2,16 +2,45 @@
 
 import os
 import sys
-import signal
-import asyncio
+import socketio
 import hashlib
-import functools
 from aiohttp import web
-from socketio import AsyncServer
 from datetime import datetime
 from termcolor import cprint
 from importlib import import_module
 from importlib import invalidate_caches
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+
+class FileChangeHandler(FileSystemEventHandler):
+
+    debug = False
+
+    def on_reload():
+        pass
+
+    def __init__(self, debug, on_reload):
+        global hash_
+        global handler
+        hash_ = None
+        handler = None
+        self.on_modified(None)
+        self.debug = debug
+        self.on_reload = on_reload
+
+    def on_modified(self, event):
+        global handler
+        global hash_
+        file = sys.argv[1]
+        new_hash = get_hash(file)
+        if new_hash != hash_:
+            class_ = getFunctions(file)
+            handler = class_()
+            hash_ = new_hash
+            if self.debug:
+                print("Detected change and reloaded %s" % file)
 
 
 def getFunctions(py_script):
@@ -38,38 +67,11 @@ def get_hash(file):
         data = fid.read()
         return hashlib.md5(data).hexdigest()
 
-
-def reloadmod(handler, file, current_hash, debug):
-    hash_ = get_hash(file)
-    if hash_ != current_hash:
-        class_ = getFunctions(file)
-        handler = class_()
-        if debug:
-            print("Detected change and reloaded %s" % file)
-        return (handler, hash_)
-    return (handler, hash_)
-
-
-def setup_graceful_exit():
-    loop = asyncio.get_event_loop()
-
-    def ask_exit(signame):
-        print("got signal %s: exit" % signame)
-        loop.stop()
-
-    for signame in ('SIGINT', 'SIGTERM'):
-        loop.add_signal_handler(getattr(signal, signame),
-                                functools.partial(ask_exit, signame))
-
-
 def main():
-    global handler
-    global hash_
     debug = True
-    py_file = sys.argv[1]
-    handler, hash_ = reloadmod(None, py_file, None, False)
-    sio = AsyncServer()
+    sio = socketio.AsyncServer()
     app = web.Application()
+    active_users = set()
 
     def log_event(sid, str_, color):
         tm = datetime.now().strftime('%I:%M:%S %p')
@@ -81,25 +83,22 @@ def main():
 
     @sio.on('connect')
     def connect(sid, environ=None):
+        active_users.add(sid)
         if debug:
             log_event(sid, "connected", "grey")
 
     @sio.on('disconnect')
     def disconnect(sid, environ=None):
+        active_users.remove(sid)
         if debug:
             log_event(sid, "disconnected", "grey")
 
-    def reload_handler():
-        global handler
-        global hash_
-        handler, hash_ = reloadmod(handler, py_file, hash_, debug)
 
     @sio.on('msg')
     async def message(sid, request):
         if debug:
             log_event(sid, str(request), "green")
         if "call" in request:
-            reload_handler()
             kwargs = request.get("args") or {}
             if hasattr(handler, request["call"]):
                 method = getattr(handler, request["call"])
@@ -114,10 +113,18 @@ def main():
         log_event(sid, response, "cyan")
         return response
 
+    def on_reload():
+        pass
 
-    setup_graceful_exit()
+    observer = Observer()
+    change_handler = FileChangeHandler(debug=debug, on_reload=on_reload)
+    change_handler.on_modified(None)
+    observer.schedule(change_handler, '.', recursive=True)
+    observer.start()
+
     sio.attach(app)
-    web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None))
+    web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
+                handle_signals=True)
 
 
 if __name__ == '__main__':

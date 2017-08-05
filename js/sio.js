@@ -23,6 +23,7 @@ sio = (function () {
 
 	socket.on('connect', () => {
 		if (debug) log('connected');
+		call("count");
 	});
 
 	socket.on('disconnect', () => {

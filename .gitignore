@@ -2,3 +2,4 @@ js/lib/*
 *.sublime-workspace
 *.log
 py/env/
+__pycache__
