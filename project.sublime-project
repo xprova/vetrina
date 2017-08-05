@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-			"folder_exclude_patterns": ["js/lib", "dev"],
+			"folder_exclude_patterns": ["js/lib", "dev", "py/env"],
 			"file_exclude_patterns": ["*.svg"],
 		}
 	]

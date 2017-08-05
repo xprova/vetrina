@@ -2,57 +2,10 @@
 <html>
 <head>
 	<title>SocketIO Test</title>
-	<style type="text/css">
-		body {
-			font-family: 'Inconsolata';
-		}
-	</style>
-	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+	<script type="text/javascript" src="js/sio.js"></script>
 </head>
 <body>
-	<h1>Hello
-	</h1>
-	<script type="text/javascript">
-
-		tm = () => new Date().toLocaleTimeString();
-
-		var socket = io("http://localhost:8000/");
-
-		example_data = {
-			msg: 'hey from js',
-			arr: [1,2,3,4,5]
-		};
-
-		function request(content) {
-
-			socket.emit('msg', content, callback = (result) => {
-				console.log(result);
-			});
-		}
-
-		socket.on('connect', () => {
-			console.log(`${tm()} :: connected`);
-			request(example_data);
-		});
-
-
-		// socket.on('msg', (msg) => {
-
-		// 	console.log(`${tm()} :: received ${msg}`);
-
-		// })
-
-			// socket.on('data', on_data);
-
-			// function on_data(data) {
-			// 	console.log(data);
-			// }
-
-
-			// console.log(`${tm()} :: emit callback result = ${result}`));
-
-
-		</script>
-	</body>
-	</html>
+	<h1>Hello</h1>
+</body>
+</html>

@@ -6,6 +6,7 @@ import asyncio
 import functools
 import signal
 from datetime import datetime
+from termcolor import cprint
 
 
 def run(handler, debug=True):
@@ -24,30 +25,30 @@ def run(handler, debug=True):
     app = web.Application()
     sio.attach(app)
 
-    def log_event(sid, str_):
+    def log_event(sid, str_, color):
         tm = datetime.now().strftime('%I:%M:%S %p')
         if sid:
             sid_short = sid[:8]
-            print("%s (%s) : %s" % (tm, sid_short, str_))
+            cprint("%s (%s) : %s" % (tm, sid_short, str_), color)
         else:
-            print("%s %s : %s" % (tm, ' ' * 10, str_))
+            cprint("%s %s : %s" % (tm, ' ' * 10, str_), color)
 
     @sio.on('connect')
-    def connect(sid, environ):
+    def connect(sid, environ=None):
         if debug:
-            log_event(sid, "connected")
+            log_event(sid, "connected", "grey")
 
     @sio.on('disconnect')
-    def disconnect(sid, environ):
+    def disconnect(sid, environ=None):
         if debug:
-            log_event(sid, "disconnected")
+            log_event(sid, "disconnected", "grey")
 
     @sio.on('msg')
     async def message(sid, data):
         if debug:
-            log_event(sid, str(data))
+            log_event(sid, str(data), "green")
         response = handler(data)
-        log_event(sid, response)
+        log_event(sid, response, "cyan")
         return response
 
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None))
