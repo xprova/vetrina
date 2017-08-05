@@ -1,3 +1,4 @@
 js/lib/*
 *.sublime-workspace
 *.log
+py/env/

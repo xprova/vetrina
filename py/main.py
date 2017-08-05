@@ -1,47 +1,25 @@
-import socketio
-import eventlet
-import eventlet.wsgi
-from flask import Flask, render_template
+#!/usr/bin/env python
 
-sio = socketio.Server()
-app = Flask(__name__)
-
-mods = [{"id": x, "name": "a" * x} for x in range(5)]
+import layoutjs
 
 
-@app.route('/')
-def index():
-    """Serve the client-side application."""
-    return render_template('index.html')
+class MyApp():
 
+    counter = 0
 
-@sio.on('connect', namespace='/chat')
-def connect(sid, environ):
-    print("connect ", sid)
-    sio.emit('msg', data="welcome from python", room=sid, namespace='/chat')
-
-
-@sio.on('msg', namespace='/chat')
-def message(sid, data):
-    print("-----------------")
-    print("message ", data)
-    print("sid = %s" % sid)
-    print("-----------------")
-    sio.emit('msg', "hello from python", room=sid, namespace='/chat')
-    sio.emit('data', mods, room=sid, namespace='/chat')
-    return "thanks"
-
-
-@sio.on('disconnect', namespace='/chat')
-def disconnect(sid):
-    print('disconnect ', sid)
+    def __call__(self, msg):
+        if not msg:
+            return {"result": "you sent an empty message"}
+        if "x" not in msg:
+            return {"result": "there was no x", "you sent": msg}
+        else:
+            self.counter += 1
+            return {"result": "you said x = %s" % msg["x"],
+                "counter": self.counter}
 
 
 def main():
-    # wrap Flask application with engineio's middleware
-    sapp = socketio.Middleware(sio, app)
-    # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('', 8000)), sapp)
+    layoutjs.run(MyApp())
 
 
 if __name__ == '__main__':

@@ -15,27 +15,44 @@
 	</h1>
 	<script type="text/javascript">
 
-		function window_onload() {
+		tm = () => new Date().toLocaleTimeString();
 
-			tm = () => new Date().toLocaleTimeString();
+		var socket = io("http://localhost:8000/");
 
-			var socket = io("http://localhost:8000/chat");
+		example_data = {
+			msg: 'hey from js',
+			arr: [1,2,3,4,5]
+		};
 
-			socket.on('connect',    () => console.log(`${tm()} :: connected`));
+		function request(content) {
 
-			socket.on('msg',     (msg) => console.log(`${tm()} :: received ${msg}`));
-			socket.on('data', on_data);
-
-			function on_data(data) {
-				console.log(data);
-			}
-
-			socket.emit('msg', 'hey from js', callback = (result) => console.log(`${tm()} :: emit callback result = ${result}`));
-
+			socket.emit('msg', content, callback = (result) => {
+				console.log(result);
+			});
 		}
 
-		window.addEventListener("load", window_onload);
+		socket.on('connect', () => {
+			console.log(`${tm()} :: connected`);
+			request(example_data);
+		});
 
-	</script>
-</body>
-</html>
+
+		// socket.on('msg', (msg) => {
+
+		// 	console.log(`${tm()} :: received ${msg}`);
+
+		// })
+
+			// socket.on('data', on_data);
+
+			// function on_data(data) {
+			// 	console.log(data);
+			// }
+
+
+			// console.log(`${tm()} :: emit callback result = ${result}`));
+
+
+		</script>
+	</body>
+	</html>
