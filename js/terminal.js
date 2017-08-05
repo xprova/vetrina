@@ -40,7 +40,12 @@ terminal = (function() {
 
     function keypress(event) {
         if (event.code === "Enter") {
-            scrollable.innerText += command.value + "\n";
+            var cmd = command.value;
+            scrollable.innerText += cmd + "\n";
+            sio.send({"command": cmd}, (response) => {
+                scrollable.innerText += response.result + "\n";
+                scroll_bottom();
+            });
             scroll_bottom();
             command.value = "";
         }
