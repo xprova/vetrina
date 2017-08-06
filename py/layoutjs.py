@@ -19,27 +19,33 @@ class AppInstance(FileSystemEventHandler):
     hash_ = None
     debug = False
     handler = None
+    py_file = None
     on_reload = None
 
-    def __init__(self, debug, dir='.', on_reload=None):
+    def __init__(self, debug, py_file, watch_dir='.', on_reload=None):
+        self.py_file = py_file
         self.on_modified(None)
         self.debug = debug
         self.on_reload = on_reload
         observer = Observer()
-        observer.schedule(self, dir, recursive=True)
+        observer.schedule(self, watch_dir, recursive=True)
         observer.start()
 
+    def get_py_file_hash(self):
+        with open(self.py_file, "rb") as fid:
+            data = fid.read()
+            return hashlib.md5(data).hexdigest()
+
     def on_modified(self, event):
-        file = sys.argv[1]
-        new_hash = get_hash(file)
+        new_hash = self.get_py_file_hash()
         if new_hash != self.hash_:
-            class_ = getClass(file)
+            class_ = getClass(self.py_file)
             self.handler = class_()
             self.hash_ = new_hash
             if self.on_reload:
                 self.on_reload()
             if self.debug:
-                print(f"Detected change in <{file}>, "
+                print(f"Detected change in <{self.py_file}>, "
                       f"reloading <{class_.__name__}> instance")
 
 
@@ -64,10 +70,6 @@ def getClass(py_script):
               (py_script, classes[0].__name__))
     return classes[0]
 
-def get_hash(file):
-    with open(file, "rb") as fid:
-        data = fid.read()
-        return hashlib.md5(data).hexdigest()
 
 def main():
     debug = True
@@ -115,7 +117,8 @@ def main():
         log_event(sid, response, "cyan")
         return response
 
-    app_instance = AppInstance(debug=debug)
+    py_file = sys.argv[1]
+    app_instance = AppInstance(debug=debug, py_file=py_file)
 
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
