@@ -9,9 +9,39 @@ from datetime import datetime
 from termcolor import cprint
 from importlib import import_module
 from importlib import invalidate_caches
-
-from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
+
+def get_class(py_script):
+    """Return a class from a python file"""
+    # get module name from filename
+    parentDir, fileName = os.path.split(py_script)
+    importName = fileName.replace(".py", "")
+    sys.path.insert(0, parentDir)
+    # clear cache and import module
+    invalidate_caches()
+    if importName in sys.modules:
+        del sys.modules[importName]
+    mod = import_module(importName)
+    # get classes
+    objs = [getattr(mod, obj_name) for obj_name in dir(mod)]
+    classes = [obj for obj in objs if isinstance(obj, type)]
+    if not classes:
+        raise Exception("Did not find any new-style classes in %s" % py_script)
+    if len(classes)>1:
+        print("Found multiple classes in %s, using class <%s>" %
+              (py_script, classes[0].__name__))
+    return classes[0]
+
+
+def log_event(sid, str_, color):
+    tm = datetime.now().strftime('%I:%M:%S %p')
+    if sid:
+        sid_short = sid[:8]
+        cprint("%s (%s) : %s" % (tm, sid_short, str_), color)
+    else:
+        cprint("%s %s : %s" % (tm, ' ' * 10, str_), color)
 
 
 class AppWatcher(FileSystemEventHandler):
@@ -39,7 +69,7 @@ class AppWatcher(FileSystemEventHandler):
     def on_modified(self, event):
         new_hash = self.get_py_file_hash()
         if new_hash != self.hash_:
-            class_ = getClass(self.py_file)
+            class_ = get_class(self.py_file)
             self.instance = class_()
             self.hash_ = new_hash
             if self.on_reload:
@@ -49,63 +79,35 @@ class AppWatcher(FileSystemEventHandler):
                       f"reloading <{class_.__name__}> instance")
 
 
-def getClass(py_script):
-    """Return a class from a python file"""
-    # get module name from filename
-    parentDir, fileName = os.path.split(py_script)
-    importName = fileName.replace(".py", "")
-    sys.path.insert(0, parentDir)
-    # clear cache and import module
-    invalidate_caches()
-    if importName in sys.modules:
-        del sys.modules[importName]
-    mod = import_module(importName)
-    # get classes
-    objs = [getattr(mod, obj_name) for obj_name in dir(mod)]
-    classes = [obj for obj in objs if isinstance(obj, type)]
-    if not classes:
-        raise Exception("Did not find any new-style classes in %s" % py_script)
-    if len(classes)>1:
-        print("Found multiple classes in %s, using class <%s>" %
-              (py_script, classes[0].__name__))
-    return classes[0]
+class MainNamespace(socketio.AsyncNamespace):
 
-
-def main():
-    debug = True
-    sio = socketio.AsyncServer()
-    app = web.Application()
+    debug = False
     active_users = set()
+    get_app_instance = None
 
-    def log_event(sid, str_, color):
-        tm = datetime.now().strftime('%I:%M:%S %p')
-        if sid:
-            sid_short = sid[:8]
-            cprint("%s (%s) : %s" % (tm, sid_short, str_), color)
-        else:
-            cprint("%s %s : %s" % (tm, ' ' * 10, str_), color)
+    def __init__(self, namespace, debug, get_app_instance):
+        super().__init__(namespace)
+        self.debug = debug
+        self.get_app_instance = get_app_instance
 
-    @sio.on('connect')
-    def connect(sid, environ=None):
-        active_users.add(sid)
-        if debug:
+    def on_connect(self, sid, environ=None):
+        self.active_users.add(sid)
+        if self.debug:
             log_event(sid, "connected", "grey")
 
-    @sio.on('disconnect')
-    def disconnect(sid, environ=None):
-        active_users.remove(sid)
-        if debug:
+    def on_disconnect(self, sid, environ=None):
+        self.active_users.remove(sid)
+        if self.debug:
             log_event(sid, "disconnected", "grey")
 
-
-    @sio.on('msg')
-    async def message(sid, request):
-        if debug:
+    async def on_msg(self, sid, request):
+        if self.debug:
             log_event(sid, str(request), "green")
-        if "call" not in request:
+        if "call" in request:
             kwargs = request.get("args") or {}
-            if hasattr(app_watcher.instance, request["call"]):
-                method = getattr(app_watcher.instance, request["call"])
+            app_instance = self.get_app_instance()
+            if hasattr(app_instance, request["call"]):
+                method = getattr(app_instance, request["call"])
                 try:
                     response = method(**kwargs)
                 except Exception as exp:
@@ -117,9 +119,14 @@ def main():
         log_event(sid, response, "cyan")
         return response
 
-    py_file = sys.argv[1]
-    app_watcher = AppWatcher(debug=debug, py_file=py_file)
 
+def main():
+    debug = True
+    app = web.Application()
+    sio = socketio.AsyncServer()
+    app_watcher = AppWatcher(debug=True, py_file=sys.argv[1])
+    get_app_instance = lambda : app_watcher.instance
+    sio.register_namespace(MainNamespace("/", debug, get_app_instance))
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
                 handle_signals=True)
