@@ -14,12 +14,12 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
-class AppInstance(FileSystemEventHandler):
+class AppWatcher(FileSystemEventHandler):
 
     hash_ = None
     debug = False
-    handler = None
     py_file = None
+    instance = None
     on_reload = None
 
     def __init__(self, debug, py_file, watch_dir='.', on_reload=None):
@@ -40,7 +40,7 @@ class AppInstance(FileSystemEventHandler):
         new_hash = self.get_py_file_hash()
         if new_hash != self.hash_:
             class_ = getClass(self.py_file)
-            self.handler = class_()
+            self.instance = class_()
             self.hash_ = new_hash
             if self.on_reload:
                 self.on_reload()
@@ -104,8 +104,8 @@ def main():
             log_event(sid, str(request), "green")
         if "call" not in request:
             kwargs = request.get("args") or {}
-            if hasattr(app_instance.handler, request["call"]):
-                method = getattr(app_instance.handler, request["call"])
+            if hasattr(app_watcher.instance, request["call"]):
+                method = getattr(app_watcher.instance, request["call"])
                 try:
                     response = method(**kwargs)
                 except Exception as exp:
@@ -118,7 +118,7 @@ def main():
         return response
 
     py_file = sys.argv[1]
-    app_instance = AppInstance(debug=debug, py_file=py_file)
+    app_watcher = AppWatcher(debug=debug, py_file=py_file)
 
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
