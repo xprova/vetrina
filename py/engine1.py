@@ -1,8 +1,6 @@
-#!/usr/bin/env python
+class MyApp(object):
 
-class MyApp():
-
-    counter = 0
+    counter = 1
 
     def count(self, until=10):
         return list(range(until))

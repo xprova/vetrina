@@ -14,53 +14,52 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
-class FileChangeHandler(FileSystemEventHandler):
+class AppInstance(FileSystemEventHandler):
 
+    hash_ = None
     debug = False
+    handler = None
+    on_reload = None
 
-    def on_reload():
-        pass
-
-    def __init__(self, debug, on_reload):
-        global hash_
-        global handler
-        hash_ = None
-        handler = None
+    def __init__(self, debug, dir, on_reload):
         self.on_modified(None)
         self.debug = debug
         self.on_reload = on_reload
+        observer = Observer()
+        observer.schedule(self, dir, recursive=True)
+        observer.start()
 
     def on_modified(self, event):
-        global handler
-        global hash_
         file = sys.argv[1]
         new_hash = get_hash(file)
-        if new_hash != hash_:
-            class_ = getFunctions(file)
-            handler = class_()
-            hash_ = new_hash
+        if new_hash != self.hash_:
+            class_ = getClass(file)
+            self.handler = class_()
+            self.hash_ = new_hash
             if self.debug:
                 print("Detected change and reloaded %s" % file)
 
 
-def getFunctions(py_script):
-    # loads the functions in the python script `py_script`
-    # and returns a dict of funName -> fun
+def getClass(py_script):
+    """Return a class from a python file"""
+    # get module name from filename
     parentDir, fileName = os.path.split(py_script)
     importName = fileName.replace(".py", "")
     sys.path.insert(0, parentDir)
-    # importObj = __import__(importName)
+    # clear cache and import module
     invalidate_caches()
     if importName in sys.modules:
         del sys.modules[importName]
-    importObj = import_module(importName)
-    funDict = {}
-    for attr in dir(importObj):
-        fun = getattr(importObj, attr)
-        if callable(fun):
-            funDict[attr] = fun
-    return funDict["MyApp"]
-
+    mod = import_module(importName)
+    # get classes
+    objs = [getattr(mod, obj_name) for obj_name in dir(mod)]
+    classes = [obj for obj in objs if isinstance(obj, type)]
+    if not classes:
+        raise Exception("Did not find any new-style classes in %s" % py_script)
+    if len(classes)>1:
+        print("Found multiple classes in %s, using class <%s>" %
+              (py_script, classes[0].__name__))
+    return classes[0]
 
 def get_hash(file):
     with open(file, "rb") as fid:
@@ -98,10 +97,10 @@ def main():
     async def message(sid, request):
         if debug:
             log_event(sid, str(request), "green")
-        if "call" in request:
+        if "call" not in request:
             kwargs = request.get("args") or {}
-            if hasattr(handler, request["call"]):
-                method = getattr(handler, request["call"])
+            if hasattr(app_instance.handler, request["call"]):
+                method = getattr(app_instance.handler, request["call"])
                 try:
                     response = method(**kwargs)
                 except Exception as exp:
@@ -116,11 +115,7 @@ def main():
     def on_reload():
         pass
 
-    observer = Observer()
-    change_handler = FileChangeHandler(debug=debug, on_reload=on_reload)
-    change_handler.on_modified(None)
-    observer.schedule(change_handler, '.', recursive=True)
-    observer.start()
+    app_instance = AppInstance(debug=debug, on_reload=on_reload, dir='.')
 
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
