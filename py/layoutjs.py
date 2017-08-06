@@ -21,7 +21,7 @@ class AppInstance(FileSystemEventHandler):
     handler = None
     on_reload = None
 
-    def __init__(self, debug, dir, on_reload):
+    def __init__(self, debug, dir='.', on_reload=None):
         self.on_modified(None)
         self.debug = debug
         self.on_reload = on_reload
@@ -36,8 +36,11 @@ class AppInstance(FileSystemEventHandler):
             class_ = getClass(file)
             self.handler = class_()
             self.hash_ = new_hash
+            if self.on_reload:
+                self.on_reload()
             if self.debug:
-                print("Detected change and reloaded %s" % file)
+                print(f"Detected change in <{file}>, "
+                      f"reloading <{class_.__name__}> instance")
 
 
 def getClass(py_script):
@@ -112,10 +115,7 @@ def main():
         log_event(sid, response, "cyan")
         return response
 
-    def on_reload():
-        pass
-
-    app_instance = AppInstance(debug=debug, on_reload=on_reload, dir='.')
+    app_instance = AppInstance(debug=debug)
 
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
