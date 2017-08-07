@@ -29,7 +29,7 @@ def get_class(py_script):
     classes = [obj for obj in objs if isinstance(obj, type)]
     if not classes:
         raise Exception("Did not find any new-style classes in %s" % py_script)
-    if len(classes)>1:
+    if len(classes) > 1:
         print("Found multiple classes in %s, using class <%s>" %
               (py_script, classes[0].__name__))
     return classes[0]
@@ -109,7 +109,7 @@ class MainNamespace(socketio.AsyncNamespace):
             if hasattr(app_instance, request["call"]):
                 method = getattr(app_instance, request["call"])
                 try:
-                    response = method(**kwargs)
+                    response = {"success": True, "result": method(**kwargs)}
                 except Exception as exp:
                     response = {"error": True, "description": str(exp)}
             else:
@@ -125,7 +125,7 @@ def main():
     app = web.Application()
     sio = socketio.AsyncServer()
     app_watcher = AppWatcher(debug=True, py_file=sys.argv[1])
-    get_app_instance = lambda : app_watcher.instance
+    get_app_instance = lambda: app_watcher.instance
     sio.register_namespace(MainNamespace("/", debug, get_app_instance))
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),

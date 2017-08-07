@@ -2,25 +2,7 @@ terminal = (function() {
 
     'use strict';
 
-    const pre_content =`
-    total 56K
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 css
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 dev
-    drwxr-xr-x+ 1 User None    0 Jul 25 00:17 grid_layout
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 htm
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:01 js
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 layout
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 logic-gates
-    drwxr-xr-x+ 1 User None    0 Jul 30 21:16 node_modules
-    drwxr-xr-x+ 1 User None    0 Aug  2 20:00 poets
-    -rw-r--r--  1 User None   96 Jul 30 21:16 setup
-    -rw-r--r--  1 User None 1.4K Aug  3 00:10 index.htm
-    -rw-r--r--  1 User None 2.5K Aug  2 20:00 bs-config.js
-    -rw-r--r--  1 User None   80 Aug  2 20:00 package.json
-    -rw-r--r--  1 User None  159 Jun 27 22:49 README.md
-    -rw-r--r--  1 User None  127 Aug  2 20:00 project.sublime-project
-    -rwxr-xr-x  1 User None  27K Aug  2 00:43 project.sublime-workspace
-    `;
+    const pre_content =``;
 
     var container;   /* top-level dev */
     var command;     /* command input field */
@@ -32,7 +14,7 @@ terminal = (function() {
         terminal   = container.querySelector("div[terminal]");
         command    = terminal.querySelector("input[command]");
         scrollable = terminal.querySelector("div[scrollable]");
-        scrollable.innerText = pre_content;
+        scrollable.innerHTML = pre_content;
         command.addEventListener("keydown", keypress);
     }
 
@@ -41,13 +23,17 @@ terminal = (function() {
     function keypress(event) {
         if (event.code === "Enter") {
             var cmd = command.value;
-            scrollable.innerText += cmd + "\n";
-            sio.send({"command": cmd}, (response) => {
-                scrollable.innerText += response.result + "\n";
-                scroll_bottom();
-            });
+            scrollable.innerHTML += `<b cmd>&raquo; ${cmd}</b>`;
             scroll_bottom();
             command.value = "";
+            sio.send({"call": cmd}, (response) => {
+                if (response.hasOwnProperty("success")) {
+                    scrollable.innerHTML += `<b response>${response.result}</b>`;
+                } else {
+                    scrollable.innerHTML += `<b error>${response.description}</b>`;
+                }
+                scroll_bottom();
+            });
         }
         if (event.code === "Escape")
             toggle();

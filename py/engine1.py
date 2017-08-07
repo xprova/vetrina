@@ -2,8 +2,11 @@ class MyApp(object):
 
     counter = 1
 
-    def count(self, until=10):
+    def count(self, until=20):
         return list(range(until))
+
+    def ping(self):
+        return "pong!"
 
     def __call__(self, msg):
         if not msg:
@@ -13,5 +16,4 @@ class MyApp(object):
         else:
             self.counter += 1
             return {"result": "you said x = %s" % msg["x"],
-                "counter": self.counter}
-
+                    "counter": self.counter}
