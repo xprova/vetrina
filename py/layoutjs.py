@@ -8,43 +8,51 @@ from aiohttp import web
 from datetime import datetime
 from termcolor import cprint
 from importlib import import_module
-from importlib import invalidate_caches
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
 def get_class(py_script):
     """Return a class from a python file"""
+
     # get module name from filename
     parentDir, fileName = os.path.split(py_script)
     importName = fileName.replace(".py", "")
     sys.path.insert(0, parentDir)
+
     # clear cache and import module
-    invalidate_caches()
     if importName in sys.modules:
         del sys.modules[importName]
     mod = import_module(importName)
+
     # get classes
     objs = [getattr(mod, obj_name) for obj_name in dir(mod)]
     classes = [obj for obj in objs if isinstance(obj, type)]
     if not classes:
-        raise Exception("Did not find any new-style classes in %s" % py_script)
+        raise Exception(f"Did not find any new-style classes in {py_script}")
     if len(classes) > 1:
-        print("Found multiple classes in %s, using class <%s>" %
-              (py_script, classes[0].__name__))
+        print(f"Found multiple classes in {py_script},"
+              "using class <{classes[0].__name__}>")
+
     return classes[0]
 
 
-def log_event(sid, str_, color):
-    tm = datetime.now().strftime('%I:%M:%S %p')
-    if sid:
-        sid_short = sid[:8]
-        cprint("%s (%s) : %s" % (tm, sid_short, str_), color)
-    else:
-        cprint("%s %s : %s" % (tm, ' ' * 10, str_), color)
+def log_event(debug, sid, str_, color):
+    if debug:
+        tm = datetime.now().strftime('%I:%M:%S %p')
+        if sid:
+            sid_short = sid[:8]
+            cprint(f"{tm} ({sid_short}) : {str_}", color)
+        else:
+            sid_space = ' ' * 10
+            cprint(f"{tm} {sid_soace} : {str_}", color)
 
 
 class AppWatcher(FileSystemEventHandler):
+    """
+    Maintain an instance of the class defined in py_file and reload when
+    py_file is changed
+    """
 
     hash_ = None
     debug = False
@@ -79,7 +87,22 @@ class AppWatcher(FileSystemEventHandler):
                       f"reloading <{class_.__name__}> instance")
 
 
+def get_error(description):
+    return {
+        "result": "error",
+        "description": description
+    }
+
+
+def get_call_success(return_):
+    return {
+        "result": "success",
+        "return": return_
+    }
+
+
 class MainNamespace(socketio.AsyncNamespace):
+    """Handle sio messaging"""
 
     debug = False
     active_users = set()
@@ -92,31 +115,28 @@ class MainNamespace(socketio.AsyncNamespace):
 
     def on_connect(self, sid, environ=None):
         self.active_users.add(sid)
-        if self.debug:
-            log_event(sid, "connected", "grey")
+        log_event(self.debug, sid, "connected", "grey")
 
     def on_disconnect(self, sid, environ=None):
         self.active_users.remove(sid)
-        if self.debug:
-            log_event(sid, "disconnected", "grey")
+        log_event(self.debug, sid, "disconnected", "grey")
 
     async def on_msg(self, sid, request):
-        if self.debug:
-            log_event(sid, str(request), "green")
+        log_event(self.debug, sid, str(request), "green")
         if "call" in request:
             kwargs = request.get("args") or {}
             app_instance = self.get_app_instance()
             if hasattr(app_instance, request["call"]):
                 method = getattr(app_instance, request["call"])
                 try:
-                    response = {"success": True, "result": method(**kwargs)}
+                    response = get_call_success(method(**kwargs))
                 except Exception as exp:
-                    response = {"error": True, "description": str(exp)}
+                    response = get_error(str(exp))
             else:
-                response = {"error": True, "description": "no such method"}
+                response = get_error("no such method")
         else:
-            response = {"error": True, "description": "invalid request"}
-        log_event(sid, response, "cyan")
+            response = get_error("invalid request")
+        log_event(self.debug, sid, response, "cyan")
         return response
 
 
