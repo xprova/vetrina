@@ -7,12 +7,14 @@ norGate = {
         "e": {position: "top"},
         "z": {position: "top"},
     },
+    description: "Example Logic Block (NOR)",
     width: 100,
     height: 100
 }
 
 corePOETS = {
     image: "poets/poets_logo_white.svg",
+    description: "System Core",
     class: "poets",
     width: 100,
     height: 100,

@@ -444,6 +444,10 @@ viewer = (function() {
         l1.addClass("connector");
     }
 
+    function get_modules() {
+        return _.cloneDeep(modules);
+    }
+
     return {
         init,
         add_module,
@@ -453,6 +457,7 @@ viewer = (function() {
         zoom_out,
         toggle_grid,
         pan,
-    }
+        get_modules,
+    };
 
 })();

@@ -4,60 +4,25 @@ palette = (function() {
 
 var module = angular.module('project', []);
 
+var items;
+var select_callback;
+
+function hide() {
+    return toggle(false);
+}
+
+function show(items_, select_callback_, cancel_callback) {
+    items = items_;
+    select_callback = select_callback_;
+    return toggle(true);
+}
+
 function paletteController($scope, $sce) {
-
-    var ram = {
-        "info": "RAM Module (512 MB)"
-    };
-
-    var router = {
-        "info": "Network-on-chip Router (5 ports)"
-    };
-
-    var corePOETS = {
-        "info": "System Core",
-        "shortcut": "Ctrl + T"
-    };
-
-    var andGate = {
-        "info": "Logic Gate (AND)"
-    };
-
-    var items = [
-    _.extend({ "label": "ram0" }, ram),
-    _.extend({ "label": "ram1" }, ram),
-    _.extend({ "label": "ram2" }, ram),
-    _.extend({ "label": "ram3" }, ram),
-    _.extend({ "label": "router0" }, router),
-    _.extend({ "label": "router1" }, router),
-    _.extend({ "label": "router2" }, router),
-    _.extend({ "label": "router3" }, router),
-    _.extend({ "label": "corePOETS_1_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_2_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_3_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_4_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_5_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_6_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_7_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_8_0" }, corePOETS),
-    _.extend({ "label": "corePOETS_9_0" }, corePOETS),
-    _.extend({ "label": "n2" }, andGate),
-    _.extend({ "label": "n3" }, andGate),
-    _.extend({ "label": "n7" }, andGate),
-    _.extend({ "label": "n8" }, andGate),
-    ]
 
     var max_results = 200;
 
-    var options = {
-        keys: ["label"],
-        includeMatches: true,
-        threshold: 0.8,
-        distance: 0,
-    }
-
     $scope.query = "";
-    $scope.matching_items = $scope.items;
+    $scope.matching_items = items;
     $scope.selected = 1;
 
     function fuzzy_match(term, text) {
@@ -144,6 +109,8 @@ function paletteController($scope, $sce) {
             var painput = document.querySelector('#palette-input');
             toggle(false);
             painput.blur(); // move focus away to avoid capturing future keystrokes
+            if (e.key === "Enter")
+                select_callback($scope.matching_items[$scope.selected]);
             return false;
         }
         return false;
@@ -194,7 +161,7 @@ function toggle(visible) {
         scope.$apply(function() {
             scope.query = '';
             scope.onQueryChange();
-        })
+        });
         painput.focus();
     } else if (!visible && current_visible) {
         palette.classList.add('invisible');
@@ -205,9 +172,9 @@ function toggle(visible) {
 }
 
 return {
-    show   : () => (toggle(true)),
-    hide   : () => (toggle(false)),
-    toggle : () => (toggle()),
-}
+    show,
+    hide,
+    toggle,
+};
 
 })();

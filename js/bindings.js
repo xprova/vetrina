@@ -15,7 +15,7 @@
         'pan_right'       : (e) => viewer.pan('right'),
         'pan_up'          : (e) => viewer.pan('up'),
         'reset_view'      : (e) => viewer.reset_view(),
-        'show_palette'    : (e) => palette.show(),
+        'show_palette'    : (e) => app.show_palette_components(),
         'toggle_grid'     : (e) => viewer.toggle_grid(),
         'toggle_terminal' : (e) => terminal.toggle(),
         'zoom_in'         : (e) => viewer.zoom_in(),

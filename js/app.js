@@ -1,4 +1,4 @@
-(function () {
+app = (function () {
 
     'use strict';
 
@@ -31,7 +31,65 @@
         return _.chain(template).cloneDeep().extend(attrs).value();
     }
 
-    function onload_handler () {
+    function show_palette_components() {
+
+        var ram = {
+            "info": "RAM Module (512 MB)"
+        };
+
+        var router = {
+            "info": "Network-on-chip Router (5 ports)"
+        };
+
+        var corePOETS = {
+            "info": "System Core",
+            "shortcut": "Ctrl + T"
+        };
+
+        var andGate = {
+            "info": "Logic Gate (AND)"
+        };
+
+        var items = [
+        _.extend({ "label": "ram0" }, ram),
+        _.extend({ "label": "ram1" }, ram),
+        _.extend({ "label": "ram2" }, ram),
+        _.extend({ "label": "ram3" }, ram),
+        _.extend({ "label": "router0" }, router),
+        _.extend({ "label": "router1" }, router),
+        _.extend({ "label": "router2" }, router),
+        _.extend({ "label": "router3" }, router),
+        _.extend({ "label": "corePOETS_1_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_2_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_3_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_4_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_5_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_6_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_7_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_8_0" }, corePOETS),
+        _.extend({ "label": "corePOETS_9_0" }, corePOETS),
+        _.extend({ "label": "n2" }, andGate),
+        _.extend({ "label": "n3" }, andGate),
+        _.extend({ "label": "n7" }, andGate),
+        _.extend({ "label": "n8" }, andGate),
+        ];
+
+        var select_callback = (selected) => console.log(selected);
+
+        var mods = viewer.get_modules();
+
+        var items = _.map(mods, function(value, key) {
+            return {
+                label: key,
+                description: value.description,
+                shortcut: "",
+            };
+        });
+
+        return palette.show(items, select_callback);
+    }
+
+    function onload_handler() {
 
         var modules = get_module_grid(corePOETS, "corePOETS");
 
@@ -150,5 +208,9 @@
         ["n24", "n19"],
         ["n24", "n10"]
     ]
+
+    return {
+        show_palette_components
+    };
 
 })();
