@@ -66,7 +66,7 @@
 
         });
 
-        viewer.init("#svg1");
+        viewer.init("svg[viewer]");
 
         _.each(modules, viewer.add_module);
         _.each(other_modules, viewer.add_module);
