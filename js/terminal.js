@@ -27,11 +27,18 @@ terminal = (function() {
             scroll_bottom();
             command.value = "";
             sio.call(cmd, {}, (response) => {
+                var new_html;
                 if (response.result === "success") {
-                    scrollable.innerHTML += `<b response>${response.return}</b>`;
+                    if (_.isString(response.return)) {
+                        new_html = `<b response>${response.return}</b>`;
+                    } else {
+                        var response_str = JSON.stringify(response.return, null, '  ');
+                        new_html = `<b response><pre>${response_str}</pre></b>`;
+                    }
                 } else {
-                    scrollable.innerHTML += `<b error>${response.description}</b>`;
+                    new_html = `<b error>${response.description}</b>`;
                 }
+                scrollable.innerHTML += new_html;
                 scroll_bottom();
             });
         }
