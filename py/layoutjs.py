@@ -31,8 +31,8 @@ def get_class(py_script):
     if not classes:
         raise Exception(f"Did not find any new-style classes in {py_script}")
     if len(classes) > 1:
-        print(f"Found multiple classes in {py_script},"
-              "using class <{classes[0].__name__}>")
+        print(f"Found multiple classes in {py_script}, "
+              f"using class <{classes[0].__name__}>")
 
     return classes[0]
 
