@@ -43,30 +43,31 @@ terminal = (function() {
             });
         }
         if (event.code === "Escape")
-            toggle();
+            hide();
     }
 
     function scroll_bottom() {
         scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
     }
 
-    function toggle() {
-        var cur_visible = container.classList.contains("visible");
-        if (cur_visible) {
-            container.style.visiblility = 'visible';
-            container.classList.remove("visible");
-            container.classList.add("invisible");
-            command.blur();
-        } else {
-            scroll_bottom();
-            container.style.visiblility = 'visible';
-            container.classList.add("visible");
-            container.classList.remove("invisible");
-            /* call command.focus() after animation to avoid a scroll glitch */
-            setTimeout(() => command.focus(), 150);
-        }
+    function hide() {
+        container.classList.remove("visible");
+        container.classList.add("invisible");
+        command.blur();
     }
 
-    return {toggle};
+    function show(maximized) {
+        if (maximized)
+            container.classList.add("maximized");
+        else
+            container.classList.remove("maximized");
+        scroll_bottom();
+        container.classList.add("visible");
+        container.classList.remove("invisible");
+        /* call command.focus() after animation to avoid a scroll glitch */
+        setTimeout(() => command.focus(), 150);
+    }
+
+    return {show};
 
 })();
