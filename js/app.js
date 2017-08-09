@@ -102,6 +102,22 @@ app = (function () {
         return palette.show(items, change_callback, select_callback, cancel_callback);
     }
 
+    function command_callback(cmd) {
+        // terminal command handler
+        sio.call(cmd, {}, (response) => {
+            if (response.result === "success") {
+                if (_.isString(response.return)) {
+                    terminal.append(`<b response>${response.return}</b>`);
+                } else {
+                    var response_str = JSON.stringify(response.return, null, '  ');
+                    terminal.append(`<b response><pre>${response_str}</pre></b>`);
+                }
+            } else {
+                terminal.append(`<b error>${response.description}</b>`);
+            }
+        });
+    }
+
     function onload_handler() {
 
         var modules = get_module_grid(corePOETS, "corePOETS");
@@ -136,6 +152,8 @@ app = (function () {
             return makeGate(gateTemplate, {x: nx - 1000, y:ny, id: id_});
 
         });
+
+        terminal.set_command_callback(command_callback);
 
         viewer.init("svg[viewer]");
 

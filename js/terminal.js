@@ -2,47 +2,36 @@ terminal = (function() {
 
     'use strict';
 
-    const pre_content =``;
-
     var container;   /* top-level dev */
     var command;     /* command input field */
     var scrollable;  /* command results textarea */
     var terminal;    /* scrollable and input group */
+
+    var command_callback;
 
     function onload_handler() {
         container  = document.querySelector("div[terminal-container]");
         terminal   = container.querySelector("div[terminal]");
         command    = terminal.querySelector("input[command]");
         scrollable = terminal.querySelector("div[scrollable]");
-        scrollable.innerHTML = pre_content;
         command.addEventListener("keydown", keypress);
     }
 
     window.addEventListener("load", onload_handler);
 
+    function append(html) {
+        scrollable.innerHTML += html;
+        scroll_bottom();
+    }
+
     function keypress(event) {
         if (event.code === "Enter") {
             var cmd = command.value;
-            scrollable.innerHTML += `<b cmd>&raquo; ${cmd}</b>`;
-            scroll_bottom();
             command.value = "";
-            sio.call(cmd, {}, (response) => {
-                var new_html;
-                if (response.result === "success") {
-                    if (_.isString(response.return)) {
-                        new_html = `<b response>${response.return}</b>`;
-                    } else {
-                        var response_str = JSON.stringify(response.return, null, '  ');
-                        new_html = `<b response><pre>${response_str}</pre></b>`;
-                    }
-                } else {
-                    new_html = `<b error>${response.description}</b>`;
-                }
-                scrollable.innerHTML += new_html;
-                scroll_bottom();
-            });
-        }
-        if (event.code === "Escape")
+            append(`<b cmd>&raquo; ${cmd}</b>`);
+            if (command_callback)
+                command_callback(cmd);
+        } else if (event.code === "Escape")
             hide();
     }
 
@@ -68,6 +57,10 @@ terminal = (function() {
         setTimeout(() => command.focus(), 150);
     }
 
-    return {show};
+    function set_command_callback(callback) {
+        command_callback = callback;
+    }
+
+    return {show, append, set_command_callback};
 
 })();
