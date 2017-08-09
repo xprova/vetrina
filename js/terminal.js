@@ -26,7 +26,7 @@ terminal = (function() {
             scrollable.innerHTML += `<b cmd>&raquo; ${cmd}</b>`;
             scroll_bottom();
             command.value = "";
-            sio.send({"call": cmd}, (response) => {
+            sio.call(cmd, {}, (response) => {
                 if (response.result === "success") {
                     scrollable.innerHTML += `<b response>${response.return}</b>`;
                 } else {

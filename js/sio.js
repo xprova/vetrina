@@ -10,6 +10,8 @@ sio = (function () {
 
 	const log = (msg) => console.log(`${tm()} :: ${msg}`)
 
+	var connected = false;
+
 	function send(content, callback) {
 		socket.emit('msg', content, (result) => {
 			if (debug) console.log(result);
@@ -18,15 +20,20 @@ sio = (function () {
 	}
 
 	function call(method, args={}, callback) {
-		send({call: method, args:args}, callback);
+		if (connected)
+			send({call: method, args:args}, callback);
+		else
+			callback({"result": "error", "description": "no engine connected"})
 	}
 
 	socket.on('connect', () => {
+		connected = true;
 		if (debug) log('connected');
 		call("count");
 	});
 
 	socket.on('disconnect', () => {
+		connected = false;
 		if (debug) log('disconnected');
 	});
 
