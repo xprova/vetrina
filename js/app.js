@@ -2,6 +2,9 @@ app = (function () {
 
     'use strict';
 
+    var pre_x; // x coord of view, before palette change shift view
+    var pre_y; // y coord of view, before palette change shift view
+
     function product (a, b, ...c) {
         // https://stackoverflow.com/a/43053803
         function cartesian_f (a, b) {
@@ -74,19 +77,29 @@ app = (function () {
         _.extend({ "label": "n8" }, andGate),
         ];
 
-        var select_callback = (selected) => console.log(selected);
+        [pre_x, pre_y] = viewer.get_view_cords();
+
+        var change_callback = (selected) => {
+            if (selected) {
+                console.log(`shifting to ${selected.x}, ${selected.y}`);
+                viewer.shift_view(selected.x, selected.y);
+            }
+        };
+
+        var select_callback = (selected) => {
+            console.log("selected");
+            console.log(selected);
+        };
+
+        var cancel_callback = (selected) => {
+            viewer.shift_view(pre_x, pre_y);
+        }
 
         var mods = viewer.get_modules();
 
-        var items = _.map(mods, function(value, key) {
-            return {
-                label: key,
-                description: value.description,
-                shortcut: "",
-            };
-        });
+        var items = _.map(mods, (value, key) => _.assign({label: key}, value) );
 
-        return palette.show(items, select_callback);
+        return palette.show(items, change_callback, select_callback, cancel_callback);
     }
 
     function onload_handler() {

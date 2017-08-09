@@ -5,15 +5,22 @@ palette = (function() {
 var module = angular.module('project', []);
 
 var items;
+
+var change_callback;
 var select_callback;
+var cancel_callback;
+
+var change_callback_last_obj;
 
 function hide() {
     return toggle(false);
 }
 
-function show(items_, select_callback_, cancel_callback) {
+function show(items_, change_callback_, select_callback_, cancel_callback_) {
     items = items_;
+    change_callback = change_callback_;
     select_callback = select_callback_;
+    cancel_callback = cancel_callback_;
     return toggle(true);
 }
 
@@ -55,6 +62,20 @@ function paletteController($scope, $sce) {
 
     }
 
+    function change_cb_wrapper() {
+
+        // call change_callback, if necessary
+
+        var new_sel_obj = $scope.matching_items[$scope.selected];
+        var objected_changed = new_sel_obj !== change_callback_last_obj;
+
+        if (change_callback && objected_changed)
+            change_callback(new_sel_obj);
+
+        change_callback_last_obj = new_sel_obj;
+
+    }
+
     $scope.onQueryChange = function() {
 
         var fuzzy_m = (item) => fuzzy_match($scope.query, item["label"]);
@@ -71,6 +92,8 @@ function paletteController($scope, $sce) {
         $scope.selected = 0;
         var results = document.querySelector("#results");
         results.scrollTop = 0;
+
+        change_cb_wrapper();
 
     }
 
@@ -93,6 +116,7 @@ function paletteController($scope, $sce) {
             results.scrollTop += itemH;
         else if (!downwards && first > $scope.selected)
             results.scrollTop -= itemH;
+
     }
 
     $scope.input_keypress = function(e) {
@@ -100,18 +124,26 @@ function paletteController($scope, $sce) {
         if (e.key === "ArrowDown") {
             $scope.selected = Math.min($scope.matching_items.length-1, $scope.selected + 1);
             scroll_to_selected_item(true);
-            return false;
+            change_cb_wrapper();
         } else if (e.key === "ArrowUp") {
             $scope.selected = Math.max(0, $scope.selected - 1);
             scroll_to_selected_item(false);
-            return false;
-        } else if (e.key === "Enter" || e.key === "Escape") {
-            var painput = document.querySelector('#palette-input');
+            change_cb_wrapper();
+        } else if (e.key === "Enter") {
             toggle(false);
+            var painput = document.querySelector('#palette-input');
             painput.blur(); // move focus away to avoid capturing future keystrokes
-            if (e.key === "Enter")
-                select_callback($scope.matching_items[$scope.selected]);
-            return false;
+            var selected_object = $scope.matching_items[$scope.selected]
+            if (select_callback && select_callback)
+                select_callback(selected_object);
+            else
+                cancel_callback();
+        } else if (e.key === "Escape") {
+            toggle(false);
+            var painput = document.querySelector('#palette-input');
+            painput.blur(); // move focus away to avoid capturing future keystrokes
+            if (cancel_callback)
+                cancel_callback($scope.matching_items[$scope.selected]);
         }
         return false;
     }

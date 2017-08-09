@@ -150,6 +150,11 @@ viewer = (function() {
 
     }
 
+    function get_view_cords() {
+        // Return coords of current view
+        return [shift.x, shift.y];
+    }
+
     // drawing functions
 
     function draw_grid (layer) {
@@ -458,6 +463,8 @@ viewer = (function() {
         toggle_grid,
         pan,
         get_modules,
+        shift_view,
+        get_view_cords,
     };
 
 })();
