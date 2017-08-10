@@ -29,7 +29,7 @@ function show(items_, change_cb, select_cb, cancel_cb) {
     var scope = angular.element(painput).scope();
     scope.$apply(function() {
         scope.query = '';
-        scope.onQueryChange();
+        scope.onQueryChange(false);
     });
     painput.focus();
     return false;
@@ -92,7 +92,10 @@ function paletteController($scope, $sce) {
 
     }
 
-    $scope.onQueryChange = function() {
+    $scope.onQueryChange = function(initial_select) {
+
+        if (initial_select == null)
+             initial_select = true;
 
         var fuzzy_m = (item) => fuzzy_match($scope.query, item["label"]);
 
@@ -105,7 +108,9 @@ function paletteController($scope, $sce) {
         .map(e => _.extend(e[0], e[1]))
         .value();
 
-        $scope.selected = 0;
+        console.log(initial_select);
+        $scope.selected = initial_select ? 0 : -1;
+
         var results = document.querySelector("#results");
         results.scrollTop = 0;
 
