@@ -102,7 +102,7 @@ app = (function () {
         return palette.show(items, change_callback, select_callback, cancel_callback);
     }
 
-    function command_callback(cmd) {
+    function oncommand(cmd) {
         // terminal command handler
         sio.call(cmd, {}, (response) => {
             if (response.result === "success") {
@@ -118,7 +118,19 @@ app = (function () {
         });
     }
 
-    function onload_handler() {
+    function onconnect() {
+        sio.call("get_name", null, (response) => {
+            var success = response.result === 'success';
+            var name_str = success ? `(${response.return})` : '';
+            toaster.success(`Engine connected ${name_str}`);
+        });
+    }
+
+    function ondisconnect() {
+        toaster.error('Engine disconnected');
+    }
+
+    function onload() {
 
         var modules = get_module_grid(corePOETS, "corePOETS");
 
@@ -153,9 +165,11 @@ app = (function () {
 
         });
 
-        terminal.set_command_callback(command_callback);
+        terminal.set_command_callback(oncommand);
 
         viewer.init("svg[viewer]");
+
+        setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 
         _.each(modules, viewer.add_module);
         _.each(other_modules, viewer.add_module);
@@ -165,7 +179,7 @@ app = (function () {
 
     };
 
-    window.addEventListener("load", onload_handler);
+    window.addEventListener("load", onload);
 
     var nodes = [
         ["n3",    "0.375",   "8.8889",  gateSource],

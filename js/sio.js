@@ -3,20 +3,39 @@ sio = (function () {
 	'use strict';
 
 	const debug = true;
-
 	const tm = () => new Date().toLocaleTimeString();
-
-	var socket = io("http://localhost:8000/");
-
 	const log = (msg) => console.log(`${tm()} :: ${msg}`)
 
+	var socket;
 	var connected = false;
 
-	function send(content, callback) {
-		socket.emit('msg', content, (result) => {
-			if (debug) console.log(result);
-			if (callback != null) callback(result);
+	function connect(connect_cb, disconnect_cb) {
+
+		socket = io("http://localhost:8000/");
+
+		socket.on('connect', () => {
+			connected = true;
+			if (debug) log('connected');
+			if (connect_cb) connect_cb();
 		});
+
+		socket.on('disconnect', () => {
+			connected = false;
+			if (debug) log('disconnected');
+			if (disconnect_cb) disconnect_cb();
+		});
+
+	}
+
+	function send(content, callback) {
+		if (connected) {
+			socket.emit('msg', content, (result) => {
+				if (debug) console.log(result);
+				if (callback != null) callback(result);
+			});
+		} else {
+			console.error('cannot send while disconnected')
+		}
 	}
 
 	function call(method, args={}, callback) {
@@ -26,17 +45,6 @@ sio = (function () {
 			callback({"result": "error", "description": "no engine connected"})
 	}
 
-	socket.on('connect', () => {
-		connected = true;
-		if (debug) log('connected');
-		call("count");
-	});
-
-	socket.on('disconnect', () => {
-		connected = false;
-		if (debug) log('disconnected');
-	});
-
-	return {send, call};
+	return {connect, call};
 
 })();
