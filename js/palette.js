@@ -18,13 +18,13 @@ window.addEventListener("load", () => {
 });
 
 function show(items_, change_cb, select_cb, cancel_cb) {
+    // set items and callbacks
     items = items_;
     change_callback = change_cb;
     select_callback = select_cb;
     cancel_callback = cancel_cb;
     // start show animation
     palette.classList.add('visible');
-    palette.classList.remove('invisible');
     // update item list
     var scope = angular.element(painput).scope();
     scope.$apply(function() {
@@ -36,7 +36,6 @@ function show(items_, change_cb, select_cb, cancel_cb) {
 }
 
 function hide() {
-    palette.classList.add('invisible');
     palette.classList.remove('visible');
     return false;
 }
