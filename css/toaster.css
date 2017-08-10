@@ -43,3 +43,11 @@ toast > icon {
     margin-right: 8px;
     font-size: 22px;
 }
+
+toast.success {
+    background-color: #4CAF50;
+}
+
+toast.error {
+    background-color: #F44336;
+}

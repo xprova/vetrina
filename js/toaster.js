@@ -2,7 +2,7 @@ var toaster = (function () {
 
     var counter = 0; // number of visible toasts
 
-    const duration_visible = 1500; // how long is toast on screen
+    const duration_visible = 2500; // how long is toast on screen
     const duration_cooldown = 500; // how long toast holds position after hiding
 
     /*
@@ -11,11 +11,12 @@ var toaster = (function () {
     cleared only after all have been hidden for at least `duration_cooldown`.
     */
 
-    function show(text, icon) {
+    function show(text, icon, class_) {
         icon = icon || '';
         var container = document.querySelector("toaster");
         var new_toast = document.createElement("toast");
         new_toast.innerHTML = `<icon>${icon}</icon>${text}`;
+        if (class_) new_toast.classList.add(class_);
         container.append(new_toast);
         counter += 1;
         window.setTimeout(() => new_toast.classList.add('show'), 10);
@@ -26,6 +27,18 @@ var toaster = (function () {
         }, duration_visible + duration_cooldown);
     }
 
-    return {show};
+    function success(text) {
+        show(text, 'done', 'success');
+    }
+
+    function error(text) {
+        show(text, 'error_outline', 'error');
+    }
+
+    function info(text) {
+        show(text, 'info_outline');
+    }
+
+    return {show, success, error, info};
 
 })();
