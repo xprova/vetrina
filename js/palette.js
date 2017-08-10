@@ -2,26 +2,43 @@ palette = (function() {
 
 'use strict';
 
+var items; // palette item list
+var palette; // palette dom object
+var painput; // palette input dom object
+var change_callback; // callback for when selected item changes
+var select_callback; // callback for pressing Enter on selected item
+var cancel_callback; // callback for cancelling palette
+var change_callback_last_obj; // object that change_cb was fired upon last
+
 var module = angular.module('project', []);
 
-var items;
+window.addEventListener("load", () => {
+    palette = document.querySelector('#palette');
+    painput = document.querySelector('#palette-input');
+});
 
-var change_callback;
-var select_callback;
-var cancel_callback;
-
-var change_callback_last_obj;
-
-function hide() {
-    return toggle(false);
+function show(items_, change_cb, select_cb, cancel_cb) {
+    items = items_;
+    change_callback = change_cb;
+    select_callback = select_cb;
+    cancel_callback = cancel_cb;
+    // start show animation
+    palette.classList.add('visible');
+    palette.classList.remove('invisible');
+    // update item list
+    var scope = angular.element(painput).scope();
+    scope.$apply(function() {
+        scope.query = '';
+        scope.onQueryChange();
+    });
+    painput.focus();
+    return false;
 }
 
-function show(items_, change_callback_, select_callback_, cancel_callback_) {
-    items = items_;
-    change_callback = change_callback_;
-    select_callback = select_callback_;
-    cancel_callback = cancel_callback_;
-    return toggle(true);
+function hide() {
+    palette.classList.add('invisible');
+    palette.classList.remove('visible');
+    return false;
 }
 
 function paletteController($scope, $sce) {
@@ -130,7 +147,7 @@ function paletteController($scope, $sce) {
             scroll_to_selected_item(false);
             change_cb_wrapper();
         } else if (e.key === "Enter") {
-            toggle(false);
+            hide();
             var painput = document.querySelector('#palette-input');
             painput.blur(); // move focus away to avoid capturing future keystrokes
             var selected_object = $scope.matching_items[$scope.selected]
@@ -139,7 +156,7 @@ function paletteController($scope, $sce) {
             else
                 cancel_callback();
         } else if (e.key === "Escape") {
-            toggle(false);
+            hide();
             var painput = document.querySelector('#palette-input');
             painput.blur(); // move focus away to avoid capturing future keystrokes
             if (cancel_callback)
@@ -177,36 +194,9 @@ module.directive('palette', () => ({
     controller: paletteController,
 }));
 
-function toggle(visible) {
-
-    var palette = document.querySelector('#palette');
-    var painput = document.querySelector('#palette-input');
-    var current_visible = palette.classList.contains('visible');
-
-    if (visible === undefined)
-        var visible = !current_visible;
-
-    if (visible && !current_visible) {
-        palette.classList.add('visible');
-        palette.classList.remove('invisible');
-        var scope = angular.element(painput).scope();
-        scope.$apply(function() {
-            scope.query = '';
-            scope.onQueryChange();
-        });
-        painput.focus();
-    } else if (!visible && current_visible) {
-        palette.classList.add('invisible');
-        palette.classList.remove('visible');
-    }
-
-    return false;
-}
-
 return {
     show,
     hide,
-    toggle,
 };
 
 })();
