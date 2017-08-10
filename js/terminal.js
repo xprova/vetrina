@@ -9,15 +9,13 @@ terminal = (function() {
 
     var command_callback;
 
-    function onload_handler() {
+    window.addEventListener("load", () => {
         container  = document.querySelector("div[terminal-container]");
         terminal   = container.querySelector("div[terminal]");
         command    = terminal.querySelector("input[command]");
         scrollable = terminal.querySelector("div[scrollable]");
         command.addEventListener("keydown", keypress);
-    }
-
-    window.addEventListener("load", onload_handler);
+    });
 
     function append(html) {
         scrollable.innerHTML += html;
@@ -41,7 +39,6 @@ terminal = (function() {
 
     function hide() {
         container.classList.remove("visible");
-        container.classList.add("invisible");
         command.blur();
     }
 
@@ -52,8 +49,7 @@ terminal = (function() {
             container.classList.remove("maximized");
         scroll_bottom();
         container.classList.add("visible");
-        container.classList.remove("invisible");
-        /* call command.focus() after animation to avoid a scroll glitch */
+        /* call command.focus() after animation to avoid a scrolling glitch */
         setTimeout(() => command.focus(), 150);
     }
 
