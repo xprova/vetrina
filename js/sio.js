@@ -30,7 +30,6 @@ sio = (function () {
 	function send(content, callback) {
 		if (connected) {
 			socket.emit('msg', content, (result) => {
-				if (debug) console.log(result);
 				if (callback != null) callback(result);
 			});
 		} else {

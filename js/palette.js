@@ -108,7 +108,6 @@ function paletteController($scope, $sce) {
         .map(e => _.extend(e[0], e[1]))
         .value();
 
-        console.log(initial_select);
         $scope.selected = initial_select ? 0 : -1;
 
         var results = document.querySelector("#results");
