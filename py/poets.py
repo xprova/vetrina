@@ -41,3 +41,6 @@ class PoetsEngine(object):
     def ping(self):
         return "pong!"
 
+    def get_name(self):
+        return "POETS"
+
