@@ -36,7 +36,13 @@ terminal = (function() {
         command.addEventListener("keydown", keypress);
     });
 
-    function append(html) {
+    function append_text(type_, str_) {
+        str_ = str_.replace(/</g, "&lt;");
+        str_ = str_.replace(/>/g, "&gt;");
+        append_html(`<b ${type_}><pre>${str_}</pre></b>`);
+    }
+
+    function append_html(html) {
         scrollable.innerHTML += html;
         scroll_bottom();
     }
@@ -50,7 +56,7 @@ terminal = (function() {
             // Enter command
             var cmd = command.value;
             command.value = "";
-            append(`<b cmd>&raquo; ${cmd}</b>`);
+            append_html(`<b cmd>&raquo; ${cmd}</b>`);
             command_history.add(cmd);
             command_history_indexer = command_history.length;
             if (command_callback)
@@ -101,6 +107,6 @@ terminal = (function() {
         command_callback = callback;
     }
 
-    return {show, append, set_command_callback};
+    return {show, append_html, append_text, set_command_callback};
 
 })();

@@ -107,16 +107,17 @@ app = (function () {
         sio.evaluate(cmd, (response) => {
             if (response.result === "success") {
                 if (response.return) {
-                    var response_str = response.return;
-                    if (!_.isString(response.return))
-                        response_str = JSON.stringify(response.return, null, '  ');
-                    terminal.append(`<b response><pre>${response_str}</pre></b>`);
+                    if (_.isString(response.return)) {
+                        terminal.append_text("response", response.return);
+                    } else {
+                        json_str = JSON.stringify(response.return, null, '  ');
+                        terminal.append_text("response", json_str);
+                    }
                 }
             } else if (response.result === "exception") {
-                var response_str = _.replace(response.return, /\n/g, "<br/>");
-                terminal.append(`<b exception><pre>${response_str}</pre></b>`);
+                terminal.append_text("exception", response.return);
             } else {
-                terminal.append(`<b error>${response.description}</b>`);
+                terminal.append_text('error', response.description);
             }
         });
     }

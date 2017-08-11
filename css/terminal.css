@@ -80,6 +80,7 @@ b[error],
 b[exception] {
 	color: white;
 	border-radius: 4px;
+	margin-bottom: 8px;
 }
 
 b[response] {
