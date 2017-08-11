@@ -1,3 +1,5 @@
 #!/bin/bash
 
 alias server="browser-sync start --server --index index.htm --config bs-config.js"
+
+server
