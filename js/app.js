@@ -104,7 +104,7 @@ app = (function () {
 
     function oncommand(cmd) {
         // terminal command handler
-        sio.eval(cmd, {}, (response) => {
+        sio.eval(cmd, (response) => {
             if (response.result === "success") {
                 if (_.isString(response.return)) {
                     terminal.append(`<b response>${response.return}</b>`);
@@ -119,7 +119,7 @@ app = (function () {
     }
 
     function onconnect() {
-        sio.call("get_name", null, (response) => {
+        sio.get("engine_name", (response) => {
             var success = response.result === 'success';
             var name_str = success ? `(${response.return})` : '';
             toaster.success(`Engine connected ${name_str}`);

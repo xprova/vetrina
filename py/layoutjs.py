@@ -57,6 +57,9 @@ class PythonConsole(InteractiveConsole):
             self.push("xx = mymethod()")
         return self.locals['xx']
 
+    def get(self, variable):
+        return self.locals[variable]
+
 
 class AppWatcher(FileSystemEventHandler):
     """
@@ -136,12 +139,16 @@ class MainNamespace(socketio.AsyncNamespace):
         console = self.get_console()
         if "call" in request:
             kwargs = request.get("args") or {}
-            result = console.call(request["call"])
-            response = get_call_success(result)
+            call_return = console.call(request["call"])
+            response = {"result": "success", "return": call_return}
         elif "eval" in request:
             kwargs = request.get("args") or {}
-            result = console.eval(request["eval"])
-            response = get_call_success(result)
+            eval_result = console.eval(request["eval"])
+            response = {"result": "success", "return": eval_result}
+        elif "get" in request:
+            kwargs = request.get("args") or {}
+            value = console.get(request["get"])
+            response = {"result": "success", "return": value}
         else:
             response = get_error("invalid request")
         log_event(self.debug, sid, response, "cyan")

@@ -44,13 +44,20 @@ sio = (function () {
 			callback({"result": "error", "description": "no engine connected"})
 	}
 
-	function eval_(method, args={}, callback) {
+	function evaluate(method, callback) {
 		if (connected)
-			send({eval: method, args:args}, callback);
+			send({eval: method}, callback);
 		else
 			callback({"result": "error", "description": "no engine connected"})
 	}
 
-	return {connect, call, eval: eval_};
+	function get(variable, callback) {
+		if (connected)
+			send({get: variable}, callback);
+		else
+			callback({"result": "error", "description": "no engine connected"})
+	}
+
+	return {connect, call, evaluate, get};
 
 })();

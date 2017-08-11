@@ -1,6 +1,8 @@
 x = 1
 y = 3
 
+engine_name = "POETS"
+
 corePoets = {
     "image": "poets/poets_logo_white.svg",
     "description": "System Core",
@@ -14,6 +16,4 @@ corePoets = {
     }
 }
 
-def get_name():
-    return "POETS"
 
