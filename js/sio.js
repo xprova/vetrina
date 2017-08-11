@@ -28,34 +28,23 @@ sio = (function () {
 	}
 
 	function send(content, callback) {
-		if (connected) {
-			socket.emit('msg', content, (result) => {
-				if (callback != null) callback(result);
-			});
-		} else {
-			console.error('cannot send while disconnected')
-		}
+		callback = callback || (() => null);
+		if (connected)
+			socket.emit('msg', content, (result) => callback(result));
+		else
+			callback({"result": "error", "description": "no engine connected"});
 	}
 
 	function call(method, args={}, callback) {
-		if (connected)
-			send({call: method, args:args}, callback);
-		else
-			callback({"result": "error", "description": "no engine connected"})
+		send({call: method, args:args}, callback);
 	}
 
 	function evaluate(method, callback) {
-		if (connected)
-			send({eval: method}, callback);
-		else
-			callback({"result": "error", "description": "no engine connected"})
+		send({eval: method}, callback);
 	}
 
 	function get(variable, callback) {
-		if (connected)
-			send({get: variable}, callback);
-		else
-			callback({"result": "error", "description": "no engine connected"})
+		send({get: variable}, callback);
 	}
 
 	return {connect, call, evaluate, get};
