@@ -104,7 +104,7 @@ app = (function () {
 
     function oncommand(cmd) {
         // terminal command handler
-        sio.call(cmd, {}, (response) => {
+        sio.eval(cmd, {}, (response) => {
             if (response.result === "success") {
                 if (_.isString(response.return)) {
                     terminal.append(`<b response>${response.return}</b>`);

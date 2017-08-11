@@ -4,37 +4,12 @@ import os
 import sys
 import socketio
 import hashlib
+from code import InteractiveConsole
 from aiohttp import web
 from datetime import datetime
 from termcolor import cprint
-from importlib import import_module
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
-
-def get_class(py_script):
-    """Return a class from a python file"""
-
-    # get module name from filename
-    parentDir, fileName = os.path.split(py_script)
-    importName = fileName.replace(".py", "")
-    sys.path.insert(0, parentDir)
-
-    # clear cache and import module
-    if importName in sys.modules:
-        del sys.modules[importName]
-    mod = import_module(importName)
-
-    # get classes
-    objs = [getattr(mod, obj_name) for obj_name in dir(mod)]
-    classes = [obj for obj in objs if isinstance(obj, type)]
-    if not classes:
-        raise Exception(f"Did not find any new-style classes in {py_script}")
-    if len(classes) > 1:
-        print(f"Found multiple classes in {py_script}, "
-              f"using class <{classes[0].__name__}>")
-
-    return classes[0]
 
 
 def log_event(debug, sid, str_, color):
@@ -48,6 +23,41 @@ def log_event(debug, sid, str_, color):
             cprint(f"{tm} {sid_soace} : {str_}", color)
 
 
+class PythonConsole(InteractiveConsole):
+    """Subclassed console that captures stdout
+
+    adapted from https://stackoverflow.com/a/15311213
+    """
+
+    def __init__(self):
+        InteractiveConsole.__init__(self)
+
+    def write(self, data):
+        self.runResult += data.rstrip()
+
+    def push(self, expression):
+        """Evaluate an expression"""
+        sys.stdout = self
+        self.runResult = ''
+        InteractiveConsole.push(self, expression)
+        sys.stdout = sys.__stdout__
+        return self.runResult
+
+    def eval(self, cmd):
+        """Alias for push"""
+        return self.push(cmd)
+
+    def call(self, method, args=None):
+        """Execute method and return results"""
+        self.locals['mymethod'] = self.locals[method]
+        if args:
+            self.locals['myargs'] = args
+            self.push("xx = mymethod(args)")
+        else:
+            self.push("xx = mymethod()")
+        return self.locals['xx']
+
+
 class AppWatcher(FileSystemEventHandler):
     """
     Maintain an instance of the class defined in py_file and reload when
@@ -57,7 +67,7 @@ class AppWatcher(FileSystemEventHandler):
     hash_ = None
     debug = False
     py_file = None
-    instance = None
+    console = None
     on_reload = None
 
     def __init__(self, debug, py_file, watch_dir='.', on_reload=None):
@@ -77,14 +87,14 @@ class AppWatcher(FileSystemEventHandler):
     def on_modified(self, event):
         new_hash = self.get_py_file_hash()
         if new_hash != self.hash_:
-            class_ = get_class(self.py_file)
-            self.instance = class_()
+            self.console = PythonConsole()
+            py_mod = self.py_file.replace(".py", "")
+            self.console.runcode(f'from {py_mod} import *')
             self.hash_ = new_hash
             if self.on_reload:
                 self.on_reload()
             if self.debug:
-                print(f"Detected change in <{self.py_file}>, "
-                      f"reloading <{class_.__name__}> instance")
+                print(f"Detected change and reloaded <{self.py_file}>")
 
 
 def get_error(description):
@@ -106,12 +116,12 @@ class MainNamespace(socketio.AsyncNamespace):
 
     debug = False
     active_users = set()
-    get_app_instance = None
+    get_console = None
 
-    def __init__(self, namespace, debug, get_app_instance):
+    def __init__(self, namespace, debug, get_console):
         super().__init__(namespace)
         self.debug = debug
-        self.get_app_instance = get_app_instance
+        self.get_console = get_console
 
     def on_connect(self, sid, environ=None):
         self.active_users.add(sid)
@@ -123,17 +133,15 @@ class MainNamespace(socketio.AsyncNamespace):
 
     async def on_msg(self, sid, request):
         log_event(self.debug, sid, str(request), "green")
+        console = self.get_console()
         if "call" in request:
             kwargs = request.get("args") or {}
-            app_instance = self.get_app_instance()
-            if hasattr(app_instance, request["call"]):
-                method = getattr(app_instance, request["call"])
-                try:
-                    response = get_call_success(method(**kwargs))
-                except Exception as exp:
-                    response = get_error(str(exp))
-            else:
-                response = get_error("no such method")
+            result = console.call(request["call"])
+            response = get_call_success(result)
+        elif "eval" in request:
+            kwargs = request.get("args") or {}
+            result = console.eval(request["eval"])
+            response = get_call_success(result)
         else:
             response = get_error("invalid request")
         log_event(self.debug, sid, response, "cyan")
@@ -145,8 +153,8 @@ def main():
     app = web.Application()
     sio = socketio.AsyncServer()
     app_watcher = AppWatcher(debug=True, py_file=sys.argv[1])
-    get_app_instance = lambda: app_watcher.instance
-    sio.register_namespace(MainNamespace("/", debug, get_app_instance))
+    get_console = lambda: app_watcher.console
+    sio.register_namespace(MainNamespace("/", debug, get_console))
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
                 handle_signals=True)
