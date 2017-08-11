@@ -8,6 +8,25 @@ terminal = (function() {
     var terminal;    /* scrollable and input group */
 
     var command_callback;
+    var command_history = [];
+    var command_history_indexer;
+
+    var command_history = {
+        history: [],
+        indexer: 3,
+        add: function(cmd) {
+            this.history.push(cmd);
+            this.indexer = this.history.length;
+        },
+        prev: function() {
+            if (this.indexer > 0) this.indexer--;
+            return this.history[this.indexer];
+        },
+        next: function() {
+            if (this.indexer < this.history.length-1) this.indexer++;
+            return this.history[this.indexer];
+        },
+    };
 
     window.addEventListener("load", () => {
         container  = document.querySelector("div[terminal-container]");
@@ -22,15 +41,40 @@ terminal = (function() {
         scroll_bottom();
     }
 
+    function clear() {
+        scrollable.innerHTML = '';
+    }
+
     function keypress(event) {
         if (event.code === "Enter") {
+            // Enter command
             var cmd = command.value;
             command.value = "";
             append(`<b cmd>&raquo; ${cmd}</b>`);
+            command_history.add(cmd);
+            command_history_indexer = command_history.length;
             if (command_callback)
                 command_callback(cmd);
-        } else if (event.code === "Escape")
+        } else if (event.key === 'l' && event.ctrlKey) {
+            // Clear console
+            clear();
+            event.stopPropagation();
+            event.preventDefault();
+        } else if (event.key === "ArrowUp") {
+            command.value = command_history.prev();
+            event.stopPropagation();
+            event.preventDefault();
+            command.selectionStart = command.value.length;
+            command.selectionEnd = command.value.length;
+        } else if (event.key === "ArrowDown") {
+            command.value = command_history.next();
+            command.selectionStart = command.value.length;
+            command.selectionEnd = command.value.length;
+            event.stopPropagation();
+        } else if (event.code === "Escape") {
+            // Hide console
             hide();
+        }
     }
 
     function scroll_bottom() {
