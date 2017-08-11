@@ -35,8 +35,13 @@ class PythonConsole(InteractiveConsole):
     def write(self, data):
         self.runResult += data.rstrip()
 
+    def showtraceback(self):
+        self.exception_happened = True
+        InteractiveConsole.showtraceback(self)
+
     def push(self, expression):
         """Evaluate an expression"""
+        self.exception_happened = False
         sys.stdout = self
         self.runResult = ''
         InteractiveConsole.push(self, expression)
@@ -49,13 +54,13 @@ class PythonConsole(InteractiveConsole):
 
     def call(self, method, args=None):
         """Execute method and return results"""
-        self.locals['mymethod'] = self.locals[method]
+        self.locals['__temp_method__'] = self.locals[method]
         if args:
             self.locals['myargs'] = args
-            self.push("xx = mymethod(args)")
+            self.push("__temp_return__ = __temp_method__(args)")
         else:
-            self.push("xx = mymethod()")
-        return self.locals['xx']
+            self.push("__temp_return__ = __temp_method__()")
+        return self.locals['__temp_return__']
 
     def get(self, variable):
         return self.locals[variable]
@@ -63,8 +68,8 @@ class PythonConsole(InteractiveConsole):
 
 class AppWatcher(FileSystemEventHandler):
     """
-    Maintain an instance of the class defined in py_file and reload when
-    py_file is changed
+    Maintain a PythonConsole object with an imported Python module.
+    Reload when module file changes.
     """
 
     hash_ = None
@@ -100,20 +105,6 @@ class AppWatcher(FileSystemEventHandler):
                 print(f"Detected change and reloaded <{self.py_file}>")
 
 
-def get_error(description):
-    return {
-        "result": "error",
-        "description": description
-    }
-
-
-def get_call_success(return_):
-    return {
-        "result": "success",
-        "return": return_
-    }
-
-
 class MainNamespace(socketio.AsyncNamespace):
     """Handle sio messaging"""
 
@@ -144,13 +135,16 @@ class MainNamespace(socketio.AsyncNamespace):
         elif "eval" in request:
             kwargs = request.get("args") or {}
             eval_result = console.eval(request["eval"])
-            response = {"result": "success", "return": eval_result}
+            if console.exception_happened:
+                response = {"result": "exception", "return": eval_result}
+            else:
+                response = {"result": "success", "return": eval_result}
         elif "get" in request:
             kwargs = request.get("args") or {}
             value = console.get(request["get"])
             response = {"result": "success", "return": value}
         else:
-            response = get_error("invalid request")
+            response = {"result": "error", "description": "invalid request"}
         log_event(self.debug, sid, response, "cyan")
         return response
 

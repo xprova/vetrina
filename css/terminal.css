@@ -72,22 +72,22 @@ div[scrollable] > b {
 	clear: both;
 	float: left;
 	padding: 4px;
-	margin: 2px 0 2px;
 	font-weight: normal;
 }
 
 b[response],
-b[error] {
+b[error],
+b[exception] {
 	color: white;
 	border-radius: 4px;
 }
 
-b[cmd] {
-	/*background-color: #0091EA;*/
-}
-
 b[response] {
 	background-color: #00C853;
+}
+
+b[exception] {
+	background-color: orange;
 }
 
 b[error] {

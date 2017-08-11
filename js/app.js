@@ -106,12 +106,15 @@ app = (function () {
         // terminal command handler
         sio.evaluate(cmd, (response) => {
             if (response.result === "success") {
-                if (_.isString(response.return)) {
-                    terminal.append(`<b response>${response.return}</b>`);
-                } else {
-                    var response_str = JSON.stringify(response.return, null, '  ');
+                if (response.return) {
+                    var response_str = response.return;
+                    if (!_.isString(response.return))
+                        response_str = JSON.stringify(response.return, null, '  ');
                     terminal.append(`<b response><pre>${response_str}</pre></b>`);
                 }
+            } else if (response.result === "exception") {
+                var response_str = _.replace(response.return, /\n/g, "<br/>");
+                terminal.append(`<b exception><pre>${response_str}</pre></b>`);
             } else {
                 terminal.append(`<b error>${response.description}</b>`);
             }

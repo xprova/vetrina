@@ -17,3 +17,5 @@ corePoets = {
 }
 
 
+def count():
+    return list(range(10))
