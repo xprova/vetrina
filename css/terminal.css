@@ -8,7 +8,7 @@ div[terminal-container] {
 	box-sizing: border-box;
 	transition-property: opacity, transform;
 	transition-duration: 0.1s;
-	transition-property: ease;
+	transition-timing-function: ease;
 }
 
 div[terminal-container].maximized {
@@ -57,8 +57,8 @@ div[terminal-container].visible {
 }
 
 div[terminal-container]:not(.visible) {
-	opacity: 0;
-	transform: translateY(10px);
+	opacity: 0.0;
+	transform: translateY(40px);
 }
 
 div[terminal-container]:not(.visible),
@@ -73,6 +73,11 @@ div[scrollable] > b {
 	float: left;
 	padding: 4px;
 	font-weight: normal;
+	max-width: 100%;
+}
+
+div[scrollable] > b > pre {
+	white-space: pre-wrap;
 }
 
 b[response],
