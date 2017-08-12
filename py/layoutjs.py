@@ -33,7 +33,7 @@ class PythonConsole(InteractiveConsole):
         InteractiveConsole.__init__(self)
 
     def write(self, data):
-        self.runResult += data.rstrip()
+        self.runResult += data
 
     def showtraceback(self):
         self.exception_happened = True
