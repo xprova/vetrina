@@ -39,6 +39,10 @@ class PythonConsole(InteractiveConsole):
         self.exception_happened = True
         InteractiveConsole.showtraceback(self)
 
+    def showsyntaxerror(self, filename=None):
+        self.exception_happened = True
+        InteractiveConsole.showsyntaxerror(self, filename)
+
     def push(self, expression):
         """Evaluate an expression"""
         self.exception_happened = False
