@@ -75,21 +75,20 @@ class PythonConsole(InteractiveConsole):
 
 class AppWatcher(FileSystemEventHandler):
     """
-    Maintain a PythonConsole object with an imported Python module.
-    Reload when module file changes.
+    Watch a python module and re-import in an associated console when changes
+    are detected.
     """
 
     hash_ = None
     debug = False
     py_file = None
     console = None
-    on_reload = None
 
-    def __init__(self, debug, py_file, watch_dir='.', on_reload=None):
+    def __init__(self, debug, console, py_file, watch_dir='.'):
+        self.console = console
         self.py_file = py_file
         self.on_modified(None)
         self.debug = debug
-        self.on_reload = on_reload
         observer = Observer()
         observer.schedule(self, watch_dir, recursive=True)
         observer.start()
@@ -102,7 +101,6 @@ class AppWatcher(FileSystemEventHandler):
     def on_modified(self, event):
         new_hash = self.get_py_file_hash()
         if new_hash != self.hash_:
-            self.console = PythonConsole()
             py_mod = self.py_file.replace(".py", "")
             lines = [
                 f'import sys',
@@ -112,8 +110,6 @@ class AppWatcher(FileSystemEventHandler):
             ]
             list(map(self.console.runcode, lines))
             self.hash_ = new_hash
-            if self.on_reload:
-                self.on_reload()
             if self.debug:
                 print(f"Detected change and reloaded <{self.py_file}>")
 
@@ -123,12 +119,12 @@ class MainNamespace(socketio.AsyncNamespace):
 
     debug = False
     active_users = set()
-    get_console = None
+    console = None
 
-    def __init__(self, namespace, debug, get_console):
+    def __init__(self, namespace, debug, console):
         super().__init__(namespace)
         self.debug = debug
-        self.get_console = get_console
+        self.console = console
 
     def on_connect(self, sid, environ=None):
         self.active_users.add(sid)
@@ -138,44 +134,57 @@ class MainNamespace(socketio.AsyncNamespace):
         self.active_users.remove(sid)
         log_event(self.debug, sid, "disconnected", "grey")
 
+    def handle_call(self, request):
+        kwargs = request.get("args") or {}
+        call_return = self.console.call(request["call"])
+        return {"result": "success", "return": call_return}
+
+    def handle_eval(self, request):
+        kwargs = request.get("args") or {}
+        eval_result = self.console.eval(request["eval"])
+        if self.console.exception_happened:
+            return {"result": "exception", "return": eval_result}
+        else:
+            return {"result": "success", "return": eval_result}
+
+    def handle_get(self, request):
+        kwargs = request.get("args") or {}
+        value = self.console.get(request["get"])
+        return {"result": "success", "return": value}
+
+    def handle_set(self, request):
+        variable = request["set"]
+        value = request["value"]
+        if self.console.set(variable, value):
+            return {"result": "success"}
+        else:
+            return {"result": "error", "description": "could not set variable"}
+
     async def on_msg(self, sid, request):
         log_event(self.debug, sid, str(request), "green")
-        console = self.get_console()
-        if "call" in request:
-            kwargs = request.get("args") or {}
-            call_return = console.call(request["call"])
-            response = {"result": "success", "return": call_return}
-        elif "eval" in request:
-            kwargs = request.get("args") or {}
-            eval_result = console.eval(request["eval"])
-            if console.exception_happened:
-                response = {"result": "exception", "return": eval_result}
-            else:
-                response = {"result": "success", "return": eval_result}
-        elif "get" in request:
-            kwargs = request.get("args") or {}
-            value = console.get(request["get"])
-            response = {"result": "success", "return": value}
-        elif "set" in request:
-            variable = request["set"]
-            value = request["value"]
-            if console.set(variable, value):
-                response = {"result": "success"}
-            else:
-                response = {"result": "error", "description": "could not set variable"}
+        call_table = {
+            "call": self.handle_call,
+            "eval": self.handle_eval,
+            "get" : self.handle_get,
+            "set" : self.handle_set,
+        }
+        for call_type, handle_func in call_table.items():
+            if call_type in request:
+                response = handle_func(request)
+                log_event(self.debug, sid, response, "cyan")
+                return response
         else:
-            response = {"result": "error", "description": "invalid request"}
-        log_event(self.debug, sid, response, "cyan")
-        return response
+            return {"result": "error", "description": "invalid request"}
 
 
 def main():
     debug = True
+    py_file = sys.argv[1]
     app = web.Application()
     sio = socketio.AsyncServer()
-    app_watcher = AppWatcher(debug=True, py_file=sys.argv[1])
-    get_console = lambda: app_watcher.console
-    sio.register_namespace(MainNamespace("/", debug, get_console))
+    console = PythonConsole()
+    app_watcher = AppWatcher(debug, console, py_file)
+    sio.register_namespace(MainNamespace("/", debug, console))
     sio.attach(app)
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
                 handle_signals=True)
