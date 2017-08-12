@@ -66,12 +66,7 @@ class PythonConsole(InteractiveConsole):
         return self.locals[variable]
 
     def set(self, variable, value):
-        if variable in self.locals:
-            self.locals[variable] = value
-            return True
-        else:
-            return False
-
+        self.locals[variable] = value
 
 class AppWatcher(FileSystemEventHandler):
     """
@@ -148,16 +143,20 @@ class MainNamespace(socketio.AsyncNamespace):
             return {"result": "success", "return": eval_result}
 
     def handle_get(self, request):
-        kwargs = request.get("args") or {}
-        value = self.console.get(request["get"])
-        return {"result": "success", "return": value}
+        try:
+            kwargs = request.get("args") or {}
+            value = self.console.get(request["get"])
+            return {"result": "success", "return": value}
+        except KeyError:
+            return {"result": "error", "description": "no such variable"}
 
     def handle_set(self, request):
-        variable = request["set"]
-        value = request["value"]
-        if self.console.set(variable, value):
+        try:
+            variable = request["set"]
+            value = request["value"]
+            self.console.set(variable, value)
             return {"result": "success"}
-        else:
+        except KeyError:
             return {"result": "error", "description": "could not set variable"}
 
     async def on_msg(self, sid, request):
