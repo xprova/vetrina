@@ -97,7 +97,13 @@ class AppWatcher(FileSystemEventHandler):
         if new_hash != self.hash_:
             self.console = PythonConsole()
             py_mod = self.py_file.replace(".py", "")
-            self.console.runcode(f'from {py_mod} import *')
+            lines = [
+                f'import sys',
+                f'if "{py_mod}" in sys.modules:'
+                f'    del sys.modules["{py_mod}"]',
+                f'from {py_mod} import *',
+            ]
+            list(map(self.console.runcode, lines))
             self.hash_ = new_hash
             if self.on_reload:
                 self.on_reload()
