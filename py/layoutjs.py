@@ -65,6 +65,13 @@ class PythonConsole(InteractiveConsole):
     def get(self, variable):
         return self.locals[variable]
 
+    def set(self, variable, value):
+        if variable in self.locals:
+            self.locals[variable] = value
+            return True
+        else:
+            return False
+
 
 class AppWatcher(FileSystemEventHandler):
     """
@@ -149,6 +156,13 @@ class MainNamespace(socketio.AsyncNamespace):
             kwargs = request.get("args") or {}
             value = console.get(request["get"])
             response = {"result": "success", "return": value}
+        elif "set" in request:
+            variable = request["set"]
+            value = request["value"]
+            if console.set(variable, value):
+                response = {"result": "success"}
+            else:
+                response = {"result": "error", "description": "could not set variable"}
         else:
             response = {"result": "error", "description": "invalid request"}
         log_event(self.debug, sid, response, "cyan")
