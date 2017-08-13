@@ -154,10 +154,11 @@ function paletteController($scope, $sce) {
             var painput = document.querySelector('#palette-input');
             painput.blur(); // move focus away to avoid capturing future keystrokes
             var selected_object = $scope.matching_items[$scope.selected]
-            if (select_callback && select_callback)
-                select_callback(selected_object);
-            else
-                cancel_callback();
+            if (selected_object) {
+                if (select_callback) select_callback(selected_object);
+            } else {
+                if (cancel_callback) cancel_callback();
+            }
         } else if (e.key === "Escape") {
             hide();
             var painput = document.querySelector('#palette-input');
