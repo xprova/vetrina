@@ -56,7 +56,7 @@ terminal = (function() {
             // Enter command
             var cmd = command.value;
             command.value = "";
-            append_html(`<b cmd>&raquo; ${cmd}</b>`);
+            append_text('cmd', `>> ${cmd}`);
             command_history.add(cmd);
             command_history_indexer = command_history.length;
             if (command_callback)
