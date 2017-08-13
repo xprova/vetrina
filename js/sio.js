@@ -47,6 +47,10 @@ sio = (function () {
 		send({get: variable}, callback);
 	}
 
-	return {connect, call, evaluate, get};
+	function set(variable, value, callback) {
+		send({set: variable, value:value}, callback);
+	}
+
+	return {connect, call, evaluate, get, set};
 
 })();

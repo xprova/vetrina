@@ -19,3 +19,8 @@ corePoets = {
 
 def count():
     return list(range(10))
+
+def table(y, n):
+    lines = [f"{x} x {y} = {x*y}" for x in range(1, n+1)]
+    for item in lines:
+        print(item)
