@@ -414,7 +414,9 @@ viewer = (function() {
 
     }
 
-    function add_connection(mod1, mod2, port1, port2) {
+    function add_connection(connection) {
+
+        const [mod1, mod2, port1, port2] = connection;
 
         var m1 = modules[mod1];
         var m2 = modules[mod2];

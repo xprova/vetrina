@@ -91,13 +91,13 @@ app = (function () {
         toaster.error('Engine disconnected');
     }
 
-    function onload() {
+    function generate_preset() {
 
-        var modules = get_module_grid(corePOETS, "corePOETS");
+        const grid_modules = get_module_grid(corePOETS, "corePOETS");
 
         const [dx, dy, s] = [50, 25, 5];
 
-        var other_modules = [
+        const misc_modules = [
             makeGate(gateAnd, {x: -dx, y:+dy, id: "gate1"}),
             makeGate(gateAnd, {x: -dx, y:-dy, id: "gate2"}),
             makeGate(gateAnd, {x:0, y:0, id: "gate3"}),
@@ -105,7 +105,7 @@ app = (function () {
             makeGate(norGate, {x: 400, y:-200, id: "block1"}),
         ];
 
-        var other_connections = [
+        const misc_connections = [
             ["gate1", "gate3", "y", "a"],
             ["gate2", "gate3", "y", "b"],
             ["gate3", "gate4", "y", "a"],
@@ -116,33 +116,39 @@ app = (function () {
             ["corePOETS_0_0", "block1", "N", "a"]
         ];
 
-        var node_modules = _.map(nodes, function (node) {
+        const gate_modules = _.map(gate_nodes, function (node) {
 
-            var [id_, x, y, gateTemplate] = node;
+            const [id_, x, y, gateTemplate] = node;
 
-            var [nx, ny] = _.map([x, y], x => Math.round(x * s)/ s * 60);
+            const [nx, ny] = _.map([x, y], x => Math.round(x * s)/ s * 60);
 
             return makeGate(gateTemplate, {x: nx - 1000, y:ny, id: id_});
 
         });
 
-        terminal.set_command_callback(oncommand);
+        const modules = _.concat(grid_modules, misc_modules, gate_modules);
+        const connections = _.concat(misc_connections, gate_connections);
+
+        return {modules, connections};
+    }
+
+    function onload() {
 
         viewer.init("svg[viewer]");
 
+        terminal.set_command_callback(oncommand);
+
         setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 
-        _.each(modules, viewer.add_module);
-        _.each(other_modules, viewer.add_module);
-        _.each(node_modules, viewer.add_module);
-        _.each(connections, con => viewer.add_connection(con[0], con[1], "y", "a") );
-        _.each(other_connections, con => viewer.add_connection.apply(this, con));
+        const preset = generate_preset();
+        _.each(preset.modules, viewer.add_module);
+        _.each(preset.connections, viewer.add_connection);
 
     };
 
     window.addEventListener("load", onload);
 
-    var nodes = [
+    var gate_nodes = [
         ["n3",    "0.375",   "8.8889",  gateSource],
         ["n5",    "0.375",   "6.7361",  gateSource],
         ["n6",    "0.375",   "4.5417",  gateSource],
@@ -176,43 +182,43 @@ app = (function () {
         ["n23",   "10.75",   "7.0417",  gateXor]
     ]
 
-    var connections = [
-        ["n3", "n18"],
-        ["n4", "n22b"],
-        ["n6", "n8"],
-        ["n6", "n9"],
-        ["n7", "n1"],
-        ["n7", "n23"],
-        ["n8", "n6b"],
-        ["n9", "n12"],
-        ["n9", "n17"],
-        ["n12", "n7"],
-        ["n12", "n21"],
-        ["n16", "n12"],
-        ["n16", "n17"],
-        ["n17", "n16b"],
-        ["n18", "n3b"],
-        ["n23", "n15b"],
-        ["n1", "n18"],
-        ["n2", "n11b"],
-        ["n5", "n7"],
-        ["n5", "n21"],
-        ["n10", "n13"],
-        ["n10", "n2"],
-        ["n11", "n13"],
-        ["n11", "n2"],
-        ["n13", "n8"],
-        ["n13", "n9"],
-        ["n15", "n1"],
-        ["n15", "n23"],
-        ["n19", "n24b"],
-        ["n20", "n19"],
-        ["n20", "n10"],
-        ["n21", "n5b"],
-        ["n22", "n4"],
-        ["n22", "n20"],
-        ["n24", "n19"],
-        ["n24", "n10"]
+    var gate_connections = [
+        ["n3", "n18", "y", "a"],
+        ["n4", "n22b", "y", "a"],
+        ["n6", "n8", "y", "a"],
+        ["n6", "n9", "y", "a"],
+        ["n7", "n1", "y", "a"],
+        ["n7", "n23", "y", "a"],
+        ["n8", "n6b", "y", "a"],
+        ["n9", "n12", "y", "a"],
+        ["n9", "n17", "y", "a"],
+        ["n12", "n7", "y", "a"],
+        ["n12", "n21", "y", "a"],
+        ["n16", "n12", "y", "a"],
+        ["n16", "n17", "y", "a"],
+        ["n17", "n16b", "y", "a"],
+        ["n18", "n3b", "y", "a"],
+        ["n23", "n15b", "y", "a"],
+        ["n1", "n18", "y", "a"],
+        ["n2", "n11b", "y", "a"],
+        ["n5", "n7", "y", "a"],
+        ["n5", "n21", "y", "a"],
+        ["n10", "n13", "y", "a"],
+        ["n10", "n2", "y", "a"],
+        ["n11", "n13", "y", "a"],
+        ["n11", "n2", "y", "a"],
+        ["n13", "n8", "y", "a"],
+        ["n13", "n9", "y", "a"],
+        ["n15", "n1", "y", "a"],
+        ["n15", "n23", "y", "a"],
+        ["n19", "n24b", "y", "a"],
+        ["n20", "n19", "y", "a"],
+        ["n20", "n10", "y", "a"],
+        ["n21", "n5b", "y", "a"],
+        ["n22", "n4", "y", "a"],
+        ["n22", "n20", "y", "a"],
+        ["n24", "n19", "y", "a"],
+        ["n24", "n10", "y", "a"]
     ]
 
     return {
