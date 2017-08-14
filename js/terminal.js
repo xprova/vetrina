@@ -2,14 +2,14 @@ terminal = (function() {
 
     'use strict';
 
-    var container;   /* top-level dev */
-    var command;     /* command input field */
-    var scrollable;  /* command results textarea */
-    var terminal;    /* scrollable and input group */
+    var container;     /* top-level dev */
+    var scrollable;    /* command results textarea */
+    var output;        /* scrollable section containing command results */
+    var prompt_input;  /* command input field */
+    var terminal;      /* scrollable and input group */
 
     var command_callback;
     var command_history = [];
-    var command_history_indexer;
 
     var command_history = {
         history: [],
@@ -29,11 +29,22 @@ terminal = (function() {
     };
 
     window.addEventListener("load", () => {
-        container  = document.querySelector("div[terminal-container]");
-        terminal   = container.querySelector("div[terminal]");
-        command    = terminal.querySelector("input[command]");
+
+        container = document.querySelector("div[terminal-container]");
+        terminal = container.querySelector("div[terminal]");
         scrollable = terminal.querySelector("div[scrollable]");
-        command.addEventListener("keydown", keypress);
+        output = terminal.querySelector("div[output]")
+        prompt_input = terminal.querySelector("div[prompt] > input");
+
+        prompt_input.addEventListener("keydown", keypress);
+
+        terminal.addEventListener("mouseup", (event) => {
+            var sel_range = window.getSelection().getRangeAt(0);
+            var sel_len = sel_range.getClientRects().length;
+
+            if (sel_len <= 1)
+                prompt_input.focus();
+        });
     });
 
     function append_text(type_, str_) {
@@ -43,22 +54,21 @@ terminal = (function() {
     }
 
     function append_html(html) {
-        scrollable.innerHTML += html;
+        output.innerHTML += html;
         scroll_bottom();
     }
 
     function clear() {
-        scrollable.innerHTML = '';
+        output.innerHTML = '';
     }
 
     function keypress(event) {
         if (event.code === "Enter") {
             // Enter command
-            var cmd = command.value;
-            command.value = "";
+            var cmd = prompt_input.value;
+            prompt_input.value = "";
             append_text('cmd', `>> ${cmd}`);
             command_history.add(cmd);
-            command_history_indexer = command_history.length;
             if (command_callback)
                 command_callback(cmd);
         } else if (event.key === 'l' && event.ctrlKey) {
@@ -67,15 +77,15 @@ terminal = (function() {
             event.stopPropagation();
             event.preventDefault();
         } else if (event.key === "ArrowUp") {
-            command.value = command_history.prev();
+            prompt_input.value = command_history.prev();
             event.stopPropagation();
             event.preventDefault();
-            command.selectionStart = command.value.length;
-            command.selectionEnd = command.value.length;
+            prompt_input.selectionStart = prompt_input.value.length;
+            prompt_input.selectionEnd = prompt_input.value.length;
         } else if (event.key === "ArrowDown") {
-            command.value = command_history.next();
-            command.selectionStart = command.value.length;
-            command.selectionEnd = command.value.length;
+            prompt_input.value = command_history.next();
+            prompt_input.selectionStart = prompt_input.value.length;
+            prompt_input.selectionEnd = prompt_input.value.length;
             event.stopPropagation();
         } else if (event.code === "Escape") {
             // Hide console
@@ -89,7 +99,7 @@ terminal = (function() {
 
     function hide() {
         container.classList.remove("visible");
-        command.blur();
+        prompt_input.blur();
     }
 
     function show(maximized) {
@@ -99,8 +109,8 @@ terminal = (function() {
             container.classList.remove("maximized");
         scroll_bottom();
         container.classList.add("visible");
-        /* call command.focus() after animation to avoid a scrolling glitch */
-        setTimeout(() => command.focus(), 150);
+        /* call prompt_input.focus() after animation to avoid a scrolling glitch */
+        setTimeout(() => prompt_input.focus(), 150);
     }
 
     function set_command_callback(callback) {

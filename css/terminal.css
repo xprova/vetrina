@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Inconsolata');
 
+/* container */
+
 div[terminal-container] {
 	position: absolute;
 	align-self: flex-end;
@@ -13,42 +15,6 @@ div[terminal-container] {
 
 div[terminal-container].maximized {
 	height: 100%;
-}
-
-div[terminal] {
-	display: flex;
-	flex-direction: column;
-	box-sizing: border-box;
-	border: solid 2px #CFD8DC;
-	width: 100%;
-	height: 100%;
-	opacity: 0.95;
-	line-height: 125%;
-	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-}
-div[terminal] > div[scrollable],
-div[terminal] > input[command] {
-	font-family: 'Inconsolata';
-	font-size: 16px;
-	background-color: #ECEFF1;
-	padding: 10px;
-	margin: 0;
-}
-
-div[terminal] > div[scrollable],
-div[terminal] > input[command] {
-	border: none;
-	border-top: solid 1px white;
-}
-
-div[terminal] > div[scrollable] {
-	height: 100%;
-	overflow-y: auto;
-	border-bottom: solid 2px #CFD8DC;
-}
-
-div[terminal] > input[command] {
-	outline: none;
 }
 
 div[terminal-container].visible {
@@ -66,7 +32,36 @@ div[terminal-container]:not(.visible) * {
 	pointer-events: none;
 }
 
-div[scrollable] > b {
+/* terminal */
+
+div[terminal] {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	border: solid 2px #CFD8DC;
+	width: 100%;
+	height: 100%;
+	opacity: 0.95;
+	line-height: 125%;
+	box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* scrollable */
+
+div[terminal] > div[scrollable] {
+	font-family: 'Inconsolata';
+	font-size: 16px;
+	background-color: #ECEFF1;
+	padding: 10px;
+	margin: 0;
+	border-top: solid 1px white;
+	height: 100%;
+	overflow-y: auto;
+}
+
+/* output */
+
+div[output] > b {
 	font-weight: normal;
 	display: inline-block;
 	clear: both;
@@ -76,8 +71,10 @@ div[scrollable] > b {
 	max-width: 100%;
 }
 
-div[scrollable] > b > pre {
+div[output] > b > pre {
 	white-space: pre-wrap;
+	font-family: 'Inconsolata';
+	margin: 0;
 }
 
 b[response],
@@ -100,6 +97,21 @@ b[error] {
 	background-color: #F44336;
 }
 
-div[scrollable] > b > pre {
-	margin: 0;
+/* prompt */
+
+div[prompt] {
+	clear: both;
+	width: 100%;
+	padding: 4px;
+	display: flex;
+	align-items: baseline;
+}
+
+div[prompt] > input {
+	outline: none;
+	font-family: 'Inconsolata';
+	font-size: 16px;
+	background-color: transparent;
+	border: none;
+	width: 100%;
 }
