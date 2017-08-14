@@ -72,6 +72,11 @@ class PythonConsole(InteractiveConsole):
     def set(self, variable, value):
         self.locals[variable] = value
 
+    def get_state(self):
+        modules = self.locals.get('modules', {})
+        connections = self.locals.get('connections', [])
+        return {"modules": modules, "connections": connections}
+
 class AppWatcher(FileSystemEventHandler):
     """
     Watch a python module and re-import in an associated console when changes
@@ -144,7 +149,14 @@ class MainNamespace(socketio.AsyncNamespace):
         if self.console.exception_happened:
             return {"result": "exception", "return": eval_result}
         else:
-            return {"result": "success", "return": eval_result}
+            response = {
+                "result": "success",
+                "return": eval_result,
+            }
+            if request["eval"] == "clear()":
+                # hard-wired for debugging
+                response["state"] = {"modules": {}, "connections": []}
+            return response
 
     def handle_get(self, request):
         try:

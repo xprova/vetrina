@@ -20,6 +20,7 @@ viewer = (function() {
     var connector_layer;
     var cord_label;
     var modules = {};
+    var connections = [];
     var offset_x;
     var offset_y;
 
@@ -217,7 +218,7 @@ viewer = (function() {
 
         snap = Snap(snap_element);
 
-        addEvent(snap_element, "mousedown", (e) => palette.hide());
+        addEvent(snap_element, "mousedown", (e) => palette.hide()); // TODO: extract to app.js
 
         snap.mousedown(mousedown_handler);
         snap.mousemove(mousemove_handler);
@@ -410,7 +411,7 @@ viewer = (function() {
 
         }
 
-        modules[mod.id] = mod;
+        modules[mod.id] = _.assign(mod, {snap_group: gr});
 
     }
 
@@ -449,10 +450,33 @@ viewer = (function() {
             ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
 
         l1.addClass("connector");
+
+        connections.push([mod1, mod2, port1, port2, l1]);
     }
 
     function get_modules() {
         return _.cloneDeep(modules);
+    }
+
+    function remove_module(module) {
+
+        function is_mod_con (con) {
+            return (con[0] == module.id) || ([con[1]] == module.id);
+        }
+
+        var con_groups = _.groupBy(connections, is_mod_con);
+
+        _.each(con_groups.true, (con) => con[4].remove());
+
+        connections = con_groups.false;
+
+        module.snap_group.remove();
+
+        delete modules[module.id];
+    }
+
+    function clear() {
+        _.each(modules, remove_module);
     }
 
     return {
@@ -467,6 +491,8 @@ viewer = (function() {
         get_modules,
         shift_view,
         get_view_cords,
+        remove_module,
+        clear,
     };
 
 })();

@@ -62,6 +62,7 @@ app = (function () {
     function oncommand(cmd) {
         // terminal command handler
         sio.evaluate(cmd, (response) => {
+
             if (response.result === "success") {
                 if (response.return) {
                     if (_.isString(response.return)) {
@@ -76,6 +77,12 @@ app = (function () {
             } else {
                 terminal.append_text('error', response.description);
             }
+
+            if (response.state) {
+                viewer.clear();
+                toaster.info('received new state');
+            }
+
         });
     }
 
@@ -137,6 +144,8 @@ app = (function () {
         viewer.init("svg[viewer]");
 
         terminal.set_command_callback(oncommand);
+
+        terminal.show();
 
         setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 

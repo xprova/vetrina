@@ -1,3 +1,7 @@
+import copy
+import functools
+import json
+
 x = 1
 y = 3
 
@@ -16,6 +20,10 @@ corePoets = {
     }
 }
 
+modules = []
+
+def clear():
+    pass
 
 def count():
     return list(range(10))
@@ -24,3 +32,15 @@ def table(y, n):
     lines = [f"{x} x {y} = {x*y}" for x in range(1, n+1)]
     for item in lines:
         print(item)
+
+def makeModule(template, key):
+    global modules
+    new_mod = copy.deepcopy(template)
+    new_mod["id"] = key
+    modules.append(new_mod)
+    print(json.dumps(new_mod, indent=4))
+
+makePoets = functools.partial(makeModule, corePoets)
+
+def print_modules():
+    print(json.dumps(modules, indent=4))
