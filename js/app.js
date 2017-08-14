@@ -40,14 +40,12 @@ app = (function () {
 
         var change_callback = (selected) => {
             if (selected) {
-                console.log(`shifting to ${selected.x}, ${selected.y}`);
                 viewer.shift_view(selected.x, selected.y);
             }
         };
 
         var select_callback = (selected) => {
-            console.log("selected");
-            console.log(selected);
+            // todo
         };
 
         var cancel_callback = (selected) => {
