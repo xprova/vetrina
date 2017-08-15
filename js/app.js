@@ -80,7 +80,7 @@ app = (function () {
 
             if (response.state) {
                 viewer.clear();
-                toaster.info('received new state');
+                _.each(response.state.modules, viewer.add_module);
             }
 
         });

@@ -153,9 +153,10 @@ class MainNamespace(socketio.AsyncNamespace):
                 "result": "success",
                 "return": eval_result,
             }
-            if request["eval"] == "clear()":
+            if request["eval"] in ["clear()", "update()"]:
                 # hard-wired for debugging
-                response["state"] = {"modules": {}, "connections": []}
+                modules = self.console.locals.get("modules", {})
+                response["state"] = {"modules": modules, "connections": []}
             return response
 
     def handle_get(self, request):
@@ -201,6 +202,7 @@ def main():
     app_watcher = AppWatcher(debug, console, py_file)
     sio.register_namespace(MainNamespace("/", debug, console))
     sio.attach(app)
+    print("Server started")
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
                 handle_signals=True)
 

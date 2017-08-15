@@ -310,6 +310,8 @@ viewer = (function() {
         if (mod.hasOwnProperty("class"))
             gr.addClass(mod.class);
 
+        _.each(mod.classes || [], cls => gr.addClass(cls));
+
         function draw_port(x1, x2, y1, y2, label, halign, valign) {
             gr.line(x1, y1, x2, y2).addClass(port_line_class);
             gr.circle(x2, y2, port_pin_r);
