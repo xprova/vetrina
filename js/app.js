@@ -81,6 +81,7 @@ app = (function () {
             if (response.state) {
                 viewer.clear();
                 _.each(response.state.modules, viewer.add_module);
+                _.each(response.state.connections, viewer.add_connection);
             }
 
         });

@@ -155,8 +155,12 @@ class MainNamespace(socketio.AsyncNamespace):
             }
             if request["eval"] in ["clear()", "update()"]:
                 # hard-wired for debugging
-                modules = self.console.locals.get("modules", {})
-                response["state"] = {"modules": modules, "connections": []}
+                modules = self.console.locals.get("modules", [])
+                connections = self.console.locals.get("connections", [])
+                response["state"] = {
+                    "modules": modules,
+                    "connections": connections,
+                }
             return response
 
     def handle_get(self, request):

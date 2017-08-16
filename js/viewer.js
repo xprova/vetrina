@@ -470,7 +470,7 @@ viewer = (function() {
 
         _.each(con_groups.true, (con) => con[4].remove());
 
-        connections = con_groups.false;
+        connections = con_groups.false || [];
 
         module.snap_group.remove();
 
