@@ -34,6 +34,10 @@
 	fill: white;
 }
 
+.poets.hide-label text {
+	fill: none;
+}
+
 .poets-port-line, .poets circle, .poets-body {
 	stroke: #0D47A1;
 	stroke-width: 2;
