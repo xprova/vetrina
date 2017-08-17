@@ -14,8 +14,10 @@ terminal = (function() {
         commands: [],
         indexer: 0,
         add: function(cmd) {
-            this.commands.push(cmd);
-            this.indexer = this.commands.length;
+            if (cmd) {
+                this.commands.push(cmd);
+                this.indexer = this.commands.length;
+            }
         },
         prev: function() {
             if (this.indexer > 0) this.indexer--;
