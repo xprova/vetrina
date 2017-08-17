@@ -9,22 +9,21 @@ terminal = (function() {
     var terminal;      /* scrollable and input group */
 
     var command_callback;
-    var command_history = [];
 
-    var command_history = {
-        history: [],
-        indexer: 3,
+    var history = {
+        commands: [],
+        indexer: 0,
         add: function(cmd) {
-            this.history.push(cmd);
-            this.indexer = this.history.length;
+            this.commands.push(cmd);
+            this.indexer = this.commands.length;
         },
         prev: function() {
             if (this.indexer > 0) this.indexer--;
-            return this.history[this.indexer];
+            return this.commands[this.indexer] || '';
         },
         next: function() {
-            if (this.indexer < this.history.length-1) this.indexer++;
-            return this.history[this.indexer];
+            if (this.indexer < this.commands.length-1) this.indexer++;
+            return this.commands[this.indexer] || '';
         },
     };
 
@@ -68,7 +67,7 @@ terminal = (function() {
             var cmd = prompt_input.value;
             prompt_input.value = "";
             append_text('cmd', `>> ${cmd}`);
-            command_history.add(cmd);
+            history.add(cmd);
             if (command_callback)
                 command_callback(cmd);
         } else if (event.key === 'l' && event.ctrlKey) {
@@ -77,13 +76,13 @@ terminal = (function() {
             event.stopPropagation();
             event.preventDefault();
         } else if (event.key === "ArrowUp") {
-            prompt_input.value = command_history.prev();
+            prompt_input.value = history.prev();
             event.stopPropagation();
             event.preventDefault();
             prompt_input.selectionStart = prompt_input.value.length;
             prompt_input.selectionEnd = prompt_input.value.length;
         } else if (event.key === "ArrowDown") {
-            prompt_input.value = command_history.next();
+            prompt_input.value = history.next();
             prompt_input.selectionStart = prompt_input.value.length;
             prompt_input.selectionEnd = prompt_input.value.length;
             event.stopPropagation();
