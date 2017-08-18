@@ -72,10 +72,6 @@ class PythonConsole(InteractiveConsole):
     def set(self, variable, value):
         self.locals[variable] = value
 
-    def get_state(self):
-        modules = self.locals.get('modules', {})
-        connections = self.locals.get('connections', [])
-        return {"modules": modules, "connections": connections}
 
 class AppWatcher(FileSystemEventHandler):
     """
