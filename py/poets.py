@@ -20,15 +20,18 @@ connections = []
 
 def clear():
     del modules[:]
+    del connections[:]
+
+
+def change(new_mods, new_cons):
+    del modules[:]
+    del connections[:]
+    modules.extend(new_mods)
+    connections.extend(new_cons)
 
 
 def update():
 
-    new_mods, new_cons = get_grid(corePoets, 5, 5,
-        module_name="corePoets_%d_%d")
+    new_mods, new_cons = get_grid(corePoets, 5, 5, "corePoets_%d_%d")
 
-    del modules[:]
-    del connections[:]
-
-    modules.extend(new_mods)
-    connections.extend(new_cons)
+    change(new_mods, new_cons)
