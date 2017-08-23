@@ -85,25 +85,28 @@ class AppWatcher(FileSystemEventHandler):
     def __init__(self, debug, console, py_file, watch_dir='.'):
         self.console = console
         self.py_file = py_file
-        self.on_modified(None)
+        self.reload()
         self.debug = debug
         observer = Observer()
         observer.schedule(self, watch_dir, recursive=True)
         observer.start()
 
+    def reload(self):
+        py_mod = self.py_file.replace(".py", "")
+        lines = [
+            f'import sys',
+            f'if "{py_mod}" in sys.modules:'
+            f'    del sys.modules["{py_mod}"]',
+            f'from {py_mod} import *',
+        ]
+        for line in lines:
+            self.console.runcode(line)
+        if self.debug:
+            print(f"Detected change and reloaded <{self.py_file}>")
+
     def on_modified(self, event):
         if event and event.src_path[-3:] == ".py":
-            py_mod = self.py_file.replace(".py", "")
-            lines = [
-                f'import sys',
-                f'if "{py_mod}" in sys.modules:'
-                f'    del sys.modules["{py_mod}"]',
-                f'from {py_mod} import *',
-            ]
-            for line in lines:
-                self.console.runcode(line)
-            if self.debug:
-                print(f"Detected change and reloaded <{self.py_file}>")
+            reload()
 
 
 class MainNamespace(socketio.AsyncNamespace):
@@ -143,11 +146,10 @@ class MainNamespace(socketio.AsyncNamespace):
             }
             if request["eval"] in ["clear()", "update()"]:
                 # hard-wired for debugging
-                modules = self.console.locals.get("modules", [])
-                connections = self.console.locals.get("connections", [])
+                model = self.console.locals.get("model")
                 response["state"] = {
-                    "modules": modules,
-                    "connections": connections,
+                    "modules": model.modules,
+                    "connections": model.connections,
                 }
             return response
 
