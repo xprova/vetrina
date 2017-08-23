@@ -3,14 +3,12 @@ class Model:
     modules = []
     connections = []
 
-    def add_module(id_, attrs):
-        pass
+    def add_modules(self, new_modules):
+        self.modules.extend(new_modules)
 
-    def remove_module(id_):
-        pass
+    def add_connections(self, new_connections):
+        self.connections.extend(new_connections)
 
-    def add_connection(mod1, mod2, port1, port2):
-        pass
-
-    def reset():
-        pass
+    def reset(self):
+        self.modules = []
+        self.connections = []

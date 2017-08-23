@@ -1,4 +1,5 @@
 from topology import get_grid
+from model import Model
 
 engine_name = "POETS"
 
@@ -14,24 +15,11 @@ corePoets = {
     "ports": {}
 }
 
-modules = []
-connections = []
-
-
-def clear():
-    del modules[:]
-    del connections[:]
-
-
-def change(new_mods, new_cons):
-    del modules[:]
-    del connections[:]
-    modules.extend(new_mods)
-    connections.extend(new_cons)
+model = Model()
 
 
 def update():
-
     new_mods, new_cons = get_grid(corePoets, 5, 5, "corePoets_%d_%d")
-
-    change(new_mods, new_cons)
+    model.reset()
+    model.add_modules(new_mods)
+    model.add_connections(new_cons)
