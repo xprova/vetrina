@@ -106,7 +106,7 @@ class AppWatcher(FileSystemEventHandler):
 
     def on_modified(self, event):
         if event and event.src_path[-3:] == ".py":
-            reload()
+            self.reload()
 
 
 class MainNamespace(socketio.AsyncNamespace):
