@@ -3,7 +3,6 @@
 import os
 import sys
 import socketio
-import hashlib
 from code import InteractiveConsole
 from aiohttp import web
 from datetime import datetime
@@ -79,7 +78,6 @@ class AppWatcher(FileSystemEventHandler):
     are detected.
     """
 
-    hash_ = None
     debug = False
     py_file = None
     console = None
@@ -93,14 +91,8 @@ class AppWatcher(FileSystemEventHandler):
         observer.schedule(self, watch_dir, recursive=True)
         observer.start()
 
-    def get_py_file_hash(self):
-        with open(self.py_file, "rb") as fid:
-            data = fid.read()
-            return hashlib.md5(data).hexdigest()
-
     def on_modified(self, event):
-        new_hash = self.get_py_file_hash()
-        if new_hash != self.hash_:
+        if event and event.src_path[-3:] == ".py":
             py_mod = self.py_file.replace(".py", "")
             lines = [
                 f'import sys',
@@ -108,8 +100,8 @@ class AppWatcher(FileSystemEventHandler):
                 f'    del sys.modules["{py_mod}"]',
                 f'from {py_mod} import *',
             ]
-            list(map(self.console.runcode, lines))
-            self.hash_ = new_hash
+            for line in lines:
+                self.console.runcode(line)
             if self.debug:
                 print(f"Detected change and reloaded <{self.py_file}>")
 
