@@ -148,9 +148,9 @@ class MainNamespace(socketio.AsyncNamespace):
                 "result": "success",
                 "return": eval_result,
             }
-            if request["eval"] in ["clear()", "update()"]:
-                # hard-wired for debugging
-                model = self.console.locals.get("model")
+            model = self.console.locals.get("model")
+            if model.dirty:
+                model.dirty = False
                 response["state"] = {
                     "modules": model.modules,
                     "connections": model.connections,
