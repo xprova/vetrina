@@ -98,6 +98,10 @@ class AppWatcher(FileSystemEventHandler):
             f'if "{py_mod}" in sys.modules:'
             f'    del sys.modules["{py_mod}"]',
             f'from {py_mod} import *',
+            f'if "model" in sys.modules:'
+            f'    del sys.modules["model"]',
+            f'from model import Model',
+            f'model = Model()',
         ]
         for line in lines:
             self.console.runcode(line)

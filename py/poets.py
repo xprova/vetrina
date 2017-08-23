@@ -1,5 +1,4 @@
 from topology import get_grid
-from model import Model
 
 engine_name = "POETS"
 
@@ -14,8 +13,6 @@ corePoets = {
     "y": -200,
     "ports": {}
 }
-
-model = Model()
 
 
 def update():
