@@ -1,4 +1,5 @@
 from random import randrange
+from random import sample
 
 engine_name = "Graphs"
 
@@ -8,22 +9,27 @@ def get_id(i):
 def get_rnode(i):
     return {
         "id": get_id(i),
-        "x": randrange(-200, 200, 5),
-        "y": randrange(-200, 200, 5),
-        "width": 10,
-        "height": 10,
+        "x": randrange(-200, 200, 10),
+        "y": randrange(-200, 200, 10),
+        "class": "node",
+        "classes": ["graph", "hide-label"],
+        "border-radius": 10,
+        "width": 20,
+        "height": 20,
         "ports": {
-            "p": {"x": 5, "y": 5}
+            "p": {"x": 10, "y": 10}
         }
     }
 
+def rand_con(nodes):
+    n = len(nodes)
+    x, y = map(get_id, sample(range(n), 2))
+    return (x, y, "p", "p")
 
-def init(model):
-    nodes = [get_rnode(i) for i in range(5)]
-    n0 = get_id(0)
-    n1 = get_id(1)
-    con = (n0, n1, "p", "p")
+def init(model, nmods=50, ncons=150):
+    nodes = [get_rnode(i) for i in range(nmods)]
+    cons = [rand_con(nodes) for _ in range(ncons)]
     model.clear()
     model.add_modules(nodes)
-    model.add_connection(con)
+    model.add_connections(cons)
 

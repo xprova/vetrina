@@ -1,0 +1,21 @@
+.graph.node text {
+	fill: none;
+}
+
+.graph.node rect {
+	stroke: black;
+	stroke-width: 2;
+	fill: white;
+	transition-property: transform;
+	transition-duration: 0.1s;
+	transition-timing-function: ease;
+	transform-origin: center center;
+}
+
+.graph.node:hover rect {
+	transform: scale(1.25);
+}
+
+.connector {
+	stroke: gray;
+}

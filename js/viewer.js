@@ -380,7 +380,9 @@ viewer = (function() {
 
             // block module
 
-            var r1 = gr.rect(x, y, mod_w, mod_h, 5, 5);
+            var r = mod["border-radius"] || 5;
+
+            var r1 = gr.rect(x, y, mod_w, mod_h, r, r);
             var t1 = gr.text(x + mod_w/2, y + mod_h + 20, mod.id);
 
             r1.addClass(body_class);
