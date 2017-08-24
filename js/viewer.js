@@ -424,10 +424,14 @@ viewer = (function() {
         var m1 = modules[mod1];
         var m2 = modules[mod2];
 
-        if (m1 == null)
+        if (m1 == null) {
             console.error(`could not find module ${mod1}`);
-        if (m2 == null)
+            return;
+        }
+        if (m2 == null) {
             console.error(`could not find module ${mod2}`);
+            return ;
+        }
 
         var p1 = m1.ports[port1];
         var p2 = m2.ports[port2];
