@@ -5,8 +5,16 @@ class Model:
         self.connections = []
         self.dirty = False
 
+    def add_module(self, module):
+        self.modules.append(module)
+        self.dirty = True
+
     def add_modules(self, new_modules):
         self.modules.extend(new_modules)
+        self.dirty = True
+
+    def add_connection(self, con):
+        self.connections.append(con)
         self.dirty = True
 
     def add_connections(self, new_connections):
