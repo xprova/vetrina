@@ -55,15 +55,9 @@ class PythonConsole(InteractiveConsole):
         """Alias for push"""
         return self.push(cmd)
 
-    def call(self, method, args=None):
+    def call(self, method, kwargs={}):
         """Execute method and return results"""
-        self.locals['__temp_method__'] = self.locals[method]
-        if args:
-            self.locals['myargs'] = args
-            self.push("__temp_return__ = __temp_method__(args)")
-        else:
-            self.push("__temp_return__ = __temp_method__()")
-        return self.locals['__temp_return__']
+        return self.locals[method](**kwargs)
 
     def get(self, variable):
         return self.locals[variable]
@@ -136,7 +130,7 @@ class MainNamespace(socketio.AsyncNamespace):
 
     def handle_call(self, request):
         kwargs = request.get("args") or {}
-        call_return = self.console.call(request["call"])
+        call_return = self.console.call(request["call"], kwargs)
         return {"result": "success", "return": call_return}
 
     def handle_eval(self, request):
