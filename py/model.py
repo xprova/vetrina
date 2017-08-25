@@ -1,9 +1,9 @@
 class Model:
 
-    def __init__(self):
-        self.modules = []
-        self.connections = []
-        self.dirty = False
+    def __init__(self, modules=[], connections=[]):
+        self.modules = modules
+        self.connections = connections
+        self.dirty = True  # force initial draw
 
     def add_module(self, module):
         self.modules.append(module)

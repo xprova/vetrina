@@ -1,5 +1,6 @@
 from random import randrange
 from random import sample
+from model import Model
 
 engine_name = "Graphs"
 
@@ -26,10 +27,7 @@ def rand_con(nodes):
     x, y = map(get_id, sample(range(n), 2))
     return (x, y, "p", "p")
 
-def init(model, nmods=50, ncons=150):
+def init(nmods=50, ncons=150):
     nodes = [get_rnode(i) for i in range(nmods)]
     cons = [rand_con(nodes) for _ in range(ncons)]
-    model.clear()
-    model.add_modules(nodes)
-    model.add_connections(cons)
-
+    return Model(nodes, cons)

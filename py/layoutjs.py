@@ -119,6 +119,7 @@ class MainNamespace(socketio.AsyncNamespace):
     debug = False
     active_users = set()
     console = None
+    model_id = None  # keeps id(model) of last update to detect changes
 
     def __init__(self, namespace, debug, console):
         super().__init__(namespace)
@@ -149,8 +150,10 @@ class MainNamespace(socketio.AsyncNamespace):
                 "return": eval_result,
             }
             model = self.console.locals.get("model")
-            if model.dirty:
+            # detect changes or re-assignment of model
+            if model.dirty or self.model_id != id(model):
                 model.dirty = False
+                self.model_id = id(model)
                 response["state"] = {
                     "modules": model.modules,
                     "connections": model.connections,
