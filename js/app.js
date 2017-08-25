@@ -92,6 +92,7 @@ app = (function () {
             var success = response.result === 'success';
             var name_str = success ? `(${response.return})` : '';
             toaster.success(`Engine connected ${name_str}`);
+            oncommand("init(model)");
         });
     }
 
