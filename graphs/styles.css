@@ -6,16 +6,26 @@
 	stroke: black;
 	stroke-width: 2;
 	fill: white;
-	transition-property: transform;
+	transition-property: transform stroke;
 	transition-duration: 0.1s;
 	transition-timing-function: ease;
 	transform-origin: center center;
 }
 
 .graph.node:hover rect {
+	stroke: red;
 	transform: scale(1.25);
 }
 
 .connector {
 	stroke: gray;
+	stroke-width: 2;
+	transition-property: stroke stroke-width;
+	transition-duration: 0.1s;
+	transition-timing-function: ease;
+}
+
+.connector:hover {
+	stroke: red;
+	stroke-width: 5;
 }

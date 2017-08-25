@@ -9,8 +9,8 @@ def get_id(i):
 def get_rnode(i):
     return {
         "id": get_id(i),
-        "x": randrange(-200, 200, 10),
-        "y": randrange(-200, 200, 10),
+        "x": randrange(-500, 500, 10),
+        "y": randrange(-500, 500, 10),
         "class": "node",
         "classes": ["graph", "hide-label"],
         "border-radius": 10,
