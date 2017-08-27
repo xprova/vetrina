@@ -14,12 +14,13 @@ from watchdog.observers import Observer
 def log_event(debug, sid, str_, color):
     if debug:
         tm = datetime.now().strftime('%I:%M:%S %p')
+        str_short = f"{str_[:76]} ..." if len(str_)>76 else str_
         if sid:
             sid_short = sid[:8]
-            cprint(f"{tm} ({sid_short}) : {str_}", color)
+            cprint(f"{tm} ({sid_short}) : {str_short}", color)
         else:
             sid_space = ' ' * 10
-            cprint(f"{tm} {sid_soace} : {str_}", color)
+            cprint(f"{tm} {sid_soace} : {str_short}", color)
 
 
 class PythonConsole(InteractiveConsole):
@@ -188,7 +189,7 @@ class MainNamespace(socketio.AsyncNamespace):
         for call_type, handle_func in call_table.items():
             if call_type in request:
                 response = handle_func(request)
-                log_event(self.debug, sid, response, "cyan")
+                log_event(self.debug, sid, str(response), "cyan")
                 return response
         else:
             return {"result": "error", "description": "invalid request"}
