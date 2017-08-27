@@ -1,5 +1,6 @@
 import itertools
 import copy
+from model import Model
 
 
 def drange(w, h):
@@ -52,4 +53,4 @@ def get_grid(module_template, w, h, module_name="module_%d_%d"):
         modules[core2]["ports"][b_port] = {"position": "bottom"}
         connections.append([core1, core2, t_port, b_port])
 
-    return (modules.values(), connections)
+    return Model(list(modules.values()), connections)
