@@ -12,6 +12,7 @@ def get_rnode(i):
         "id": get_id(i),
         "x": randrange(-500, 500, 10),
         "y": randrange(-500, 500, 10),
+        "description": "Graph Node",
         "class": "node",
         "classes": ["graph", "hide-label"],
         "border-radius": 10,
