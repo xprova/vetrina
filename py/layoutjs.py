@@ -66,6 +66,16 @@ class PythonConsole(InteractiveConsole):
     def set(self, variable, value):
         self.locals[variable] = value
 
+    def import_module(self, py_mod, symbols):
+        lines = [
+            f'import sys',
+            f'if "{py_mod}" in sys.modules:'
+            f'    del sys.modules["{py_mod}"]',
+            f'from {py_mod} import {symbols}',
+        ]
+        for line in lines:
+            self.runcode(line)
+
 
 class AppWatcher(FileSystemEventHandler):
     """
@@ -86,20 +96,10 @@ class AppWatcher(FileSystemEventHandler):
         observer.schedule(self, watch_dir, recursive=True)
         observer.start()
 
-    def import_module(self, py_mod, symbols):
-        lines = [
-            f'import sys',
-            f'if "{py_mod}" in sys.modules:'
-            f'    del sys.modules["{py_mod}"]',
-            f'from {py_mod} import {symbols}',
-        ]
-        for line in lines:
-            self.console.runcode(line)
-
     def reload(self):
         py_mod = self.py_file.replace(".py", "")
-        self.import_module(py_mod, "*")
-        self.import_module("model", "Model")
+        self.console.import_module(py_mod, "*")
+        self.console.import_module("model", "Model")
         if self.debug:
             print(f"Detected change and reloaded <{self.py_file}>")
 
