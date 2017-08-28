@@ -79,33 +79,18 @@ class PythonConsole(InteractiveConsole):
 
 class AppWatcher(FileSystemEventHandler):
     """
-    Watch a python module and re-import in an associated console when changes
-    are detected.
+    Watch a directory and run on_reload when changes in .py files are detected
     """
 
-    debug = False
-    py_file = None
-    console = None
-
-    def __init__(self, debug, console, py_file, watch_dir='.'):
-        self.console = console
-        self.py_file = py_file
-        self.reload()
-        self.debug = debug
+    def __init__(self, on_reload, watch_dir='.'):
+        self.on_reload = on_reload
         observer = Observer()
         observer.schedule(self, watch_dir, recursive=True)
         observer.start()
 
-    def reload(self):
-        py_mod = self.py_file.replace(".py", "")
-        self.console.import_module(py_mod, "*")
-        self.console.import_module("model", "Model")
-        if self.debug:
-            print(f"Detected change and reloaded <{self.py_file}>")
-
     def on_modified(self, event):
         if event and event.src_path[-3:] == ".py":
-            self.reload()
+            self.on_reload()
 
 
 class MainNamespace(socketio.AsyncNamespace):
@@ -188,20 +173,28 @@ class MainNamespace(socketio.AsyncNamespace):
         else:
             return {"result": "error", "description": "invalid request"}
 
+def load_engine(console, py_mod, debug):
+    console.import_module("model", "Model")
+    console.runcode("init = lambda: Model()")  # define a dummy init()
+    if py_mod:
+        console.import_module(py_mod, "*")
+    if debug:
+        print(f"Detected change and reloaded engine")
 
 def main():
     debug = True
-    py_file = sys.argv[1]
+    py_file = sys.argv[1] if len(sys.argv)>1 else None
+    py_mod = py_file.replace(".py", "") if py_file else None
     app = web.Application()
     sio = socketio.AsyncServer()
     console = PythonConsole()
-    app_watcher = AppWatcher(debug, console, py_file)
+    app_watcher = AppWatcher(lambda: load_engine(console, py_mod, debug))
+    load_engine(console, py_mod, False)
     sio.register_namespace(MainNamespace("/", debug, console))
     sio.attach(app)
     print("Server started")
     web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
                 handle_signals=True)
-
 
 if __name__ == '__main__':
     main()
