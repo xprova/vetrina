@@ -14,9 +14,4 @@ corePoets = {
     "ports": {}
 }
 
-
-def init(model):
-    new_mods, new_cons = get_grid(corePoets, 5, 5, "corePoets_%d_%d")
-    model.clear()
-    model.add_modules(new_mods)
-    model.add_connections(new_cons)
+init = lambda: get_grid(corePoets, 5, 5, "corePoets_%d_%d")
