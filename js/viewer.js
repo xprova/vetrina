@@ -423,7 +423,7 @@ viewer = (function() {
 
     function add_connection(connection) {
 
-        const [mod1, mod2, port1, port2] = connection;
+        const [mod1, mod2, port1, port2, classes] = connection;
 
         var m1 = modules[mod1];
         var m2 = modules[mod2];
@@ -457,6 +457,8 @@ viewer = (function() {
         var y2 = cy2 + p2.y;
 
         var l1 = connector_layer.line(x1, y1, x2, y2);
+
+        _.each(classes || [], class_ => l1.addClass(class_));
 
         connections.push([mod1, mod2, port1, port2, l1]);
     }

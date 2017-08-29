@@ -26,7 +26,7 @@ def get_rnode(i):
 def rand_con(nodes):
     n = len(nodes)
     x, y = map(get_id, sample(range(n), 2))
-    return (x, y, "p", "p")
+    return (x, y, "p", "p", ["graph-connection"])
 
 def init(nmods=50, ncons=150):
     nodes = [get_rnode(i) for i in range(nmods)]
