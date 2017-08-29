@@ -197,7 +197,7 @@ viewer = (function() {
     _.map(_.range(-gh, gh+1), draw_hline);
     _.map(_.range(-gv, gv+1), draw_vline);
 
-}
+    }
 
     // main function
 
