@@ -231,6 +231,7 @@ viewer = (function() {
 
         grid_layer.attr({id: "grid"});
         module_layer.attr({id: "modules"});
+        connector_layer.attr({id: "connections"});
 
         draw_grid(grid_layer);
 
@@ -306,6 +307,7 @@ viewer = (function() {
 
         var gr = snap.g();
         gr.attr({id: mod.id});
+        module_layer.add(gr);
 
         if (mod.hasOwnProperty("class"))
             gr.addClass(mod.class);
