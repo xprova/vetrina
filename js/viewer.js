@@ -456,10 +456,7 @@ viewer = (function() {
         var x2 = cx2 + p2.x;
         var y2 = cy2 + p2.y;
 
-        var l1 = connector_layer.path(`M ${x1} ${y1} R ${x1+(x2-x1)*0.25} \
-            ${y1+(y2-y1)*0.25} ${x2} ${y2}`);
-
-        l1.addClass("connector");
+        var l1 = connector_layer.line(x1, y1, x2, y2);
 
         connections.push([mod1, mod2, port1, port2, l1]);
     }

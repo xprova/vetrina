@@ -50,7 +50,7 @@ svg:active{
 	font-family: "Inconsolata";
 }
 
-.connector {
+#connections line {
 	stroke-width: 1.5px;
 	stroke: black;
 	stroke-linecap: round;

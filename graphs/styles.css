@@ -17,7 +17,7 @@
 	transform: scale(1.25);
 }
 
-.connector {
+/*#connections > line {
 	stroke: gray;
 	stroke-width: 2;
 	transition-property: stroke stroke-width;
@@ -25,7 +25,8 @@
 	transition-timing-function: ease;
 }
 
-.connector:hover {
+#connections > line:hover {
 	stroke: red;
 	stroke-width: 5;
 }
+*/
