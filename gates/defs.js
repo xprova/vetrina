@@ -1,5 +1,5 @@
 gateAnd = {
-    svg: "logic-gates/gate-and.svg",
+    svg: "gates/gate-and.svg",
     class: "logic-gates",
     description: "Logic Gate (AND)",
     width: 50,
@@ -12,7 +12,7 @@ gateAnd = {
 }
 
 gateOr = {
-    svg: "logic-gates/gate-or.svg",
+    svg: "gates/gate-or.svg",
     class: "logic-gates",
     description: "Logic Gate (OR)",
     width: 50,
@@ -25,7 +25,7 @@ gateOr = {
 }
 
 gateXor = {
-    svg: "logic-gates/gate-xor.svg",
+    svg: "gates/gate-xor.svg",
     class: "logic-gates",
     description: "Logic Gate (XOR)",
     width: 50,
@@ -39,7 +39,7 @@ gateXor = {
 
 
 gateNor = {
-    svg: "logic-gates/gate-nor.svg",
+    svg: "gates/gate-nor.svg",
     class: "logic-gates",
     description: "Logic Gate (NOR)",
     width: 50,
@@ -52,7 +52,7 @@ gateNor = {
 }
 
 gateNand = {
-    svg: "logic-gates/gate-nand.svg",
+    svg: "gates/gate-nand.svg",
     class: "logic-gates",
     description: "Logic Gate (NAND)",
     width: 50,
@@ -65,7 +65,7 @@ gateNand = {
 }
 
 gateBuffer = {
-    svg: "logic-gates/gate-buffer.svg",
+    svg: "gates/gate-buffer.svg",
     description: "Logic Gate (Buffer)",
     class: "logic-gates",
     width: 50,
@@ -77,7 +77,7 @@ gateBuffer = {
 }
 
 gateWire = {
-    svg: "logic-gates/gate-wire.svg",
+    svg: "gates/gate-wire.svg",
     description: "Logic Gate (Wire)",
     class: "logic-gates",
     width: 50,
@@ -89,7 +89,7 @@ gateWire = {
 }
 
 gateInverter = {
-    svg: "logic-gates/gate-inverter.svg",
+    svg: "gates/gate-inverter.svg",
     class: "logic-gates",
     description: "Logic Gate (Inverter)",
     width: 50,
@@ -101,7 +101,7 @@ gateInverter = {
 }
 
 gateSource = {
-    svg: "logic-gates/gate-source.svg",
+    svg: "gates/gate-source.svg",
     class: "logic-gates",
     description: "Flip-Flop (Source)",
     width: 50,
@@ -113,7 +113,7 @@ gateSource = {
 }
 
 gateSink = {
-    svg: "logic-gates/gate-sink.svg",
+    svg: "gates/gate-sink.svg",
     class: "logic-gates",
     description: "Flip-Flop (Destination)",
     width: 50,
