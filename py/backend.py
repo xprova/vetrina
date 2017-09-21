@@ -12,15 +12,17 @@ from watchdog.observers import Observer
 
 
 def log_event(debug, sid, str_, color):
+    MAX_LEN = 80  # max chars per line
+    mx_msg = MAX_LEN - 4  # max message length (subtracting length of " ...")
     if debug:
         tm = datetime.now().strftime('%I:%M:%S %p')
-        str_short = f"{str_[:76]} ..." if len(str_)>76 else str_
+        str_short = ("%s ..." % str_[:mx_msg]) if len(str_)>mx_msg else str_
         if sid:
             sid_short = sid[:8]
-            cprint(f"{tm} ({sid_short}) : {str_short}", color)
+            cprint("%s (%s) : %s" % (tm, sid_short, str_short), color)
         else:
             sid_space = ' ' * 10
-            cprint(f"{tm} {sid_soace} : {str_short}", color)
+            cprint("{%s} {%s} : {%s}" % (tm, sid_space, str_short), color)
 
 
 class PythonConsole(InteractiveConsole):
@@ -179,7 +181,7 @@ def load_engine(console, py_mod, debug):
     if py_mod:
         console.import_module(py_mod, "*")
     if debug:
-        print(f"Detected change and reloaded engine")
+        print("Detected change and reloaded engine")
 
 def main():
     debug = True
