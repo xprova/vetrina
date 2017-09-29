@@ -15,7 +15,10 @@ from termcolor import cprint
 usage="""Adapter
 
 Usage:
-  adapter.py <engine>
+  adapter.py [options] <engine>
+
+Options:
+  -d, --debug  Print debug messages
 
 """
 
@@ -65,7 +68,7 @@ def main():
         log_event(sid, req_str, "green")
         proc.stdin.write("%s\n" % req_str)
 
-        # read and parse engine output
+        # read, log and parse engine output
 
         rep_str = proc.stdout.readline().strip()
         log_event(sid, rep_str, "cyan")
@@ -73,15 +76,18 @@ def main():
         try:
             response = json.loads(rep_str)
         except ValueError:
-            msg = "Engine returned an invalid JSON string"
-            log_event(sid, msg, "red")
-            response = {"result": "error", "description": "internal engine error"}
+            log_event(sid, "Engine returned an invalid JSON string", "red")
+            response = {
+                "result": "error",
+                "description": "internal engine error"
+            }
 
         return response
 
     # start server
 
-    eventlet.wsgi.server(eventlet.listen(('localhost', 8000)), app)
+    eventlet.wsgi.server(
+        eventlet.listen(('localhost', 8000)), app, log_output=args["--debug"])
 
 
 if __name__ == '__main__':
