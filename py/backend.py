@@ -70,10 +70,10 @@ class PythonConsole(InteractiveConsole):
 
     def import_module(self, py_mod, symbols):
         lines = [
-            f'import sys',
-            f'if "{py_mod}" in sys.modules:'
-            f'    del sys.modules["{py_mod}"]',
-            f'from {py_mod} import {symbols}',
+            'import sys',
+            'if "%s" in sys.modules:' % py_mod
+            '    del sys.modules["%s"]' % py_mod,
+            'from %s import %s' % (py_mod, symbols),
         ]
         for line in lines:
             self.runcode(line)
