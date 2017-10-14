@@ -64,41 +64,6 @@ terminal = (function() {
         scroll_bottom();
     }
 
-    function append_demo_chart() {
-
-        var data = [
-        ['Number of Cores', 'Performance'],
-        [ 8,      12],
-        [ 4,      5.5],
-        [ 11,     14],
-        [ 4,      5],
-        [ 3,      3.5],
-        [ 6.5,    7]
-        ];
-
-        var options = {
-            title: 'Average Shortest Path Computation',
-            hAxis: {title: 'Number of Cores', minValue: 0, maxValue: 15},
-            vAxis: {title: 'Performance (units)', minValue: 0, maxValue: 15},
-            legend: 'none'
-        };
-
-        var chart_id = 1;
-
-        append_scatter_chart(chart_id, data, options);
-    }
-
-    function append_scatter_chart(chart_id, data, options) {
-
-        var element = document.createElement("chart");
-        var data_table = google.visualization.arrayToDataTable(data);
-        var chart = new google.visualization.ScatterChart(element);
-        element.id = `chart_${chart_id}`;
-        append_element(element);
-        chart.draw(data_table, options);
-
-    }
-
     function clear() {
         output.innerHTML = '';
     }
@@ -158,6 +123,12 @@ terminal = (function() {
         command_callback = callback;
     }
 
-    return {show, append_html, append_text, set_command_callback};
+    return {
+        show,
+        append_html,
+        append_text,
+        append_element,
+        set_command_callback
+    };
 
 })();
