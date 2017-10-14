@@ -9,7 +9,7 @@ body {
 	overflow: hidden;
 }
 
-svg {
+svg[viewer] {
 	background: white;
 	border-top: solid 1px #dddddd;
     cursor: default;
@@ -19,7 +19,7 @@ svg {
     box-sizing: border-box;
 }
 
-svg:active{
+svg[viewer]:active{
     cursor: move;
 }
 
