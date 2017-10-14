@@ -7,6 +7,7 @@
     <script src="js/lib/mousetrap.min.js"></script>
     <script src="js/lib/lodash.js"></script>
     <script src="js/lib/socket.io.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="poets/defs.js"></script>
     <script src="gates/defs.js"></script>
     <script src="js/sio.js"></script>
@@ -23,6 +24,9 @@
     <link rel="stylesheet" type="text/css" href="poets/styles.css">
     <link rel="stylesheet" type="text/css" href="gates/styles.css">
     <link rel="stylesheet" type="text/css" href="graphs/styles.css">
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+    </script>
 </head>
 <body ng-app="project">
     <toaster></toaster>

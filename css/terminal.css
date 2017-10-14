@@ -115,3 +115,12 @@ div[prompt] > input {
 	border: none;
 	width: 100%;
 }
+
+/* charts */
+
+chart {
+	width: 800px;
+	height: 500px;
+	display: block;
+	border: solid 1px gray;
+}
