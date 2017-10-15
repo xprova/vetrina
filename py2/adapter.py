@@ -70,11 +70,17 @@ def main():
 
         # read, log and parse engine output
 
-        rep_str = proc.stdout.readline().strip()
-        log_event(sid, rep_str, "cyan")
-
         try:
-            response = json.loads(rep_str)
+
+            unfinished = True
+
+            while unfinished:
+                rep_str = proc.stdout.readline().strip()
+                log_event(sid, rep_str, "cyan")
+                response = json.loads(rep_str)
+                sio.emit('reply', response)
+                unfinished = response.get("result") not in ["success", "error"]
+
         except ValueError:
             log_event(sid, "Engine returned an invalid JSON string", "red")
             response = {

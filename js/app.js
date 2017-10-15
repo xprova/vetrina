@@ -72,6 +72,8 @@ app = (function () {
                         terminal.append_text("response", json_str);
                     }
                 }
+            } else if (response.result === "update") {
+                // ignore, for now
             } else if (response.result === "exception") {
                 terminal.append_text("exception", response.return);
             } else {

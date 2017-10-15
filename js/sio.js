@@ -9,6 +9,14 @@ sio = (function () {
 	var socket;
 	var connected = false;
 
+	var msg_counter = 0;
+
+	var finish_cb_table = {};  // call id -> finish_cb_fun
+	var update_cb_table = {};  // call id -> update_cb_fun
+
+	var last_finish_cb;
+	var last_update_cb;
+
 	function connect(connect_cb, disconnect_cb) {
 
 		socket = io("http://localhost:8000/");
@@ -25,30 +33,52 @@ sio = (function () {
 			if (disconnect_cb) disconnect_cb();
 		});
 
+		socket.on('reply', (content) => {
+
+			var callback = finish_cb_table[content._id] || last_finish_cb;
+
+			callback(content);
+
+			console.log('received reply');
+			console.log(content);
+		});
+
 	}
 
-	function send(content, callback) {
-		callback = callback || (() => null);
-		if (connected)
-			socket.emit('msg', content, (result) => callback(result));
-		else
-			callback({"result": "error", "description": "no engine connected"});
+	function send(content, finish_cb, update_cb) {
+
+		if (connected) {
+
+			var _id = msg_counter++;
+			content["_id"] = _id; // TODO: deep copy instead of mutation
+			finish_cb_table[_id] = finish_cb;
+			update_cb_table[_id] = update_cb;
+			socket.emit('msg', content);
+
+			last_finish_cb = finish_cb;
+			last_update_cb = update_cb;
+
+		} else {
+
+			finish_cb({"result": "error", "description": "no engine connected"});
+
+		}
 	}
 
-	function call(method, args={}, callback) {
-		send({call: method, args:args}, callback);
+	function call(method, args={}, finish_cb, update_cb) {
+		send({call: method, args:args}, finish_cb, update_cb);
 	}
 
-	function evaluate(method, callback) {
-		send({eval: method}, callback);
+	function evaluate(method, finish_cb, update_cb) {
+		send({eval: method}, finish_cb, update_cb);
 	}
 
-	function get(variable, callback) {
-		send({get: variable}, callback);
+	function get(variable, finish_cb, update_cb) {
+		send({get: variable}, finish_cb, update_cb);
 	}
 
-	function set(variable, value, callback) {
-		send({set: variable, value:value}, callback);
+	function set(variable, value, finish_cb, update_cb) {
+		send({set: variable, value:value}, finish_cb, update_cb);
 	}
 
 	return {connect, call, evaluate, get, set};
