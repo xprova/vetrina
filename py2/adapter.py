@@ -2,11 +2,12 @@
 
 import io
 import socketio
-import eventlet
-import eventlet.wsgi
 import subprocess
 import json
 import flask
+
+from aiohttp import web
+from socketio import AsyncServer
 
 from docopt import docopt
 from datetime import datetime
@@ -39,9 +40,9 @@ def main():
 
     args = docopt(usage, version="Adapter 0.1")
 
-    sio = socketio.Server()
-    app = flask.Flask(__name__)
-    app = socketio.Middleware(sio, app)
+    sio = AsyncServer()
+    app = web.Application()
+    sio.attach(app)
 
     # start engine
 
@@ -50,7 +51,9 @@ def main():
         proc = subprocess.Popen([args["<engine>"]],
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+            bufsize=1)
 
     except OSError as exp:
 
@@ -60,7 +63,7 @@ def main():
     # define message handler
 
     @sio.on('msg')
-    def handle_message(sid, data):
+    async def handle_message(sid, data):
 
         # log message and send to engine
 
@@ -78,7 +81,7 @@ def main():
                 rep_str = proc.stdout.readline().strip()
                 log_event(sid, rep_str, "cyan")
                 response = json.loads(rep_str)
-                sio.emit('reply', response)
+                await sio.emit('reply', response)
                 unfinished = response.get("result") not in ["success", "error"]
 
         except ValueError:
@@ -92,8 +95,7 @@ def main():
 
     # start server
 
-    eventlet.wsgi.server(
-        eventlet.listen(('localhost', 8000)), app, log_output=args["--debug"])
+    web.run_app(app, port=8000)
 
 
 if __name__ == '__main__':
