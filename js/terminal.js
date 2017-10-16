@@ -116,8 +116,12 @@ terminal = (function() {
     }
 
     function append_element(element) {
-        output.append(element);
-        scroll_bottom();
+        if (element) {
+            output.append(element);
+            scroll_bottom();
+        } else {
+            console.error("attempted to add null element");
+        }
     }
 
     function clear() {

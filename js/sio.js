@@ -42,6 +42,8 @@ sio = (function () {
 
 	function send(content, finish_cb, update_cb) {
 
+		finish_cb = finish_cb || (() => {});
+
 		if (connected) {
 
 			var id = msg_counter++;

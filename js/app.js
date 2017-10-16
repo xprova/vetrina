@@ -69,14 +69,20 @@ app = (function () {
         sio.evaluate(cmd, (response) => {
 
             if (response.result === "success") {
+
                 if (response.return) {
-                    if (_.isString(response.return)) {
+                    if (response.return === "chart") {
+                        var chart1 = charts.make(1);
+                        terminal.append_element(chart1);
+                        charts.draw_demo(1);
+                    } else if (_.isString(response.return)) {
                         terminal.append_text("response", response.return, response_id);
                     } else {
                         json_str = JSON.stringify(response.return, null, '  ');
                         terminal.append_text("response", json_str);
                     }
                 }
+
             } else if (response.result === "update") {
                 // ignore, for now
                 terminal.append_text("update", response.return, response_id);
@@ -98,7 +104,7 @@ app = (function () {
             var success = response.result === 'success';
             var name_str = success ? `(${response.return})` : '';
             toaster.success(`Engine connected ${name_str}`);
-            oncommand("model = init()");
+            sio.evaluate("model = init()");
         });
     }
 
@@ -153,7 +159,7 @@ app = (function () {
 
         terminal.set_command_callback(oncommand);
 
-        terminal.show();
+        terminal.show(true);
 
         setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 
