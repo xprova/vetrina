@@ -1,4 +1,4 @@
-app = (function () {
+var vetrina = (function () {
 
     'use strict';
 
