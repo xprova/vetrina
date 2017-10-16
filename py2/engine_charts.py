@@ -2,20 +2,66 @@
 
 import json
 import sys
+import time
 
-def process(request):
-    if "get" in request:
-        if request["get"] == "engine_name":
-            return {"result": "success", "return": "Charts Engine"}
-    if request.get("eval") == "chart":
-        return {"result": "success", "return": "chart"}
-    return {"result": "error", "description": "unsupported"}
+
+def get_chart(result, npoints):
+    points = [[x, x**2] for x in range(npoints+1)]
+    return {
+        "result": result,
+        "return": "chart",
+        "data" : [['Number of Cores', 'Performance']] + points,
+        "options": {
+            'title': 'Average Shortest Path Computation',
+            'hAxis': {
+                'title': 'Number of Cores',
+                'viewWindow': {
+                    'min': 0,
+                    'max': 50
+                },
+                'ticks': list(range(0,51,5)),
+                'gridlines': {'color': '#eee'}
+            },
+            'vAxis': {
+                'title': 'Performance (units)',
+                'viewWindow': {
+                    'min': 0,
+                    'max': 2500
+                },
+                'ticks': list(range(0,2501,250)),
+                'gridlines': {'color': '#eee'}
+            },
+            'legend': 'none'
+        }
+    }
+
+
+def print_json(obj):
+    print(json.dumps(obj))
+    sys.stdout.flush()
+
 
 def main():
+
     while True:
+
         request = json.loads(input())
-        print(json.dumps(process(request)))
-        sys.stdout.flush()
+
+        if "get" in request:
+            if request["get"] == "engine_name":
+                print_json({"result": "success", "return": "Charts Engine"})
+                continue
+
+        if request.get("eval") == "plot":
+            points = 50
+            for npoints in range(1, points):
+                print_json(get_chart("update", npoints))
+                time.sleep(0.05)
+            print_json(get_chart("success", points))
+            continue
+
+        print_json({"result": "error", "description": "unsupported"})
+
 
 if __name__ == '__main__':
     main()

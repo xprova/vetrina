@@ -21,7 +21,7 @@ var charts = (function() {
 			console.error(`chart with id ${chart_id} already exists`);
 		} else {
 			var element = document.createElement("chart");
-			var chart = new google.visualization.ScatterChart(element);
+			var chart = new google.visualization.AreaChart(element);
 			chart_objs[chart_id] = chart;
 			return element;
 		}

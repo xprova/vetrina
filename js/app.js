@@ -68,14 +68,21 @@ app = (function () {
 
         sio.evaluate(cmd, (response) => {
 
-            if (response.result === "success") {
+            if (response.return === "chart") {
+
+                var chart_id = response_id;
+
+                if (!charts.exists(chart_id)) {
+                    var chart = charts.make(response_id);
+                    terminal.append_element(chart);
+                }
+
+                charts.draw(response_id, response.data, response.options);
+
+            } else if (response.result === "success") {
 
                 if (response.return) {
-                    if (response.return === "chart") {
-                        var chart1 = charts.make(1);
-                        terminal.append_element(chart1);
-                        charts.draw_demo(1);
-                    } else if (_.isString(response.return)) {
+                    if (_.isString(response.return)) {
                         terminal.append_text("response", response.return, response_id);
                     } else {
                         json_str = JSON.stringify(response.return, null, '  ');
