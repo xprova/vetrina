@@ -79,19 +79,24 @@ def main():
 
             while unfinished:
                 rep_str = proc.stdout.readline().strip()
-                log_event(sid, rep_str, "cyan")
                 response = json.loads(rep_str)
-                await sio.emit('reply', response)
                 unfinished = response.get("result") not in ["success", "error"]
+                color = "yellow" if unfinished else "cyan"
+                log_event(sid, rep_str, color)
+                await sio.emit('reply', response)
+
+                # For some reason, the reply message is not sent until the
+                # next await statement. As a workaround, send a dummy message.
+                # TODO: fix
+                await sio.emit('dummy')
 
         except ValueError:
-            log_event(sid, "Engine returned an invalid JSON string", "red")
+            log_event(sid, "Engine returned an invalid JSON string: " + rep_str, "red")
             response = {
                 "result": "error",
                 "description": "internal engine error"
             }
-
-        return response
+            await sio.emit('reply', response)
 
     # start server
 

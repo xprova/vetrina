@@ -1,13 +1,14 @@
 #!/bin/bash
 
+count=20
+
 while true
 do
     read
-    echo '{"result": "update", "return": "1"}'
-    sleep 1
-    echo '{"result": "update", "return": "2"}'
-    sleep 1
-    echo '{"result": "update", "return": "3"}'
-    sleep 1
+    for item in $(seq $count)
+    do
+	    echo "{\"result\": \"update\", \"return\": \"$item / $count\"}"
+	    sleep 0.1
+    done
     echo '{"result": "success", "return": "done"}'
 done

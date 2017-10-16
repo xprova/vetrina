@@ -4,6 +4,7 @@ app = (function () {
 
     var pre_x; // x coord of view, before palette change shift view
     var pre_y; // y coord of view, before palette change shift view
+    var cmd_counter = 1;
 
     function product (a, b, ...c) {
         // https://stackoverflow.com/a/43053803
@@ -60,13 +61,17 @@ app = (function () {
     }
 
     function oncommand(cmd) {
+
         // terminal command handler
+
+        var response_id = cmd_counter++;
+
         sio.evaluate(cmd, (response) => {
 
             if (response.result === "success") {
                 if (response.return) {
                     if (_.isString(response.return)) {
-                        terminal.append_text("response", response.return);
+                        terminal.append_text("response", response.return, response_id);
                     } else {
                         json_str = JSON.stringify(response.return, null, '  ');
                         terminal.append_text("response", json_str);
@@ -74,7 +79,7 @@ app = (function () {
                 }
             } else if (response.result === "update") {
                 // ignore, for now
-                terminal.append_text("update", response.return);
+                terminal.append_text("update", response.return, response_id);
             } else {
                 terminal.append_text('error', response.description);
             }

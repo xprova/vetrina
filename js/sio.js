@@ -34,13 +34,8 @@ sio = (function () {
 		});
 
 		socket.on('reply', (content) => {
-
 			var callback = finish_cb_table[content._id] || last_finish_cb;
-
 			callback(content);
-
-			console.log('received reply');
-			console.log(content);
 		});
 
 	}
@@ -49,10 +44,10 @@ sio = (function () {
 
 		if (connected) {
 
-			var _id = msg_counter++;
-			content["_id"] = _id; // TODO: deep copy instead of mutation
-			finish_cb_table[_id] = finish_cb;
-			update_cb_table[_id] = update_cb;
+			var id = msg_counter++;
+			content["id"] = id; // TODO: deep copy instead of mutation
+			finish_cb_table[id] = finish_cb;
+			update_cb_table[id] = update_cb;
 			socket.emit('msg', content);
 
 			last_finish_cb = finish_cb;

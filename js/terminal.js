@@ -9,6 +9,7 @@ terminal = (function() {
     var terminal;      /* scrollable and input group */
 
     var command_callback;
+    var output_objs = {}; // id -> output DOM elem
 
     var history = {
         commands: [],
@@ -48,15 +49,70 @@ terminal = (function() {
         });
     });
 
-    function append_text(type_, str_) {
-        str_ = str_.replace(/</g, "&lt;");
-        str_ = str_.replace(/>/g, "&gt;");
-        append_html(`<b ${type_}><pre>${str_}</pre></b>`);
+    var replace_dom_element = function (el1, el2) {
+
+        var parent = el1.parentNode;
+        if (!parent) return false;
+
+        parent.replaceChild(el2, el1);
+
+        return el2;
     }
 
-    function append_html(html) {
-        output.insertAdjacentHTML('beforeend', html);
-        scroll_bottom();
+    function append_text(type_, str_, id) {
+
+        var elem = create_text_element(type_, str_);
+
+        if (id) {
+
+            // identity specified
+
+            var existing_obj = output_objs[id];
+
+            if (existing_obj) {
+
+                // object with same id exists, replace with new object
+
+                replace_dom_element(existing_obj, elem);
+
+            } else {
+
+                // new id, just append object to output
+
+                append_element(elem);
+            }
+
+            // whether object was appended or replaced, store in output_objs
+            // for book-keeping
+
+            output_objs[id] = elem;
+
+        } else {
+
+            // no id specified, add to output
+
+            append_element(elem);
+        }
+
+    }
+
+    function create_text_element(type_, str_) {
+
+        // Create and return a console log text element in the form:
+        //
+        // <b type_ id="%ID"><pre>Text</pre></b>
+        //
+        // where %ID = resp_${id}
+
+        var b_elem = document.createElement("b");
+        var p_elem = document.createElement("pre");
+
+        b_elem.setAttribute(type_, ''); // add type attribute (with no value)
+        p_elem.innerText = str_; // set <pre> content
+
+        b_elem.appendChild(p_elem);
+
+        return b_elem;
     }
 
     function append_element(element) {
@@ -125,7 +181,6 @@ terminal = (function() {
 
     return {
         show,
-        append_html,
         append_text,
         append_element,
         set_command_callback
