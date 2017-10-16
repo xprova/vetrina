@@ -1,4 +1,4 @@
-## Layout Editor JS
+## Vetrina
 
 Generic EDA tool front-end based on web technologies, featuring a schematic
 editor, a command palette and a console. The front-end can connect to a
