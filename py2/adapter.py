@@ -4,7 +4,6 @@ import io
 import socketio
 import subprocess
 import json
-import flask
 
 from aiohttp import web
 from socketio import AsyncServer

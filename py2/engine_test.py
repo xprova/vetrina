@@ -11,8 +11,8 @@ def process(request):
 
 def main():
     while True:
-        request = json.loads(raw_input())
-        print json.dumps(process(request))
+        request = json.loads(input())
+        print(json.dumps(process(request)))
         sys.stdout.flush()
 
 if __name__ == '__main__':
