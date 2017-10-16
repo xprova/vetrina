@@ -74,8 +74,7 @@ app = (function () {
                 }
             } else if (response.result === "update") {
                 // ignore, for now
-            } else if (response.result === "exception") {
-                terminal.append_text("exception", response.return);
+                terminal.append_text("update", response.return);
             } else {
                 terminal.append_text('error', response.description);
             }

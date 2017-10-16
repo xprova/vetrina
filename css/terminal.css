@@ -79,7 +79,7 @@ div[output] > b > pre {
 
 b[response],
 b[error],
-b[exception] {
+b[update] {
 	color: white;
 	border-radius: 4px;
 	margin-bottom: 8px;
@@ -89,7 +89,7 @@ b[response] {
 	background-color: #00C853;
 }
 
-b[exception] {
+b[update] {
 	background-color: orange;
 }
 
