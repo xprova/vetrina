@@ -3,10 +3,10 @@
 import json
 import sys
 import time
+import random
 
 
-def get_chart(result, npoints):
-    points = [[x, x**2] for x in range(npoints+1)]
+def get_chart(result, points):
     return {
         "result": result,
         "return": "chart",
@@ -53,9 +53,11 @@ def main():
                 continue
 
         if request.get("eval") == "plot":
-            points = 50
-            for npoints in range(1, points):
-                print_json(get_chart("update", npoints))
+            npoints = 50
+            func = lambda x: x**2+random.random()*100
+            points = [[x, func(x)] for x in range(npoints+1)]
+            for n in range(1, npoints):
+                print_json(get_chart("update", points[:n]))
                 time.sleep(0.05)
             print_json(get_chart("success", points))
             continue
