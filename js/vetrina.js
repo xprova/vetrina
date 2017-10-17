@@ -68,34 +68,76 @@ var vetrina = (function () {
 
         sio.evaluate(cmd, (response) => {
 
-            if (response.return === "chart") {
+            var response_type = response.type || "text";
+
+            if (response_type === "chart") {
+
+                // handle responses with chart payload
 
                 var chart_id = response_id;
 
-                if (!charts.exists(chart_id)) {
-                    var chart = charts.make(response_id);
-                    terminal.append_element(chart);
+                if (response.result === "success" || response.result === "update") {
+
+                    if (!charts.exists(chart_id))
+                        terminal.append_element(charts.make(chart_id));
+
+                    charts.draw(chart_id, response.return.data,
+                        response.return.options);
+
+                } else {
+
+                    terminal.append_text('error', response.description);
+
                 }
 
-                charts.draw(response_id, response.data, response.options);
+            } else if (response_type === "text") {
 
-            } else if (response.result === "success") {
+                // handle responses with text payload
 
-                if (response.return) {
-                    if (_.isString(response.return)) {
-                        terminal.append_text("response", response.return, response_id);
-                    } else {
-                        json_str = JSON.stringify(response.return, null, '  ');
-                        terminal.append_text("response", json_str);
-                    }
+                if (response.result === "success" && response.return) {
+
+                    terminal.append_text("response", response.return, response_id);
+
+                } else if (response.result === "update") {
+
+                    terminal.append_text("update", response.return, response_id);
+
+                } else if (response.result === "error") {
+
+                    terminal.append_text('error', response.description);
                 }
 
-            } else if (response.result === "update") {
-                // ignore, for now
-                terminal.append_text("update", response.return, response_id);
+            } else if (response_type === "json") {
+
+                // handle responses with json payload
+
+                var json_str = JSON.stringify(response.return, null, '  ');
+
+                if (response.result === "success" && json_str) {
+
+                    terminal.append_text("response", json_str, response_id);
+
+                } else if (response.result === "update") {
+
+                    terminal.append_text("update", json_str, response_id);
+
+                } else if (response.result === "error") {
+
+                    terminal.append_text('error', response.description);
+                }
+
             } else {
-                terminal.append_text('error', response.description);
+
+                // unrecognized response type
+
+                terminal.append_text('error',
+                    `engine response has an unrecognized type ${response.type}`);
+
+                return; // abort processing current response
+
             }
+
+            // update current model if responses has a 'state' field
 
             if (response.state) {
                 viewer.clear();
