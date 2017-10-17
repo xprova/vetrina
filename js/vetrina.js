@@ -126,6 +126,10 @@ var vetrina = (function () {
                     terminal.append_text('error', response.description);
                 }
 
+            } else if (response_type === "download") {
+
+                download(response.return, "data.csv", "text/plain");
+
             } else {
 
                 // unrecognized response type
