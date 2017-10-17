@@ -52,6 +52,11 @@ def get_chart(points, xmax, ymax, result="update", include_options=False):
     }
 
     options = {
+        'series': {
+            0: {'lineWidth': 2, 'color': '#A1BEE6'},
+            1: {'lineWidth': 1, 'color': '#A1BEE6'},
+            2: {'lineWidth': 1, 'color': '#A1BEE6'}
+        },
         'title': 'Average Shortest Path Computation',
         'hAxis': {
             'title': 'Removed Nodes',
@@ -87,6 +92,7 @@ def print_json(obj):
 def main():
 
     terminal = run_nios()
+    points = [[1,1,1,1]]
 
     while True:
 
@@ -101,33 +107,54 @@ def main():
 
         # Respond to example plot queries:
 
-        if request.get("eval") == "dummy":
-            npoints = 50
-            min_fun = lambda x: (x - 2 - random.random()*10)**2
-            avg_fun = lambda x: x**2
-            max_fun = lambda x: (x + 2 + random.random()*10)**2
-            points = [[x, avg_fun(x), min_fun(x), max_fun(x)] for x in range(npoints+1)]
-            for n in range(1, npoints):
-                print_json(get_chart(points[:n], 50, 2500))
-                time.sleep(0.25)
-            print_json(get_chart(points, 50, 2500, result="success"))
-            continue
+        if "eval" in request:
 
-        # Run network analysis:
+            words = request["eval"].split()
+            cmd = words[0]
 
-        if request.get("eval") == "run":
-            points = []
-            nodes_max = 200
-            ymax = 0.03
-            print_json(get_chart([[-1, -1, -1, -1]], nodes_max, ymax, include_options=True))
-            for ind, item in enumerate(run_sweep(terminal, 1, nodes_max, 10)):
-                min_, avg, max_ = item
-                points.append([ind, avg, min_, max_])
-                print_json(get_chart(points, nodes_max, ymax))
-            print_json(get_chart(points, nodes_max, ymax, result="success"))
-            continue
+            if cmd == "dummy":
+                npoints = 50
+                min_fun = lambda x: (x - 2 - random.random()*10)**2
+                avg_fun = lambda x: x**2
+                max_fun = lambda x: (x + 2 + random.random()*10)**2
+                points = [[x, avg_fun(x), min_fun(x), max_fun(x)] for x in range(npoints+1)]
+                for n in range(1, npoints):
+                    print_json(get_chart(points[:n], 50, 2500))
+                    time.sleep(0.25)
+                print_json(get_chart(points, 50, 2500, result="success"))
+                continue
 
-        # Otherwise:
+            # Run network analysis:
+
+            if cmd == "plot":
+                nodes_max = int(words[1]) + 1
+                points = []
+                # nodes_max = 200
+                ymax = 0.03
+                print_json(get_chart([[-1, -1, -1, -1]], nodes_max, ymax, include_options=True))
+                for ind, item in enumerate(run_sweep(terminal, 1, nodes_max, 10)):
+                    min_, avg, max_ = item
+                    points.append([ind, avg, min_, max_])
+                    print_json(get_chart(points, nodes_max, ymax))
+                print_json(get_chart(points, nodes_max, ymax, result="success"))
+                continue
+
+            if cmd == "download":
+
+                sheet = [['Removed Nodes', 'Average', 'Min', 'Max']] + points
+                lines = [", ".join([str(item) for item in row]) for row in sheet]
+                csv_content = "\n".join(lines)
+
+                response = {
+                    "result": "success",
+                    "return": csv_content,
+                    "type": "download"
+                }
+
+                print_json(response)
+                continue
+
+            # Otherwise:
 
         print_json({"result": "error", "description": "unsupported"})
 
