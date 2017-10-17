@@ -147,7 +147,10 @@ def main():
 
                 response = {
                     "result": "success",
-                    "return": csv_content,
+                    "return": {
+                        "filename": "data.csv",
+                        "content": csv_content
+                    },
                     "type": "download"
                 }
 
