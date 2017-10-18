@@ -127,7 +127,7 @@ def main():
             # Run network analysis:
 
             if cmd == "plot":
-                nodes_max = int(words[1]) + 1
+                nodes_max = int(words[1])
                 points = [[0,0,0,0]]
                 # nodes_max = 200
                 ymax = 0.03
@@ -140,7 +140,7 @@ def main():
                 continue
 
             if cmd == "print":
-                nodes_max = int(words[1]) + 1
+                nodes_max = (int(words[1]) + 1) if len(words)>1 else len(points)
                 sformat = "%14s" * 4
                 header1 = ['Removed Nodes', 'Average', 'Min', 'Max']
                 header2 = ['-------------', '-------', '---', '---']
@@ -162,7 +162,10 @@ def main():
                 content = "\n".join(lines)
                 response = {
                     "result": "success",
-                    "return": content,
+                    "return": {
+                        "filename": "data.csv",
+                        "content": content
+                    },
                     "type": "download"
                 }
                 print_json(response)

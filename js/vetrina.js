@@ -128,7 +128,8 @@ var vetrina = (function () {
 
             } else if (response_type === "download") {
 
-                download(response.return, "data.csv", "text/plain");
+                download(response.return.content, response.return.filename,
+                    "text/plain");
 
             } else {
 
