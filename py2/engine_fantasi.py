@@ -92,7 +92,7 @@ def print_json(obj):
 def main():
 
     terminal = run_nios()
-    points = [[1,1,1,1]]
+    points = [[0,0,0,0]]
 
     while True:
 
@@ -128,29 +128,43 @@ def main():
 
             if cmd == "plot":
                 nodes_max = int(words[1]) + 1
-                points = []
+                points = [[0,0,0,0]]
                 # nodes_max = 200
                 ymax = 0.03
                 print_json(get_chart([[-1, -1, -1, -1]], nodes_max, ymax, include_options=True))
                 for ind, item in enumerate(run_sweep(terminal, 1, nodes_max, 10)):
                     min_, avg, max_ = item
-                    points.append([ind, avg, min_, max_])
+                    points.append([ind+1, avg, min_, max_])
                     print_json(get_chart(points, nodes_max, ymax))
                 print_json(get_chart(points, nodes_max, ymax, result="success"))
                 continue
 
-            if cmd == "download":
-
-                sheet = [['Removed Nodes', 'Average', 'Min', 'Max']] + points
-                lines = [", ".join([str(item) for item in row]) for row in sheet]
-                csv_content = "\n".join(lines)
-
+            if cmd == "print":
+                nodes_max = int(words[1]) + 1
+                sformat = "%14s" * 4
+                header1 = ['Removed Nodes', 'Average', 'Min', 'Max']
+                header2 = ['-------------', '-------', '---', '---']
+                sheet = [header1, header2] + points[:nodes_max]
+                lines = [sformat % tuple(map(str, row)) for row in sheet]
+                content = "\n".join(lines)
                 response = {
                     "result": "success",
-                    "return": csv_content,
+                    "return": content,
+                    "type": "text"
+                }
+                print_json(response)
+                continue
+
+
+            if cmd == "download":
+                sheet = [['Removed Nodes', 'Average', 'Min', 'Max']] + points
+                lines = [", ".join([str(item) for item in row]) for row in sheet]
+                content = "\n".join(lines)
+                response = {
+                    "result": "success",
+                    "return": content,
                     "type": "download"
                 }
-
                 print_json(response)
                 continue
 
