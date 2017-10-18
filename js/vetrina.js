@@ -212,8 +212,6 @@ var vetrina = (function () {
 
         terminal.set_command_callback(oncommand);
 
-        terminal.show(true);
-
         setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 
         const preset = generate_preset();
