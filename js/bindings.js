@@ -17,7 +17,7 @@
         'pan_up'               : (e) => viewer.pan('up'),
         'reset_view'           : (e) => viewer.reset_view(),
         'restore_terminal'     : (e) => terminal.restore(),
-        'show_palette'         : (e) => app.show_palette_components(),
+        'show_palette'         : (e) => vetrina.show_palette_components(),
         'show_terminal'        : (e) => terminal.show(),
         'show_terminal_max'    : (e) => terminal.show(true),
         'toggle_grid'          : (e) => viewer.toggle_grid(),
