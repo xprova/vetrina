@@ -19,7 +19,9 @@ sio = (function () {
 
 	function connect(connect_cb, disconnect_cb) {
 
-		socket = io("http://localhost:8000/");
+		var hostname = window.location.hostname;
+
+		socket = io(`http://${hostname}:8000/`);
 
 		socket.on('connect', () => {
 			connected = true;
