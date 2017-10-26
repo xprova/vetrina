@@ -21,7 +21,7 @@ sio = (function () {
 
 		var hostname = window.location.hostname;
 
-		socket = io(`http://${hostname}:8000/`);
+		socket = io(`https://${hostname}:9020/`);
 
 		socket.on('connect', () => {
 			connected = true;
