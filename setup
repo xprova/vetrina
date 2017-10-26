@@ -2,18 +2,21 @@
 
 alias server="browser-sync start --server --index index.htm --config bs-config.js"
 
-server
-
 expose() {
 
 	# Open a reverse tunnel, forwarding $REMOTE_PORT at remote to $LOCAL_PORT
 	# at localhost. This is used to forward traffic from a remote server to an
 	# engine running on the local machine.
 
-	# Usage: expose user@server.com
-
 	USER_AT_HOST=$1
 	REMOTE_PORT=9010
 	LOCAL_PORT=9020
-	ssh -N -R $REMOTE_PORT:localhost:$LOCAL_PORT $USER_AT_HOST
+
+	if [[ -z $USER_AT_HOST ]];
+	then
+		echo "Usage: expose user@server.com"
+	else
+		ssh -N -R $REMOTE_PORT:localhost:$LOCAL_PORT $USER_AT_HOST
+	fi
+
 }
