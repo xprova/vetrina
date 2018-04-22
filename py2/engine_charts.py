@@ -9,29 +9,31 @@ import random
 def get_chart(result, points):
     return {
         "result": result,
-        "return": "chart",
-        "data" : [['Number of Cores', 'Performance']] + points,
-        "options": {
-            'title': 'Average Shortest Path Computation',
-            'hAxis': {
-                'title': 'Number of Cores',
-                'viewWindow': {
-                    'min': 0,
-                    'max': 50
+        "type": "chart",
+        "return": {
+            "data" : [['Number of Cores', 'Performance']] + points,
+            "options": {
+                'title': 'Average Shortest Path Computation',
+                'hAxis': {
+                    'title': 'Number of Cores',
+                    'viewWindow': {
+                        'min': 0,
+                        'max': 50
+                    },
+                    'ticks': list(range(0,51,5)),
+                    'gridlines': {'color': '#eee'}
                 },
-                'ticks': list(range(0,51,5)),
-                'gridlines': {'color': '#eee'}
-            },
-            'vAxis': {
-                'title': 'Performance (units)',
-                'viewWindow': {
-                    'min': 0,
-                    'max': 2500
+                'vAxis': {
+                    'title': 'Performance (units)',
+                    'viewWindow': {
+                        'min': 0,
+                        'max': 2500
+                    },
+                    'ticks': list(range(0,2501,250)),
+                    'gridlines': {'color': '#eee'}
                 },
-                'ticks': list(range(0,2501,250)),
-                'gridlines': {'color': '#eee'}
-            },
-            'legend': 'none'
+                'legend': 'none'
+            }
         }
     }
 

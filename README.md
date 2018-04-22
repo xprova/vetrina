@@ -5,7 +5,7 @@ editor, a command palette and a console. The front-end can connect to a
 back-end engine via WebSockets and expose its internal model and functionality
 to the user.
 
-[Live Demo](https://tuura.org/vetrina/)
+[Live Demo](https://tuura.org/vetrina/?demo)
 
 #### Mini Documentation
 

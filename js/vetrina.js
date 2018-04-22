@@ -145,7 +145,11 @@ var vetrina = (function () {
 
         setTimeout(() => sio.connect(onconnect, ondisconnect), 500);
 
-        terminal.show();
+        // Show terminal (in max view if URL contains '?max')
+
+        const maximize_terminal = document.URL.indexOf('?max') != -1;
+
+        terminal.show(maximize_terminal);
 
         // Show viewer demo if URL contains '?demo'
 

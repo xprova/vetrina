@@ -20,8 +20,10 @@ sio = (function () {
 	function connect(connect_cb, disconnect_cb) {
 
 		var hostname = window.location.hostname;
+		const use_https = hostname != "localhost";
+		const protocol = use_https ? "https" : "http";
 
-		socket = io(`https://${hostname}:9020/`);
+		socket = io(`${protocol}://${hostname}:9020/`);
 
 		socket.on('connect', () => {
 			connected = true;
