@@ -32,6 +32,7 @@ class PythonConsole(InteractiveConsole):
     """
 
     def __init__(self):
+        self.runResult = ''
         InteractiveConsole.__init__(self)
 
     def write(self, data):
@@ -71,7 +72,7 @@ class PythonConsole(InteractiveConsole):
     def import_module(self, py_mod, symbols):
         lines = [
             'import sys',
-            'if "%s" in sys.modules:' % py_mod
+            'if "%s" in sys.modules:' % py_mod,
             '    del sys.modules["%s"]' % py_mod,
             'from %s import %s' % (py_mod, symbols),
         ]
@@ -195,7 +196,7 @@ def main():
     sio.register_namespace(MainNamespace("/", debug, console))
     sio.attach(app)
     print("Server started")
-    web.run_app(app, host='127.0.0.1', port=8000, print=(lambda _: None),
+    web.run_app(app, host='127.0.0.1', port=9020, print=(lambda _: None),
                 handle_signals=True)
 
 if __name__ == '__main__':
