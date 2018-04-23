@@ -4,9 +4,13 @@
 
 - [Overview](#overview)
 - [Setup](#setup)
+    - [Web Application](#web-application)
+    - [Back-end Engine](#back-end-engine)
+    - [Connectivity](#connectivity)
 - [Protocol](#protocol)
     - [Request Object Format](#request-object-format)
     - [Response Object Format](#response-object-format)
+    - [Response Payload](#response-payload)
 
 ### Overview
 
@@ -30,7 +34,7 @@ diagram editor with built-in console that converts user interactions into JSON
 objects and sends them through a WebSocket connection to the back-end adapter
 ([`py2/adapter.py`](py2/adapter.py)). The latter maintains the server-side end
 of the WebSocket connection, relaying received JSON objects to a back-end
-engine and sends engine replies back to the web application. Communication
+engine and sending engine replies back to the web application. Communication
 between the adapter and engine are done purely using input/output streams,
 making it very simple to develop engines in any language (including Bash, see
 [this example](py2/engine_hello.sh)).
@@ -40,7 +44,16 @@ making it very simple to develop engines in any language (including Bash, see
 #### Web Application
 
 The web application can be served as a static website using any standard
-webserver, using the top-level [`index.htm`](index.htm) file.
+webserver, using the top-level [`index.htm`](index.htm) file. The
+[Browsesync](https://www.browsersync.io/) configuration file
+[`bs-config.js`](bs-config.js) is provided for convenience during development.
+
+Vetrina can also be ran as an independent application using
+[Electron](https://electronjs.org/):
+
+```
+electron /path/to/vetrina
+```
 
 #### Back-end Engine
 
@@ -96,7 +109,8 @@ which case it will use HTTP.
 Vetrina uses an asynchronous protocol to communicate with the back-end engine
 (through the adapter). User interactions are sent as _request_ objects and
 processed by the back-end engine which then sends one or more _response_
-objects. Request and response objects are JSON dictionaries.
+objects. Request and response objects are JSON dictionaries and the protocol
+is _stateful_.
 
 An example of this exchange is shown below.
 
@@ -115,7 +129,7 @@ indicating that the request has been processed successfully and returns
 
 Each request object must be one of the following types:
 
-##### 1. Call object
+##### 1. Call Object
 
 - Used to call an engine function
 - Must contain a `call` field with a string value (function name)
@@ -128,7 +142,7 @@ Examples:
 {'call': 'square', 'args': {'x': 5}}
 ```
 
-##### 2. Set object
+##### 2. Set Object
 
 - Used to set the value of an engine variable
 - Must contain a `set` field with a string value (variable name)
@@ -141,7 +155,7 @@ Examples:
 {'set': 'y', 'value': {'first': 'John', 'last': 'doe'}}
 ```
 
-##### 3. Get object
+##### 3. Get Object
 
 - Used to get the value of an engine variable
 - Must contain a `get` field with a string value (variable name)
@@ -152,7 +166,7 @@ Example:
 {'get': 'x'}
 ```
 
-##### 4. Eval object
+##### 4. Eval Object
 
 - Used to evaluate an expression
 - Must contain a `eval` field with a string value (expression to evaluate)
@@ -167,7 +181,7 @@ Example:
 
 Each request object must be one of the following types:
 
-##### 1. Success object
+##### 1. Success Object
 
 - Indicates that the request has been processed without errors
 - Must contain a `result` field with the string value `success`
@@ -179,7 +193,7 @@ Example:
 {'result': 'success', 'return': '25'}
 ```
 
-##### 2. Error object
+##### 2. Error Object
 
 - Indicates that one or more errors were encountered when processing the request
 - Must contain a `result` field with the string value `error`
@@ -192,7 +206,86 @@ Examples:
 {'result': 'error', 'description': '  File "<console>", line 1\n    hello world\n              ^\nSyntaxError: invalid syntax\n'}
 ```
 
-##### 3. Update object
+##### 3. Update Object
 
 - Indicates that some progress has been made in processing the request
 - Must contain a `result` field with the string value `update`
+- Must contain a `return` field with a string value (returned output)
+
+Examples:
+
+```javascript
+{'result': 'update', 'return': '25% completed'}
+{'result': 'update', 'return': '50% completed'}
+{'result': 'update', 'return': '75% completed'}
+```
+
+Update objects sent in reply to a request object will overwrite each other in
+the terminal window. In the above, the first update object will
+print `25% completed` in the command window and the next two will overwrite
+this with `50% completed` and `75% completed`.
+
+By convention, a series of one or more update objects must be terminated by
+either a success or error objects.
+
+#### Response Payload
+
+Success response objects may also carry a _payload_ such as charts or files.
+
+##### Charts
+
+Charts are rendered using [Google
+Charts](https://developers.google.com/chart/) inside the command window. To
+create a new chart or update an existing one, the response object:
+
+- Must contain a `type` field with the string value `chart`
+- Must contain two subfields `data` and `options` in its `return` field
+
+Example:
+
+```javascript
+{
+    'result': 'success',
+    'type': 'chart',
+    'return': {
+        'data': [
+            ['Number of Cores', 'Performance'],
+            [8, 12],
+            [4, 5.5],
+            [11, 14],
+            [4, 5],
+            [3, 3.5],
+            [6.5, 7]
+        ],
+        'options': {
+            'title': 'Average Shortest Path Computation',
+            'hAxis': {'title': 'Number of Cores', 'minValue': 0, 'maxValue': 15},
+            'vAxis': {'title': 'Performance (units)', 'minValue': 0, 'maxValue': 15},
+            'legend': 'none'
+        }
+    }
+}
+```
+
+At the moment, only area charts are supported. The `data` and `options` fields
+are passed to Google Charts methods directly and their format is [documented
+here](https://developers.google.com/chart/interactive/docs/gallery/areachart).
+
+##### Files
+
+Plain text files can be sent as response payloads and will be downloaded
+automatically by the browser. To embed a file payload, the response object:
+
+- Must contain a `type` field with the string value `file`
+- Must contain two subfields `filename` and `content` in its `return` field.
+
+```javascript
+{
+    'result': 'success',
+    'type': 'file',
+    'return': {
+        'filename': 'results.csv',
+        'content': 'a,b,c\n1,2,3\n4,5,6'
+    }
+}
+```
