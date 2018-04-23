@@ -1,5 +1,15 @@
 ## Vetrina
 
+### Content
+
+- [Overview](#overview)
+- [Setup](#setup)
+- [Protocol](#protocol)
+    - [Request Object Format](#request-object-format)
+    - [Response Object Format](#response-object-format)
+
+### Overview
+
 Vetrina is a modern web-based front-end for interactive command line tools,
 consisting of a diagram editor and a console. It connects to server-side tools
 (_backend engines_) via
@@ -10,8 +20,6 @@ Vetrina makes it very easy to covert basic command line tools in any language
 into full-fledged visual experiences and expose them to users on the Internet.
 
 [Live Demo](https://tuura.org/vetrina/?demo)
-
-### Overview
 
 <img src="svg/overview.svg" width="100%">
 
@@ -73,3 +81,118 @@ Server started
 In practice, more robust mechanisms such as setting up
 [systemd units](https://www.digitalocean.com/community/tutorials/understanding-systemd-units-and-unit-files)
 may be preferable to ensure that the engine is ran at system startup and restarted if it fails.
+
+#### Connectivity
+
+Vetrina uses port 9020 for the WebSocket connection. The web application will
+persist in attempting to connect until a connection is made so there's no need
+to restart either the adapter or web application if the connection is dropped
+(and they can be started in any order). The connection is negotiated using
+HTTPS, unless Vetrina is running locally (i.e. if hostname is `localhost`) in
+which case it will use HTTP.
+
+### Protocol
+
+Vetrina uses an asynchronous protocol to communicate with the back-end engine
+(through the adapter). User interactions are sent as _request_ objects and
+processed by the back-end engine which then sends one or more _response_
+objects. Request and response objects are JSON dictionaries.
+
+An example of this exchange is shown below.
+
+```
+07:29:00 PM (5591999b) : {'eval': '1+2', 'id': 4}
+07:29:00 PM (5591999b) : {'result': 'success', 'return': '3\n'}
+```
+
+In this example, the user enters `1+2` in the command prompt. This interaction
+is converted to an `eval` request object and sent to the back-end engine (more
+on message format in a bit). The engine replies with a response object
+indicating that the request has been processed successfully and returns
+`'3\n'` which is appended the command window.
+
+#### Request Object Format
+
+Each request object must be one of the following types:
+
+##### 1. Call object
+
+- Used to call an engine function
+- Must contain a `call` field with a string value (function name)
+- May contain an `args` field with a JSON value (function arguments)
+
+Examples:
+
+```javascript
+{'call': 'do_something'}
+{'call': 'square', 'args': {'x': 5}}
+```
+
+##### 2. Set object
+
+- Used to set the value of an engine variable
+- Must contain a `set` field with a string value (variable name)
+- Must contain a `value` field with a JSON value (assigned value)
+
+Examples:
+
+```javascript
+{'set': 'x', 'value': '1'}
+{'set': 'y', 'value': {'first': 'John', 'last': 'doe'}}
+```
+
+##### 3. Get object
+
+- Used to get the value of an engine variable
+- Must contain a `get` field with a string value (variable name)
+
+Example:
+
+```javascript
+{'get': 'x'}
+```
+
+##### 4. Eval object
+
+- Used to evaluate an expression
+- Must contain a `eval` field with a string value (expression to evaluate)
+
+Example:
+
+```javascript
+{'eval': '1+2'}
+```
+
+#### Response Object Format
+
+Each request object must be one of the following types:
+
+##### 1. Success object
+
+- Indicates that the request has been processed without errors
+- Must contain a `result` field with the string value `success`
+- Must contain a `return` field with a string value (returned output)
+
+Example:
+
+```javascript
+{'result': 'success', 'return': '25'}
+```
+
+##### 2. Error object
+
+- Indicates that one or more errors were encountered when processing the request
+- Must contain a `result` field with the string value `error`
+- Must contain a `description` field with the string value (a description of encountered errors)
+
+Examples:
+
+```javascript
+{'result': 'error', 'description': 'no such variable'}
+{'result': 'error', 'description': '  File "<console>", line 1\n    hello world\n              ^\nSyntaxError: invalid syntax\n'}
+```
+
+##### 3. Update object
+
+- Indicates that some progress has been made in processing the request
+- Must contain a `result` field with the string value `update`
