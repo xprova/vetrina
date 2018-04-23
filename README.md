@@ -3,8 +3,8 @@
 ### Overview
 
 Vetrina is a modern web-based front-end for interactive command line tools,
-consisting of a diagram editor and a console. It connects to server-side tools
-(_backend engines_) via
+consisting of a diagram editor and a command window. It connects to
+server-side tools (_backend engines_) via
 [WebSockets](https://en.m.wikipedia.org/wiki/WebSocket) and allows users to
 interact with them through web browsers.
 
@@ -18,14 +18,14 @@ into full-fledged visual experiences and expose them to users on the Internet.
 Vetrina consists of two parts: a web application and a back-end adapter.
 
 The web application ([`index.htm`](index.htm)) is an Angular-based interactive
-diagram editor with built-in console that converts user interactions into JSON
-objects and sends them through a WebSocket connection to the back-end adapter
-([`py2/adapter.py`](py2/adapter.py)). The latter maintains the server-side end
-of the WebSocket connection, relaying received JSON objects to a back-end
-engine and sending engine replies back to the web application. Communication
-between the adapter and engine are done purely using input/output streams,
-making it very simple to develop engines in any language (including Bash, see
-[this example](py2/engine_hello.sh)).
+diagram editor with built-in command window that converts user interactions
+into JSON objects and sends them through a WebSocket connection to the
+back-end adapter ([`py2/adapter.py`](py2/adapter.py)). The latter maintains
+the server-side end of the WebSocket connection, relaying received JSON
+objects to a back-end engine and sending engine replies back to the web
+application. Communication between the adapter and engine are done purely
+using input/output streams, making it very simple to develop engines in any
+language (including Bash, see [this example](py2/engine_hello.sh)).
 
 ### Documentation
 
@@ -33,7 +33,10 @@ making it very simple to develop engines in any language (including Bash, see
     - [Web Application](doc/setup.md#web-application)
     - [Back-end Engine](doc/setup.md#back-end-engine)
     - [Connectivity](doc/setup.md#connectivity)
-- [Protocol](doc/protocol.md#protocol)
+- [Protocol](doc/protocol.md)
     - [Request Object Format](doc/protocol.md#request-object-format)
     - [Response Object Format](doc/protocol.md#response-object-format)
     - [Response Payload](doc/protocol.md#response-payload)
+- [Viewer State](doc/viewer-state.md)
+    - [Module Objects](doc/viewer-state.md#module-objects)
+    - [Connection Objects](doc/viewer-state.md#connection-objects)

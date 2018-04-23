@@ -124,9 +124,10 @@ either a success or error objects.
 
 ### Response Payload
 
-Success response objects may also carry a _payload_ such as charts or files.
+Success response objects may also carry a _payload_ such as charts, files or
+viewer states.
 
-#### Charts
+#### 1. Charts
 
 Charts are rendered using [Google
 Charts](https://developers.google.com/chart/) inside the command window. To
@@ -165,13 +166,16 @@ At the moment, only area charts are supported. The `data` and `options` fields
 are passed to Google Charts methods directly and their format is [documented
 here](https://developers.google.com/chart/interactive/docs/gallery/areachart).
 
-#### Files
+#### 2. Files
 
-Plain text files can be sent as response payloads and will be downloaded
-automatically by the browser. To embed a file payload, the response object:
+Plain text files can be sent as response payloads and are downloaded by the
+browser without requiring user interaction (beyond the interaction causing the
+request object to be send). To embed a file payload, the response object:
 
 - Must contain a `type` field with the string value `file`
 - Must contain two subfields `filename` and `content` in its `return` field.
+
+Example:
 
 ```javascript
 {
@@ -183,3 +187,27 @@ automatically by the browser. To embed a file payload, the response object:
     }
 }
 ```
+
+which will initiate a download of a file called `result.csv` with the
+following content:
+
+```
+a,b,c
+1,2,3
+4,5,6
+```
+
+#### 3. Viewer States
+
+Viewer states specify the _modules_ and _connections_ in Vetrina's diagram
+editor. When a request causes a change in the diagram editor's content, the
+engine is responsible for sending the updated viewer state as a response
+payload. In other windows, the diagram state is maintained by the back-end
+engine.
+
+To include a viewer state, the response object:
+
+- Must contain a `state` field consisting of `modules` and `connections`
+subfields, each a list of objects
+
+The format of these objects is described in [Viewer State](viewer-state.md).
