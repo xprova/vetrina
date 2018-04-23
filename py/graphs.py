@@ -4,6 +4,8 @@ from model import Model
 
 engine_name = "Graphs"
 
+model = Model()
+
 def get_id(i):
     return "n%d" % i
 

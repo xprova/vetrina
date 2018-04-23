@@ -10,6 +10,7 @@ from termcolor import cprint
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
+sio = socketio.AsyncServer()
 
 def log_event(debug, sid, str_, color):
     MAX_LEN = 80  # max chars per line
@@ -172,7 +173,8 @@ class MainNamespace(socketio.AsyncNamespace):
             if call_type in request:
                 response = handle_func(request)
                 log_event(self.debug, sid, str(response), "cyan")
-                return response
+                # return response
+                await sio.emit('reply', response)
         else:
             return {"result": "error", "description": "invalid request"}
 
@@ -189,7 +191,7 @@ def main():
     py_file = sys.argv[1] if len(sys.argv)>1 else None
     py_mod = py_file.replace(".py", "") if py_file else None
     app = web.Application()
-    sio = socketio.AsyncServer()
+
     console = PythonConsole()
     app_watcher = AppWatcher(lambda: load_engine(console, py_mod, debug))
     load_engine(console, py_mod, False)
