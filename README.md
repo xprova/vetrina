@@ -8,10 +8,10 @@ server-side tools (_backend engines_) via
 [WebSockets](https://en.m.wikipedia.org/wiki/WebSocket) and allows users to
 interact with them through web browsers.
 
-Vetrina makes it very easy to covert basic command line tools in any language
+Vetrina makes it very easy to convert basic command line tools in any language
 into full-fledged visual experiences and expose them to users on the Internet.
 
-[Live Demo](https://tuura.org/vetrina/?demo)
+[Live Demo](https://tuura.org/vetrina/?demo/graph)
 
 <img src="doc/overview.svg" width="100%">
 

@@ -153,12 +153,19 @@ var vetrina = (function () {
 
         // Show viewer demo if URL contains '?demo'
 
-        var is_demo = document.URL.indexOf('?demo') != -1;
+        const url_contains = (substr) => document.URL.indexOf(substr) != -1;
 
-        if (is_demo) {
-            const preset = demos.get_viewer_demo();
+        if (url_contains("?demo")) {
+
+            var preset;
+
+            if (url_contains("/poets")) preset = demos.get_poets();
+            else if (url_contains("/graph")) preset = demos.get_graph();
+            else preset = {modules: [], connections: []};
+
             _.each(preset.modules, viewer.add_module);
             _.each(preset.connections, viewer.add_connection);
+
         }
 
     };

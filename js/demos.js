@@ -104,7 +104,7 @@ const demos = (function () {
 	    return _.chain(template).cloneDeep().extend(attrs).value();
 	}
 
-	function get_viewer_demo() {
+	function get_poets() {
 
 	    const grid_modules = get_module_grid(corePOETS, "corePOETS");
 
@@ -145,8 +145,55 @@ const demos = (function () {
 	    return {modules, connections};
 	}
 
+	function get_graph() {
+
+		const count = 36; // number of nodes
+		const edges = 100; // number of edges
+
+		function make_node(index) {
+
+			const radians = 1.0 * index / count * 2.0 * Math.PI;
+			const radius = 200;
+			const x = Math.sin(radians) * radius;
+			const y = Math.cos(radians) * radius;
+
+			return {
+				"id": `n${index}`,
+				"x": x,
+				"y": y,
+				"description": "Graph Node",
+				"class": "node",
+				"classes": ["graph", "hide-label"],
+				"border-radius": 10,
+				"width": 20,
+				"height": 20,
+				"ports": {
+				    "p": {"x": 10, "y": 10}
+				}
+			}
+		}
+
+		function get_rand_connection() {
+
+			const ind1 = randint(0, count-1);
+			const ind2 = randint(0, count-1);
+
+			return [`n${ind1}`, `n${ind2}`, "p", "p", ["graph-connection"]];
+		}
+
+		function randint(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		const modules = _.map(_.range(count), make_node);
+		const connections = _.map(_.range(edges), get_rand_connection);
+		return {modules, connections};
+
+	}
+
 	return {
-		get_viewer_demo
+		get_poets,
+		get_graph
 	};
 
 })();
