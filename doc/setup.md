@@ -2,10 +2,11 @@
 
 ### Web Application
 
-The web application can be served as a static website using any standard
-webserver, using the top-level [`index.htm`](index.htm) file. The
+The web application can be served as a static website using any standard web
+server, using the top-level [`index.htm`](../index.htm) file. The
 [Browsesync](https://www.browsersync.io/) configuration file
-[`bs-config.js`](bs-config.js) is provided for convenience during development.
+[`bs-config.js`](../bs-config.js) is provided for convenience during
+development.
 
 Vetrina can also be ran as an independent application using
 [Electron](https://electronjs.org/):
@@ -24,10 +25,10 @@ The back-end engine must be invoked through the adapter as follows:
 
 The engine name argument must be in the same format used to execute the engine
 in the Linux shell. For example, an engine in the current directory must be
-invoked as `./adapter.py ./engine` (`./adapter.py engine` will throw an error
-message).
+invoked as `./adapter.py ./engine`. Trying to run it as `./adapter.py engine`
+will result in an error message.
 
-The adapter will start the engine as a subprocess and relay its input and
+The adapter will start the engine as a subprocess and forward its input and
 output streams to the WebSocket connection. It will also print a time-stamped
 log of incoming and outgoing messages as below:
 

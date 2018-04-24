@@ -14,10 +14,9 @@ An example of this exchange is shown below.
 ```
 
 In this example, the user enters `1+2` in the command prompt. This interaction
-is converted to an `eval` request object and sent to the back-end engine. The
-engine replies with a response object indicating that the request has been
-processed successfully and returns `'3\n'` which is appended to the command
-window.
+is converted to an _eval_ request object and sent to the back-end engine. The
+engine replies with a _success_ response object and returns `'3\n'` which is
+appended to the command window.
 
 ### Request Object Format
 
@@ -170,7 +169,8 @@ here](https://developers.google.com/chart/interactive/docs/gallery/areachart).
 
 Plain text files can be sent as response payloads and are downloaded by the
 browser without requiring user interaction (beyond the interaction causing the
-request object to be send). To embed a file payload, the response object:
+request object to be sent, that is). To embed a file payload, the response
+object:
 
 - Must contain a `type` field with the string value `file`
 - Must contain two subfields `filename` and `content` in its `return` field.
@@ -188,8 +188,8 @@ Example:
 }
 ```
 
-which will initiate a download of a file called `result.csv` with the
-following content:
+which will initiate downloading a file called `result.csv` with the following
+content:
 
 ```
 a,b,c
@@ -202,7 +202,7 @@ a,b,c
 Viewer states specify the _modules_ and _connections_ in Vetrina's diagram
 editor. When a request causes a change in the diagram editor's content, the
 engine is responsible for sending the updated viewer state as a response
-payload. In other windows, the diagram state is maintained by the back-end
+payload. In other words, the diagram state is maintained by the back-end
 engine.
 
 To include a viewer state, the response object:
