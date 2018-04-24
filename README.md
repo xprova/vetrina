@@ -24,7 +24,7 @@ maintains the server-side end of the WebSocket connection, relaying received
 JSON objects to a back-end engine and sending engine replies back to the web
 application. Communication between the adapter and engine are done purely
 using input/output streams, making it very simple to develop engines in any
-language (including Bash, see [this example](py2/engine_hello.sh)).
+language (including Bash, see [this example](backend/engine_hello.sh)).
 
 ### Documentation
 

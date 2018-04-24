@@ -9,12 +9,12 @@
 	transition-property: transform stroke;
 	transition-duration: 0.1s;
 	transition-timing-function: ease;
-	transform-origin: center center;
+	transform-origin: center;
 }
 
 .graph.node:hover rect {
 	stroke: red;
-	transform: scale(1.25);
+	stroke-width: 4;
 }
 
 #connections > line.graph-connection {
