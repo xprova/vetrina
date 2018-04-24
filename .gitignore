@@ -1,6 +1,5 @@
 js/lib/*
 *.sublime-workspace
 *.log
-py/env/
-py2/env/
+env/
 __pycache__

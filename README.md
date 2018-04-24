@@ -13,16 +13,15 @@ into full-fledged visual experiences and expose them to users on the Internet.
 
 [Live Demo](https://tuura.org/vetrina/?demo)
 
-<img src="svg/overview.svg" width="100%">
+<img src="doc/overview.svg" width="100%">
 
 Vetrina consists of two parts: a web application and a back-end adapter.
 
-The web application ([`index.htm`](index.htm)) is an Angular-based interactive
-diagram editor with built-in command window that converts user interactions
-into JSON objects and sends them through a WebSocket connection to the
-back-end adapter ([`py2/adapter.py`](py2/adapter.py)). The latter maintains
-the server-side end of the WebSocket connection, relaying received JSON
-objects to a back-end engine and sending engine replies back to the web
+The web application is an Angular-based interactive diagram editor with
+built-in command window that converts user interactions into JSON objects and
+sends them through a WebSocket connection to the back-end adapter. The latter
+maintains the server-side end of the WebSocket connection, relaying received
+JSON objects to a back-end engine and sending engine replies back to the web
 application. Communication between the adapter and engine are done purely
 using input/output streams, making it very simple to develop engines in any
 language (including Bash, see [this example](py2/engine_hello.sh)).
@@ -40,3 +39,6 @@ language (including Bash, see [this example](py2/engine_hello.sh)).
 - [Viewer State](doc/viewer-state.md)
     - [Module Objects](doc/viewer-state.md#module-objects)
     - [Connection Objects](doc/viewer-state.md#connection-objects)
+- [Developer's Guide](doc/develop.md)
+    - [General Organization](doc/develop.md#general-organization)
+    - [Dependencies](doc/develop.md#dependencies)
