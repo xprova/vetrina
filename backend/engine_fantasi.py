@@ -89,10 +89,85 @@ def print_json(obj):
     sys.stdout.flush()
 
 
+def process_dummy(terminal, workspace):
+    npoints = 110
+    min_fun = lambda x: (x - 2 - random.random()*10)**2
+    avg_fun = lambda x: x**2
+    max_fun = lambda x: (x + 2 + random.random()*10)**2
+    points = [[x, avg_fun(x), min_fun(x), max_fun(x)] for x in range(npoints+1)]
+    for n in range(1, npoints):
+        print_json(get_chart(points[:n], 50, 2500))
+        time.sleep(0.25)
+    response = get_chart(points, 50, 2500, result="success")
+    workspace['points'] = points
+    return (response, workspace)
+
+
+def process_plot(terminal, workspace):
+    nodes_max = int(words[1])
+    points = [[0,0,0,0]]
+    # nodes_max = 200
+    ymax = 0.03
+    print_json(get_chart([[-1, -1, -1, -1]], nodes_max, ymax, include_options=True))
+    for ind, item in enumerate(run_sweep(terminal, 1, nodes_max, 10)):
+        min_, avg, max_ = item
+        points.append([ind+1, avg, min_, max_])
+        print_json(get_chart(points, nodes_max, ymax))
+    response = get_chart(points, nodes_max, ymax, result="success")
+    workspace['points'] = points
+    return (response, workspace)
+
+
+def process_print(terminal, workspace):
+    nodes_max = (int(words[1]) + 1) if len(words)>1 else len(points)
+    sformat = "%14s" * 4
+    header1 = ['Removed Nodes', 'Average', 'Min', 'Max']
+    header2 = ['-------------', '-------', '---', '---']
+    sheet = [header1, header2] + points[:nodes_max]
+    lines = [sformat % tuple(map(str, row)) for row in sheet]
+    content = "\n".join(lines)
+    response = {
+        "result": "success",
+        "return": content,
+        "type": "text"
+    }
+    return (response, workspace)
+
+
+def process_download(terminal, workspace):
+    sheet = [['Removed Nodes', 'Average', 'Min', 'Max']] + points
+    lines = [", ".join([str(item) for item in row]) for row in sheet]
+    content = "\n".join(lines)
+    response = {
+        "result": "success",
+        "return": {
+            "filename": "data.csv",
+            "content": content
+        },
+        "type": "download"
+    }
+    return (response, workspace)
+
+
+def process_engine_name(terminal, workspace):
+    response = {"result": "success", "return": "FANTASI"}
+    return (response, workspace)
+
+
+def process_error(terminal, workspace):
+    response = {"result": "error", "return": "Unsupported request"}
+    return (response, workspace)
+
+
+def get_first_word(line):
+    """Return first word in a line."""
+    return line.split()[0]
+
+
 def main():
 
     terminal = run_nios()
-    points = [[0,0,0,0]]
+    workspace = {'points': [[0,0,0,0]]}
 
     while True:
 
@@ -100,81 +175,23 @@ def main():
 
         # Respond to engine name queries:
 
-        if "get" in request:
-            if request["get"] == "engine_name":
-                print_json({"result": "success", "return": "FANTASI"})
-                continue
+        is_engine_name = "get" in request and request["get"] == "engine_name"
+        is_dummy = "eval" in request and get_first_word(request['eval']) == "dummy"
+        is_plot = "eval" in request and get_first_word(request['eval']) == "plot"
+        is_print = "eval" in request and get_first_word(request['eval']) == "print"
+        is_download = "eval" in request and get_first_word(request['eval']) == "download"
 
-        # Respond to example plot queries:
+        handlers = {
+            is_engine_name: process_engine_name,
+            is_dummy: process_dummy,
+            is_plot: process_plot,
+            is_print: process_plot,
+            is_download: process_download,
+        }
 
-        if "eval" in request:
-
-            words = request["eval"].split()
-            cmd = words[0]
-
-            if cmd == "dummy":
-                npoints = 50
-                min_fun = lambda x: (x - 2 - random.random()*10)**2
-                avg_fun = lambda x: x**2
-                max_fun = lambda x: (x + 2 + random.random()*10)**2
-                points = [[x, avg_fun(x), min_fun(x), max_fun(x)] for x in range(npoints+1)]
-                for n in range(1, npoints):
-                    print_json(get_chart(points[:n], 50, 2500))
-                    time.sleep(0.25)
-                print_json(get_chart(points, 50, 2500, result="success"))
-                continue
-
-            # Run network analysis:
-
-            if cmd == "plot":
-                nodes_max = int(words[1])
-                points = [[0,0,0,0]]
-                # nodes_max = 200
-                ymax = 0.03
-                print_json(get_chart([[-1, -1, -1, -1]], nodes_max, ymax, include_options=True))
-                for ind, item in enumerate(run_sweep(terminal, 1, nodes_max, 10)):
-                    min_, avg, max_ = item
-                    points.append([ind+1, avg, min_, max_])
-                    print_json(get_chart(points, nodes_max, ymax))
-                print_json(get_chart(points, nodes_max, ymax, result="success"))
-                continue
-
-            if cmd == "print":
-                nodes_max = (int(words[1]) + 1) if len(words)>1 else len(points)
-                sformat = "%14s" * 4
-                header1 = ['Removed Nodes', 'Average', 'Min', 'Max']
-                header2 = ['-------------', '-------', '---', '---']
-                sheet = [header1, header2] + points[:nodes_max]
-                lines = [sformat % tuple(map(str, row)) for row in sheet]
-                content = "\n".join(lines)
-                response = {
-                    "result": "success",
-                    "return": content,
-                    "type": "text"
-                }
-                print_json(response)
-                continue
-
-
-            if cmd == "download":
-                sheet = [['Removed Nodes', 'Average', 'Min', 'Max']] + points
-                lines = [", ".join([str(item) for item in row]) for row in sheet]
-                content = "\n".join(lines)
-                response = {
-                    "result": "success",
-                    "return": {
-                        "filename": "data.csv",
-                        "content": content
-                    },
-                    "type": "download"
-                }
-                print_json(response)
-                continue
-
-            # Otherwise:
-
-        print_json({"result": "error", "description": "unsupported"})
-
+        handler = handlers.get(True, process_error)
+        response, workspace = handler(request, workspace)
+        print_json(response)
 
 if __name__ == '__main__':
     main()
