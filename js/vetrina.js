@@ -73,9 +73,9 @@ var vetrina = (function () {
 
                     terminal.append_text("update", response.return, response_id);
 
-                } else if (response.result === "error") {
+                } else if (response.result === "error" || response.result === "exception") {
 
-                    terminal.append_text('error', response.description);
+                    terminal.append_text('error', response.return);
                 }
 
             } else if (response_type === "json") {

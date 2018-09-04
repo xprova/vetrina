@@ -25,6 +25,22 @@
 	transition-timing-function: ease;
 }
 
+#connections > line.graph-connection-emph {
+	stroke: #4caf50;
+	stroke-width: 4;
+	transition-property: stroke stroke-width;
+	transition-duration: 0.1s;
+	transition-timing-function: ease;
+}
+
+#connections > line.graph-connection-faint {
+	stroke: #0000000f;
+	stroke-width: 4;
+	transition-property: stroke stroke-width;
+	transition-duration: 0.1s;
+	transition-timing-function: ease;
+}
+
 #connections > line.graph-connection:hover {
 	stroke: red;
 	stroke-width: 5;

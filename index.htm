@@ -1,52 +1,55 @@
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Vetrina</title>
-    <script src="js/lib/angular.min.js"></script>
-    <script src="js/lib/snap.svg-min.js"></script>
-    <script src="js/lib/mousetrap.min.js"></script>
-    <script src="js/lib/lodash.js"></script>
-    <script src="js/lib/socket.io.js"></script>
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="js/lib/download.js"></script>
-    <script src="poets/defs.js"></script>
-    <script src="gates/defs.js"></script>
-    <script src="js/sio.js"></script>
-    <script src="js/palette.js"></script>
-    <script src="js/viewer.js"></script>
-    <script src="js/terminal.js"></script>
-    <script src="js/bindings.js"></script>
-    <script src="js/toaster.js"></script>
-    <script src="js/charts.js"></script>
-    <script src="js/demos.js"></script>
-    <script src="js/vetrina.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/viewer.css">
-    <link rel="stylesheet" type="text/css" href="css/palette.css">
-    <link rel="stylesheet" type="text/css" href="css/terminal.css">
-    <link rel="stylesheet" type="text/css" href="css/toaster.css">
-    <link rel="stylesheet" type="text/css" href="poets/styles.css">
-    <link rel="stylesheet" type="text/css" href="gates/styles.css">
-    <link rel="stylesheet" type="text/css" href="graphs/styles.css">
-    <script type="text/javascript">
+    <head>
+        <meta charset="utf-8" />
+        <title>Vetrina</title>
+        <script src="js/lib/angular.min.js"></script>
+        <script src="js/lib/snap.svg-min.js"></script>
+        <script src="js/lib/mousetrap.min.js"></script>
+        <script src="js/lib/lodash.js"></script>
+        <script src="js/lib/socket.io.js"></script>
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
+        <script src="js/lib/download.js"></script>
+        <script src="poets/defs.js"></script>
+        <script src="gates/defs.js"></script>
+        <script src="js/sio.js"></script>
+        <script src="js/palette.js"></script>
+        <script src="js/viewer.js"></script>
+        <script src="js/terminal.js"></script>
+        <script src="js/bindings.js"></script>
+        <script src="js/toaster.js"></script>
+        <script src="js/charts.js"></script>
+        <script src="js/demos.js"></script>
+        <script src="js/vetrina.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/viewer.css">
+        <link rel="stylesheet" type="text/css" href="css/palette.css">
+        <link rel="stylesheet" type="text/css" href="css/terminal.css">
+        <link rel="stylesheet" type="text/css" href="css/toaster.css">
+        <link rel="stylesheet" type="text/css" href="poets/styles.css">
+        <link rel="stylesheet" type="text/css" href="gates/styles.css">
+        <link rel="stylesheet" type="text/css" href="graphs/styles.css">
+        <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
-    </script>
-</head>
-<body ng-app="project">
-    <toaster></toaster>
+        </script>
+    </head>
+    <body ng-app="project">
+        <toaster></toaster>
     <svg viewer class="unselectable"></svg>
-    <palette></palette>
-    <div terminal-container>
-        <div terminal>
-            <div scrollable>
-                <div output></div>
-                <div prompt>
-                    <div>
+<palette></palette>
+<div terminal-container>
+    <div terminal>
+        <div scrollable>
+            <div class="logo-container">
+                <img src="poets/poets_logo_black.svg" />
+            </div>
+            <div output></div>
+            <div prompt>
+                <div>
                     >>&nbsp;
-                    </div>
-                    <input/>
                 </div>
+                <input/>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
