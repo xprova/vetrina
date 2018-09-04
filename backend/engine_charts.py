@@ -64,6 +64,13 @@ def main():
             print_json(get_chart("success", points))
             continue
 
+        if "seq" in request.get("eval"):
+            cmd = request["eval"]
+            n = int(cmd.split(" ")[1])
+            result = str(list(range(n)))
+            print_json({"result": "success", "return": result})
+            continue
+
         print_json({"result": "error", "description": "unsupported"})
 
 

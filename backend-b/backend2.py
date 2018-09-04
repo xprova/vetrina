@@ -3,14 +3,26 @@
 import os
 import sys
 import socketio
+
+# from aiohttp import web
+import eventlet
+import eventlet.wsgi
+
+from flask import Flask
+
+
 from code import InteractiveConsole
-from aiohttp import web
+
+
 from datetime import datetime
 from termcolor import cprint
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
+# from watchdog.events import FileSystemEventHandler
+# from watchdog.observers import Observer
 
-sio = socketio.AsyncServer()
+# sio = socketio.AsyncServer()
+
+sio = socketio.Server(async_mode='eventlet')
+
 
 def log_event(debug, sid, str_, color):
     MAX_LEN = 80  # max chars per line
@@ -80,24 +92,27 @@ class PythonConsole(InteractiveConsole):
         for line in lines:
             self.runcode(line)
 
-
-class AppWatcher(FileSystemEventHandler):
-    """
-    Watch a directory and run on_reload when changes in .py files are detected
-    """
-
-    def __init__(self, on_reload, watch_dir='.'):
-        self.on_reload = on_reload
-        observer = Observer()
-        observer.schedule(self, watch_dir, recursive=True)
-        observer.start()
-
-    def on_modified(self, event):
-        if event and event.src_path[-3:] == ".py":
-            self.on_reload()
+    def flush(self):
+        pass
 
 
-class MainNamespace(socketio.AsyncNamespace):
+# class AppWatcher(FileSystemEventHandler):
+#     """
+#     Watch a directory and run on_reload when changes in .py files are detected
+#     """
+
+#     def __init__(self, on_reload, watch_dir='.'):
+#         self.on_reload = on_reload
+#         observer = Observer()
+#         observer.schedule(self, watch_dir, recursive=True)
+#         observer.start()
+
+#     def on_modified(self, event):
+#         if event and event.src_path[-3:] == ".py":
+#             self.on_reload()
+
+
+class MainNamespace(socketio.Namespace):
     """Handle sio messaging"""
 
     debug = False
@@ -105,10 +120,10 @@ class MainNamespace(socketio.AsyncNamespace):
     console_ref = None
     model_id = None  # keeps id(model) of last update to detect changes
 
-    def __init__(self, namespace, debug, console_ref):
-        super().__init__(namespace)
-        self.debug = debug
-        self.console_ref = console_ref
+    # def __init__(self, namespace, debug, console_ref):
+    #     super().__init__(namespace)
+    #     self.debug = debug
+    #     self.console_ref = console_ref
 
     def console(self):
         return self.console_ref["console"]
@@ -167,7 +182,7 @@ class MainNamespace(socketio.AsyncNamespace):
         except KeyError:
             return {"result": "error", "description": "could not set variable"}
 
-    async def on_msg(self, sid, request):
+    def on_msg(self, sid, request):
         log_event(self.debug, sid, str(request), "green")
         call_table = {
             "call": self.handle_call,
@@ -180,7 +195,7 @@ class MainNamespace(socketio.AsyncNamespace):
                 response = handle_func(request)
                 log_event(self.debug, sid, str(response), "cyan")
                 # return response
-                await sio.emit('reply', response)
+                sio.emit('reply', response)
         else:
             return {"result": "error", "description": "invalid request"}
 
@@ -198,20 +213,23 @@ def main():
     debug = True
     py_file = sys.argv[1] if len(sys.argv)>1 else None
     py_mod = py_file.replace(".py", "") if py_file else None
-    app = web.Application()
+    # app = web.Application()
     console_ref = {}
+    console_ref["console"] = create_console(py_mod, debug)
 
-    def on_reload():
-        console_ref["console"] = create_console(py_mod, debug)
-
-    on_reload()
+    mynamespace = MainNamespace("/")
+    mynamespace.console_ref = console_ref
+    sio.register_namespace(mynamespace)
+    app = socketio.Middleware(sio)
+    eventlet.wsgi.server(eventlet.listen(('', 9020)), app)
 
     # app_watcher = AppWatcher(on_reload)
-    sio.register_namespace(MainNamespace("/", debug, console_ref))
-    sio.attach(app)
+    # sio.attach(app)
+
     print("Server started")
-    web.run_app(app, host='127.0.0.1', port=9010, print=(lambda _: None),
-                handle_signals=True)
+
+    # web.run_app(app, host='127.0.0.1', port=9020, print=(lambda _: None),
+    #             handle_signals=True)
 
 if __name__ == '__main__':
     main()

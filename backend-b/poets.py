@@ -1,4 +1,5 @@
 from topology import get_grid
+from subprocess import check_output as run
 
 engine_name = "POETS"
 
@@ -15,3 +16,9 @@ corePoets = {
 }
 
 init = lambda: get_grid(corePoets, 5, 5, "corePoets_%d_%d")
+
+def ls():
+    output = run("ls")
+    lines = [line.decode() for line in output.split(b'\n') if line]
+    for line in lines:
+        print(line)
